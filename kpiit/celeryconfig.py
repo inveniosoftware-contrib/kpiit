@@ -9,6 +9,8 @@
 
 import os
 
+from celery.schedules import crontab
+
 
 def _env(key, default):
     return os.environ.get(key, default)
@@ -21,10 +23,10 @@ result_backend = _env('CELERY_RESULT_BACKEND', 'redis://localhost:6379/1')
 #: List of modules to import when the Celery worker starts.
 imports = _env('CELERY_IMPORTS', ['kpiit.tasks'])
 #: Scheduled tasks configuration (aka cronjobs).
-beat_schedule = _env('CELERYBEAT_SCHEDULE', {
-    'get-records-every-???': {
-        'task': 'kpiit.tasks.num_records',
-        'schedule': 3600.0,
+beat_schedule = {
+    'get-records-every-day-after-midnight': {
+        'task': 'kpiit.tasks.num_records_collect',
+        'schedule': crontab(hour=0, minute=20),
         'args': ()
     }
-})
+}

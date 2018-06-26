@@ -8,22 +8,39 @@
 """Celery tasks."""
 
 import os
-import requests
 
+import kpi
+import requests
+from celery import chord
 from celery.utils.log import get_task_logger
+
 from .app import app
 
-ZENODO_RECORDS_URL = 'https://zenodo.org/api/records/?all_versions'
 logger = get_task_logger(__name__)
+
+RECORDS_URLS = dict(
+    zenodo='https://zenodo.org/api/records/?all_versions',
+    videos='https://videos.cern.ch/api/records/?all_versions',
+    opendata='http://opendata.cern.ch/api/records/?all_versions'
+)
 
 
 @app.task
-def num_records():
-    """Get KPI for number of records."""
-    zenodo_req = requests.get(ZENODO_RECORDS_URL)
-    zenodo_json = zenodo_req.json()
+def num_records_collect():
+    """Get # of records for all services then collect them."""
+    return chord(num_records.s(name, url) for name, url in RECORDS_URLS.items())(num_records_done.s())
 
-    # TODO: validate json content
-    num_records = zenodo_json['hits']['total']
+@app.task
+def num_records(name, url):
+    """Get # of records for the given URL."""
+    req = requests.get(url)
+    json = req.json()
 
-    return num_records
+    num_records = json['hits']['total']
+    logger.debug('# of records ({}): {}'.format(name, num_records))
+
+    return name, num_records
+
+@app.task
+def num_records_done(values):
+    logger.info('collected num_records KPI: {}'.format(values))
