@@ -20,3 +20,6 @@ class RecordsMetric(Metric):
     @property
     def count(self):
         return self.__count
+
+    def __repr__(self):
+        return 'RecordsMetric(name="{}", count={})'.format(self.name, self.count)

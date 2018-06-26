@@ -24,11 +24,11 @@ class RecordsURLProvider(URLProvider):
         super().__init__(RecordsMetric(), url)
 
     def collect(self):
-        """Collect num_records from given URL."""
+        """Collect num_records from given URL and returns the updated metrics."""
         req = requests.get(self.url)
         data = req.json()
         record_count = data['hits']['total']
 
         self.metric.update(record_count)
 
-        return record_count
+        return self.metric

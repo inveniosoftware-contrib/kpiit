@@ -33,3 +33,8 @@ class Provider(object):
 
     def collect(self):
         raise NotImplementedError()
+
+
+class Publisher(object):
+    def publish(self, metrics):
+        raise NotImplementedError()
