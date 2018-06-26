@@ -7,9 +7,10 @@
 
 """Celery tasks."""
 
+import json
+import itertools
 import os
 
-import kpi
 import requests
 from celery import chord
 from celery.utils.log import get_task_logger
@@ -19,28 +20,42 @@ from .app import app
 logger = get_task_logger(__name__)
 
 RECORDS_URLS = dict(
-    zenodo='https://zenodo.org/api/records/?all_versions',
-    videos='https://videos.cern.ch/api/records/?all_versions',
-    opendata='http://opendata.cern.ch/api/records/?all_versions'
+    zenodo='zenodo_records.json',
+    videos='videos_records.json',
+    opendata='opendata_records.json',
+    # zenodo='https://zenodo.org/api/records/?all_versions',
+    # videos='https://videos.cern.ch/api/records/?all_versions',
+    # opendata='http://opendata.cern.ch/api/records/?all_versions'
 )
 
 
 @app.task
-def num_records_collect():
-    """Get # of records for all services then collect them."""
-    return chord(num_records.s(name, url) for name, url in RECORDS_URLS.items())(num_records_done.s())
+def collect_kpi():
+    # return chord([num_records_collect.s()])(collect_kpi_done.s())
+    collect_num_records = (num_records.s(name, url)
+                           for name, url in RECORDS_URLS.items())
+    return chord(itertools.chain(collect_num_records))(collect_kpi_done.s())
+
+
+@app.task
+def collect_kpi_done(data):
+    test = {key: value
+            for num_record in data for key, value in num_record.items()}
+    logger.info(test)
+    return data
+
 
 @app.task
 def num_records(name, url):
     """Get # of records for the given URL."""
-    req = requests.get(url)
-    json = req.json()
+    # req = requests.get(url)
+    # data = req.json()
+    with open(url, 'r') as f:
+        data = json.loads(f.read())
 
-    num_records = json['hits']['total']
-    logger.debug('# of records ({}): {}'.format(name, num_records))
+    record_count = data['hits']['total']
+    # logger.debug('# of records ({}): {}'.format(name, record_coun))
 
-    return name, num_records
+    key = '{}_num_records'.format(name)
 
-@app.task
-def num_records_done(values):
-    logger.info('collected num_records KPI: {}'.format(values))
+    return {key: record_count}
