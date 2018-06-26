@@ -16,6 +16,7 @@ from celery import chord
 from celery.utils.log import get_task_logger
 
 from .app import app
+from .util import get_timestamp_now
 
 logger = get_task_logger(__name__)
 
@@ -29,9 +30,27 @@ RECORDS_URLS = dict(
 )
 
 
+def build_kpi_message(serviceid, service_status, **data):
+    """Generate a KPI message (JSON) that will be sent to monit."""
+    timestamp = get_timestamp_now()
+    availabilityinfo = None
+    availabilitydesc = None
+
+    return json.dumps({
+        'producer': 'kpi',
+        'type': 'service',
+        'serviceid': serviceid,
+        'service_status': service_status,
+        'type_prefix': 'raw',
+        'timestamp': timestamp,
+        'availabilityinfo': availabilityinfo,
+        'availabilitydesc': availabilitydesc,
+        **data
+    })
+
+
 @app.task
 def collect_kpi():
-    # return chord([num_records_collect.s()])(collect_kpi_done.s())
     collect_num_records = (num_records.s(name, url)
                            for name, url in RECORDS_URLS.items())
     return chord(itertools.chain(collect_num_records))(collect_kpi_done.s())
@@ -39,10 +58,12 @@ def collect_kpi():
 
 @app.task
 def collect_kpi_done(data):
-    test = {key: value
-            for num_record in data for key, value in num_record.items()}
-    logger.info(test)
-    return data
+    kpi = {key: value
+           for num_record in data for key, value in num_record.items()}
+    logger.info(kpi)
+    with open('output.json', 'w+') as f:
+        f.write(build_kpi_message('testserviceid', 'available', **kpi))
+    return kpi
 
 
 @app.task
