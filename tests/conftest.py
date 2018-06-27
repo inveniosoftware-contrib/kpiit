@@ -7,11 +7,14 @@
 
 """Common pytest fixtures and plugins."""
 
+import json
+
 import pytest
 
 from kpiit.metrics.records import RecordsMetric
 from kpiit.metrics.zenodo import ZenodoRecordsMetric
-from kpiit.providers import FileProvider, URLProvider
+from kpiit.models import MetricInstance
+from kpiit.providers import URLProvider
 
 
 @pytest.fixture
@@ -21,13 +24,13 @@ def records_metric():
 
 
 @pytest.fixture
-def file_provider(records_metric):
-    """Fixture for file provider."""
-    return FileProvider(records_metric, 'tests/data/zenodo_records.json')
+def url_provider(records_metric):
+    """URL provider fixture."""
+    return URLProvider(records_metric, ZenodoRecordsMetric.URL)
 
 
 @pytest.fixture
-def zenodo_records(file_provider):
+def zenodo_records():
     """Fixture for Zenodo records metric instance."""
     return ZenodoRecordsMetric()
 

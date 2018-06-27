@@ -10,12 +10,12 @@
 from ..models import MetricInstance
 from ..providers.records import RecordsURLProvider
 
-ZENODO_RECORDS_URL = 'https://zenodo.org/api/records/?all_versions'
-
 
 class ZenodoRecordsMetric(MetricInstance):
     """Metric instance for # of records from Zenodo."""
 
-    def __init__(self, provider=RecordsURLProvider(ZENODO_RECORDS_URL)):
+    URL = 'https://zenodo.org/api/records/?all_versions'
+
+    def __init__(self, provider=RecordsURLProvider(URL)):
         """Number of records metric for Zenodo initialization."""
         super().__init__(provider)

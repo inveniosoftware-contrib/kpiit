@@ -13,21 +13,6 @@ import requests
 from ..models import Provider
 
 
-class FileProvider(Provider):
-    """Basic file-based provider."""
-
-    def __init__(self, metric, filename):
-        """File provider initialization."""
-        super().__init__(metric)
-        self.filename = filename
-
-    def collect(self):
-        """Collect data in file."""
-        with open(self.filename, 'r') as f:
-            self.data = f.read()
-            self.json = json.loads(self.data)
-
-
 class URLProvider(Provider):
     """Basic URL-based provider."""
 

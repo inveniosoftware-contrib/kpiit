@@ -27,11 +27,11 @@ def test_metric_base():
     assert metric.values['test'] == 1
 
 
-def test_metricinstance_base(file_provider):
+def test_metricinstance_base(url_provider):
     """Test metric instance base class."""
-    metric_inst = MetricInstance(file_provider)
+    metric_inst = MetricInstance(url_provider)
 
-    assert metric_inst.provider == file_provider
+    assert metric_inst.provider == url_provider
     assert metric_inst.metric is not None
 
 
