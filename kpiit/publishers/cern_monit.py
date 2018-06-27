@@ -12,13 +12,16 @@ from datetime import datetime
 
 from ..models import Publisher
 
+SERVICE_ID = 'testserviceid'
+
 
 class CERNMonitPublisher(Publisher):
     """Publish metrics to CERN monit grafana instance."""
 
-    def build_kpi_message(self, serviceid, service_status, **data):
+    def build_kpi_message(self, serviceid, service_status, metrics):
         """Build a KPI message (JSON) that will be sent to monit."""
-        timestamp = None  # get_timestamp_now()
+        data = CERNMonitPublisher.metrics_to_dict(metrics)
+        timestamp = CERNMonitPublisher.get_timestamp()
         availabilityinfo = None
         availabilitydesc = None
 
@@ -36,9 +39,20 @@ class CERNMonitPublisher(Publisher):
 
     def publish(self, metrics):
         """Publish KPIs to the grafana instance."""
-        raise NotImplementedError()
+        status = 'available'  # TODO: Implement proper status checking
+        msg = self.build_kpi_message(SERVICE_ID, status, metrics)
+
+        return msg
 
     @staticmethod
     def get_timestamp():
         """Get timestamp in milliseconds without decimals."""
         return round(datetime.utcnow().timestamp() * 1000)
+
+    @staticmethod
+    def metrics_to_dict(metrics):
+        """Convert an array of metrics to a dict."""
+        data = {}
+        for metric in metrics:
+            data[metric.name] = metric.value
+        return data

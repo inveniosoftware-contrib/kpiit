@@ -16,10 +16,28 @@ class Metric(object):
     def __init__(self, name):
         """Metric initialization."""
         self.name = name
+        self.__values = {}
 
-    def update(self, *args, **kwargs):
+    def update(self, **kwargs):
         """Update metric data."""
-        raise NotImplementedError()
+        for key, value in kwargs.items():
+            self.__values[key] = value
+
+    @property
+    def values(self):
+        """Get metric values."""
+        return self.__values
+
+    def __repr__(self):
+        """Metric representation."""
+        pairs = [', {}={}'.format(key, value)
+                 for key, value in self.values.items()]
+
+        return '{clsname}("{name}"{value_pairs})'.format(
+            clsname=self.__class__.__name__,
+            name=self.name,
+            value_pairs=''.join(sorted(pairs))
+        )
 
 
 class MetricInstance(object):

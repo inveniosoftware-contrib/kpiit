@@ -21,8 +21,10 @@ def test_metric_base():
 
     assert metric.name == 'testname'
 
-    with pytest.raises(NotImplementedError):
-        metric.update(5)
+    metric.update(test=5)
+    assert metric.values['test'] == 5
+    metric.update(test=1)
+    assert metric.values['test'] == 1
 
 
 def test_metricinstance_base(file_provider):
@@ -34,13 +36,13 @@ def test_metricinstance_base(file_provider):
 
 
 def test_records_metric(records_metric):
-    assert records_metric.name == 'num_records'
+    assert records_metric.name == 'records'
     assert records_metric.count is None
 
-    records_metric.update(5)
+    records_metric.count = 5
     assert records_metric.count == 5
 
-    records_metric.update(3)
+    records_metric.count = 3
     assert records_metric.count == 3
 
-    assert repr(records_metric) == 'RecordsMetric("num_records", count=3)'
+    assert repr(records_metric) == 'RecordsMetric("records", num_records=3)'

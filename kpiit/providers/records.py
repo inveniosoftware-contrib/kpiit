@@ -28,8 +28,6 @@ class RecordsURLProvider(URLProvider):
         """Collect # of records from URL and returns the updated metrics."""
         super().collect()
 
-        record_count = self.json['hits']['total']
-
-        self.metric.update(record_count)
+        self.metric.count = self.json['hits']['total']
 
         return self.metric
