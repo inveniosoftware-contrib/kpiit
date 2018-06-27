@@ -10,7 +10,6 @@
 import os
 
 import pytest
-import requests
 
 from kpiit.metrics.zenodo import ZenodoRecordsMetric
 from kpiit.models import Metric, MetricInstance, Provider, Publisher

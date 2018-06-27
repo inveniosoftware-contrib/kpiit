@@ -16,6 +16,7 @@ class RecordsMetric(Metric):
     def __init__(self):
         """Records metric initialization."""
         super().__init__('num_records')
+        self.__count = None
 
     def update(self, count):
         """Update records count."""
