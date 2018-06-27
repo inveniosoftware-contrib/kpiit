@@ -12,7 +12,7 @@ import json
 import pytest
 
 from kpiit.metrics.records import RecordsMetric
-from kpiit.metrics.zenodo import ZenodoRecordsMetricInst
+from kpiit.metricsinst.zenodo import ZenodoRecordsMetricInst
 from kpiit.providers import JSONURLProvider
 
 

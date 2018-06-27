@@ -11,7 +11,7 @@ import os
 
 import pytest
 
-from kpiit.metrics.zenodo import ZenodoRecordsMetricInst
+from kpiit.metricsinst.zenodo import ZenodoRecordsMetricInst
 from kpiit.models import Metric, MetricInstance, Provider, Publisher
 
 

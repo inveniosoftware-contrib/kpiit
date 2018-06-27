@@ -7,12 +7,9 @@
 
 """Celery tasks."""
 
-import itertools
-import json
 import os
 
-import requests
-from celery import chord
+from celery import chain
 from celery.utils.log import get_task_logger
 
 from .app import app
@@ -21,13 +18,19 @@ logger = get_task_logger(__name__)
 
 
 @app.task
-def collect_metrics():
+def collect_and_publish(*args, **kwargs):
+    """Collect metrics then publish."""
+    return chain(collect_metrics.s(metrics), publish_metrics.s(publisher))
+
+
+@app.task
+def collect_metrics(metrics):
     """Collect metrics."""
     pass
 
 
 @app.task
-def publish_metrics(metrics):
+def publish_metrics(metrics, publisher):
     """Publish metrics."""
     pass
 
