@@ -16,12 +16,12 @@ class Metric(object):
     def __init__(self, name):
         """Metric initialization."""
         self.name = name
-        self.__values = {}
+        self.__values = {name: {}}
 
     def update(self, **kwargs):
         """Update metric data."""
         for key, value in kwargs.items():
-            self.__values[key] = value
+            self.__values[self.name][key] = value
 
     @property
     def values(self):
@@ -31,7 +31,7 @@ class Metric(object):
     def __repr__(self):
         """Metric representation."""
         pairs = [', {}={}'.format(key, value)
-                 for key, value in self.values.items()]
+                 for key, value in self.values[self.name].items()]
 
         return '{clsname}("{name}"{value_pairs})'.format(
             clsname=self.__class__.__name__,

@@ -42,10 +42,11 @@ def collect_metrics(metrics_paths):
     for inst in metric_instances:
         inst.collect()
 
-    return [inst for inst in metric_instances]
+    return [inst.metric.values for inst in metric_instances]
 
 
 @app.task
 def publish_metrics(metrics, publisher):
     """Publish metrics."""
-    logger.info(len(metrics))
+    logger.info(metrics)
+    logger.info(publisher)
