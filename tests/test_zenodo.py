@@ -11,7 +11,7 @@ import os
 
 import pytest
 
-from kpiit.metrics.zenodo import ZenodoRecordsMetric
+from kpiit.metrics.zenodo import ZenodoRecordsMetricInst
 from kpiit.models import Metric, MetricInstance, Provider, Publisher
 
 
@@ -20,4 +20,5 @@ def test_zenodo_records(requests_mock, zenodo_records, zenodo_records_json):
         'https://zenodo.org/api/records/?all_versions',
         text=zenodo_records_json
     )
-    assert zenodo_records.collect().count == 406804
+    zenodo_records.collect()
+    zenodo_records.metric.count == 406804

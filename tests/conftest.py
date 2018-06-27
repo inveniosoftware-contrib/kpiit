@@ -12,9 +12,8 @@ import json
 import pytest
 
 from kpiit.metrics.records import RecordsMetric
-from kpiit.metrics.zenodo import ZenodoRecordsMetric
-from kpiit.models import MetricInstance
-from kpiit.providers import URLProvider
+from kpiit.metrics.zenodo import ZenodoRecordsMetricInst
+from kpiit.providers import JSONURLProvider
 
 
 @pytest.fixture
@@ -26,13 +25,13 @@ def records_metric():
 @pytest.fixture
 def url_provider(records_metric):
     """URL provider fixture."""
-    return URLProvider(records_metric, ZenodoRecordsMetric.URL)
+    return JSONURLProvider(records_metric, ZenodoRecordsMetricInst.URL)
 
 
 @pytest.fixture
 def zenodo_records():
     """Fixture for Zenodo records metric instance."""
-    return ZenodoRecordsMetric()
+    return ZenodoRecordsMetricInst()
 
 
 @pytest.fixture

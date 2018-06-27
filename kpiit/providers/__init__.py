@@ -13,7 +13,7 @@ import requests
 from ..models import Provider
 
 
-class URLProvider(Provider):
+class JSONURLProvider(Provider):
     """Basic URL-based provider."""
 
     def __init__(self, metric, url):
@@ -25,5 +25,3 @@ class URLProvider(Provider):
         """Get URL request."""
         self.data = requests.get(self.url)
         self.json = self.data.json()
-
-        return self.metric

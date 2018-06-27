@@ -19,14 +19,17 @@ from .app import app
 
 logger = get_task_logger(__name__)
 
-RECORDS_URLS = dict(
-    zenodo='zenodo_records.json',
-    videos='videos_records.json',
-    opendata='opendata_records.json',
-    # zenodo='https://zenodo.org/api/records/?all_versions',
-    # videos='https://videos.cern.ch/api/records/?all_versions',
-    # opendata='http://opendata.cern.ch/api/records/?all_versions'
-)
+
+@app.task
+def collect_metrics():
+    """Collect metrics."""
+    pass
+
+
+@app.task
+def publish_metrics(metrics):
+    """Publish metrics."""
+    pass
 
 
 # @app.task

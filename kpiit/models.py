@@ -50,7 +50,7 @@ class MetricInstance(object):
 
     def collect(self):
         """Collect metrics from the provider."""
-        return self.provider.collect()
+        self.provider.collect()
 
 
 class Provider(object):
