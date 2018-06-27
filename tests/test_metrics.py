@@ -15,6 +15,24 @@ from kpiit.metrics.zenodo import ZenodoRecordsMetric
 from kpiit.models import Metric, MetricInstance, Provider, Publisher
 
 
+def test_metric_base():
+    """Test metric base class."""
+    metric = Metric('testname')
+
+    assert metric.name == 'testname'
+
+    with pytest.raises(NotImplementedError):
+        metric.update(5)
+
+
+def test_metricinstance_base(file_provider):
+    """Test metric instance base class."""
+    metric_inst = MetricInstance(file_provider)
+
+    assert metric_inst.provider == file_provider
+    assert metric_inst.metric is not None
+
+
 def test_records_metric(records_metric):
     assert records_metric.name == 'num_records'
     assert records_metric.count is None
