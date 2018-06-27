@@ -5,7 +5,7 @@
 # KPIit is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
-"""MetricInstances for Zenodo"""
+"""MetricInstances for Zenodo."""
 
 from ..models import MetricInstance
 from ..providers.records import RecordsURLProvider
@@ -13,7 +13,10 @@ from ..providers.records import RecordsURLProvider
 
 class ZenodoRecordsMetric(MetricInstance):
     """Metric instance for # of records from Zenodo."""
+
     ZENODO_RECORDS_URL = 'https://zenodo.org/api/records/?all_versions'
 
     def __init__(self):
-        super().__init__(RecordsURLProvider(ZenodoRecordsMetric.ZENODO_RECORDS_URL))
+        """Zenodo # of records metric initialization."""
+        provider = RecordsURLProvider(ZenodoRecordsMetric.ZENODO_RECORDS_URL)
+        super().__init__(provider)
