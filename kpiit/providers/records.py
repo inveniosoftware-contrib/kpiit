@@ -26,9 +26,9 @@ class RecordsURLProvider(URLProvider):
 
     def collect(self):
         """Collect # of records from URL and returns the updated metrics."""
-        req = requests.get(self.url)
-        data = req.json()
-        record_count = data['hits']['total']
+        super().collect()
+
+        record_count = self.json['hits']['total']
 
         self.metric.update(record_count)
 

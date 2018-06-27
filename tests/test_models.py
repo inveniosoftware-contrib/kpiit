@@ -10,8 +10,10 @@
 import os
 
 import pytest
+import requests
 
-from kpiit.models import Metric, Provider, Publisher
+from kpiit.metrics.zenodo import ZenodoRecordsMetric
+from kpiit.models import Metric, MetricInstance, Provider, Publisher
 
 
 def test_metric_base():
@@ -42,3 +44,19 @@ def test_publisher_base(records_metric):
 
     with pytest.raises(NotImplementedError):
         publisher.publish(metrics)
+
+
+def test_metricinstance_base(file_provider):
+    """Test metric instance base class."""
+    metric_inst = MetricInstance(file_provider)
+
+    assert metric_inst.provider == file_provider
+    assert metric_inst.metric is not None
+
+
+def test_zenodo_records(requests_mock, zenodo_records, zenodo_records_json):
+    requests_mock.get(
+        'https://zenodo.org/api/records/?all_versions',
+        text=zenodo_records_json
+    )
+    assert zenodo_records.collect().count == 406804
