@@ -15,34 +15,39 @@ from ..models import Publisher
 SERVICE_ID = 'testserviceid'
 
 
-class CERNMonitPublisher(Publisher):
+class CERNGrafanaPublisher(Publisher):
     """Publish metrics to CERN monit grafana instance."""
 
-    def build_kpi_message(self, serviceid, service_status, metrics):
+    def publish(self, metrics):
+        """Publish KPIs to the grafana instance."""
+        status = 'available'  # TODO: Implement proper status checking
+        msg = CERNGrafanaPublisher.build_message(SERVICE_ID, status, metrics)
+
+        return msg
+
+    @classmethod
+    def build_message(cls, serviceid, service_status, metrics, **kwargs):
         """Build a KPI message (JSON) that will be sent to monit."""
-        data = CERNMonitPublisher.metrics_to_dict(metrics)
-        timestamp = CERNMonitPublisher.get_timestamp()
-        availabilityinfo = None
-        availabilitydesc = None
+        data = cls.metrics_to_dict(metrics)
+        timestamp = cls.get_timestamp()
+
+        producer = kwargs.get('producer', 'kpi')
+        type_ = kwargs.get('type', 'service')
+        type_prefix = kwargs.get('type_prefix', 'raw')
+        availabilityinfo = kwargs.get('availabilityinfo', None)
+        availabilitydesc = kwargs.get('availabilitydesc', None)
 
         return json.dumps({
-            'producer': 'kpi',
-            'type': 'service',
+            'producer': producer,
+            'type': type_,
             'serviceid': serviceid,
             'service_status': service_status,
-            'type_prefix': 'raw',
+            'type_prefix': type_prefix,
             'timestamp': timestamp,
             'availabilityinfo': availabilityinfo,
             'availabilitydesc': availabilitydesc,
             **data
         })
-
-    def publish(self, metrics):
-        """Publish KPIs to the grafana instance."""
-        status = 'available'  # TODO: Implement proper status checking
-        msg = self.build_kpi_message(SERVICE_ID, status, metrics)
-
-        return msg
 
     @staticmethod
     def get_timestamp():
@@ -54,5 +59,5 @@ class CERNMonitPublisher(Publisher):
         """Convert an array of metrics to a dict."""
         data = {}
         for metric in metrics:
-            data[metric.name] = metric.value
+            data.update(metric.values)
         return data
