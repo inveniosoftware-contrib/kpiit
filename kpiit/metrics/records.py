@@ -13,6 +13,9 @@ from ..models import Metric
 class RecordsMetric(Metric):
     """Metric for number of records."""
 
+    def __init__(self, name, provider, fields=['num_records']):
+        super().__init__(name, provider, fields)
+
     def collect(self):
         """Collect data for this instance."""
         super().collect()
