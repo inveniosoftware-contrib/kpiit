@@ -31,12 +31,6 @@ def url_provider(records_metric):
 
 
 @pytest.fixture
-def zenodo_records():
-    """Fixture for Zenodo records metric instance."""
-    return ZenodoRecordsMetricInst()
-
-
-@pytest.fixture
 def zenodo_records_json():
     """Load JSON content from Zenodo records file."""
     data = None
@@ -46,9 +40,13 @@ def zenodo_records_json():
 
 
 @pytest.fixture
-def cod_records():
-    """Fixture for COD records metric instance."""
-    return CODRecordsMetricInst()
+def zenodo_records(requests_mock, zenodo_records_json):
+    """Fixture for Zenodo records metric instance."""
+    requests_mock.get(
+        'https://zenodo.org/api/records/?all_versions',
+        text=zenodo_records_json
+    )
+    return ZenodoRecordsMetricInst()
 
 
 @pytest.fixture
@@ -58,6 +56,16 @@ def cod_records_json():
     with open('tests/data/cod_records.json', 'r') as f:
         data = f.read()
     return data
+
+
+@pytest.fixture
+def cod_records(requests_mock, cod_records_json):
+    """Fixture for COD records metric instance."""
+    requests_mock.get(
+        'http://opendata.cern.ch/api/records/?all_versions',
+        text=cod_records_json
+    )
+    return CODRecordsMetricInst()
 
 
 @pytest.fixture

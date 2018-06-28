@@ -15,10 +15,7 @@ from kpiit.metricsinst.cod import CODRecordsMetricInst
 from kpiit.models import Metric, MetricInstance, Provider, Publisher
 
 
-def test_cod_records(requests_mock, cod_records, cod_records_json):
-    requests_mock.get(
-        'http://opendata.cern.ch/api/records/?all_versions',
-        text=cod_records_json
-    )
+def test_cod_records(cod_records):
     cod_records.collect()
+
     assert cod_records.metric.count == 4613
