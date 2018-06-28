@@ -25,7 +25,7 @@ imports = _env('CELERY_IMPORTS', ['kpiit.tasks'])
 #: Scheduled tasks configuration (aka cronjobs).
 beat_schedule = {
     'collect-kpi-every-day-after-midnight': {
-        'task': 'kpiit.tasks.collect_and_publish',
+        'task': 'kpiit.tasks.collect_and_publish_metrics',
         # 'schedule': crontab(hour=0, minute=20),
         'schedule': 10.0,
         'kwargs': {

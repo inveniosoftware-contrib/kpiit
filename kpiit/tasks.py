@@ -19,7 +19,7 @@ logger = get_task_logger(__name__)
 
 
 @app.task
-def collect_and_publish(*args, **kwargs):
+def collect_and_publish_metrics(*args, **kwargs):
     """Collect metrics then publish."""
     metrics_paths = kwargs['metrics']
 
@@ -27,7 +27,7 @@ def collect_and_publish(*args, **kwargs):
     if 'publisher' not in kwargs or not isinstance(kwargs['publisher'], str):
         return collect_metrics.s(metrics_paths)
 
-    # Publish when metrics collection is completed
+    # Publish when collecting metrics is completed
     return chain(
         collect_metrics.s(metrics_paths),
         publish_metrics.s(kwargs['publisher'])
