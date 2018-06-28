@@ -12,6 +12,7 @@ import json
 import pytest
 
 from kpiit.metrics.records import RecordsMetric
+from kpiit.metricsinst.cod import CODRecordsMetricInst
 from kpiit.metricsinst.zenodo import ZenodoRecordsMetricInst
 from kpiit.providers import JSONURLProvider
 from kpiit.publishers.json import JSONFilePublisher
@@ -40,6 +41,21 @@ def zenodo_records_json():
     """Load JSON content from Zenodo records file."""
     data = None
     with open('tests/data/zenodo_records.json', 'r') as f:
+        data = f.read()
+    return data
+
+
+@pytest.fixture
+def cod_records():
+    """Fixture for COD records metric instance."""
+    return CODRecordsMetricInst()
+
+
+@pytest.fixture
+def cod_records_json():
+    """Load JSON content from COD records file."""
+    data = None
+    with open('tests/data/cod_records.json', 'r') as f:
         data = f.read()
     return data
 

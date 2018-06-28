@@ -21,4 +21,4 @@ def test_zenodo_records(requests_mock, zenodo_records, zenodo_records_json):
         text=zenodo_records_json
     )
     zenodo_records.collect()
-    zenodo_records.metric.count == 406804
+    assert zenodo_records.metric.count == 406804

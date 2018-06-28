@@ -30,7 +30,8 @@ beat_schedule = {
         'schedule': 10.0,
         'kwargs': {
             'metrics': [
-                'kpiit.metricsinst.zenodo.ZenodoRecordsMetricInst'
+                'kpiit.metricsinst.zenodo.ZenodoRecordsMetricInst',
+                'kpiit.metricsinst.cod.CODRecordsMetricInst',
             ],
             'publisher': 'kpiit.publishers.json.JSONFilePublisher'
         }

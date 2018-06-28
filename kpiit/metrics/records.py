@@ -13,9 +13,9 @@ from ..models import Metric
 class RecordsMetric(Metric):
     """Metric for number of records."""
 
-    def __init__(self):
+    def __init__(self, name='records'):
         """Records metric initialization."""
-        super().__init__('records')
+        super().__init__(name)
 
     @property
     def count(self):
