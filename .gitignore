@@ -67,3 +67,6 @@ target/
 
 # VSCode settings
 .vscode
+
+# Celery
+celerybeat-schedule

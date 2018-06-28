@@ -8,6 +8,7 @@
 """Common pytest fixtures and plugins."""
 
 import json
+import sys
 
 import pytest
 
@@ -18,7 +19,7 @@ from kpiit.publishers.json import JSONFilePublisher
 
 
 @pytest.fixture
-def json_url_provider(records_metric):
+def json_url_provider():
     """JSON URL provider fixture."""
     return JSONURLProvider('http://opendata.cern.ch/api/records/?all_versions')
 
@@ -39,16 +40,6 @@ def zenodo_records_json():
 
 
 @pytest.fixture
-def zenodo_records(zenodo_records_json):
-    """Fixture for Zenodo records metric instance."""
-    # requests_mock.get(
-    #     'https://zenodo.org/api/records/?all_versions',
-    #     text=zenodo_records_json
-    # )
-    return zenodo_records_metric
-
-
-@pytest.fixture
 def cod_records_json():
     """Load JSON content from COD records file."""
     data = None
@@ -57,13 +48,32 @@ def cod_records_json():
     return data
 
 
+def new_collect(data):
+    """Mocked collect."""
+    json_data = json.loads(data)
+
+    def collect(self):
+        """Test."""
+        self.provider.json = json_data
+        num_records = self.provider.json['hits']['total']
+        self.update(num_records=num_records)
+
+    return collect
+
+
 @pytest.fixture
-def cod_records(cod_records_json):
+def zenodo_records(mocker, zenodo_records_json):
+    """Fixture for Zenodo records metric instance."""
+    mocker.patch.object(RecordsMetric, 'collect',
+                        new=new_collect(zenodo_records_json))
+    return zenodo_records_metric
+
+
+@pytest.fixture
+def cod_records(mocker, cod_records_json):
     """Fixture for COD records metric instance."""
-    # requests_mock.get(
-    #     'http://opendata.cern.ch/api/records/?all_versions',
-    #     text=cod_records_json
-    # )
+    mocker.patch.object(RecordsMetric, 'collect',
+                        new=new_collect(cod_records_json))
     return cod_records_metric
 
 

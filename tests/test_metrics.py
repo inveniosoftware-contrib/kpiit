@@ -23,13 +23,10 @@ def test_metric_base(records_metric):
 
 
 def test_records_metric(records_metric):
-    assert records_metric.name == 'records'
-    assert records_metric.count is None
+    records_metric.update(num_records=5)
+    assert records_metric.values['records']['num_records'] == 5
 
-    records_metric.count = 5
-    assert records_metric.count == 5
-
-    records_metric.count = 3
-    assert records_metric.count == 3
+    records_metric.update(num_records=3)
+    assert records_metric.values['records']['num_records'] == 3
 
     assert repr(records_metric) == 'RecordsMetric("records", num_records=3)'
