@@ -18,4 +18,4 @@ class RecordsMetric(Metric):
         super().collect()
 
         num_records = self.provider.json['hits']['total']
-        self.update(num_records=num_records)
+        self.num_records = num_records

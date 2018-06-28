@@ -37,12 +37,12 @@ def collect_and_publish_metrics(*args, **kwargs):
 @app.task
 def collect_metrics(metrics_paths):
     """Collect metrics."""
-    metric_instances = [load_target(path)() for path in metrics_paths]
+    metric_instances = [load_target(path) for path in metrics_paths]
 
     for inst in metric_instances:
         inst.collect()
 
-    return [inst.metric.values for inst in metric_instances]
+    return [inst.values for inst in metric_instances]
 
 
 @app.task
