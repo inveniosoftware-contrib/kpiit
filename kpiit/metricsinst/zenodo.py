@@ -8,11 +8,11 @@
 """MetricInstances for Zenodo."""
 
 from ..metrics.records import RecordsMetric
-from ..models import MetricInstance
+from ..metricsinst.records import RecordsMetricInst
 from ..providers import JSONURLProvider
 
 
-class ZenodoRecordsMetricInst(MetricInstance):
+class ZenodoRecordsMetricInst(RecordsMetricInst):
     """Metric instance for # of records from Zenodo."""
 
     URL = 'https://zenodo.org/api/records/?all_versions'
@@ -20,9 +20,3 @@ class ZenodoRecordsMetricInst(MetricInstance):
     def __init__(self, provider=JSONURLProvider(RecordsMetric(), URL)):
         """Number of records metric for Zenodo initialization."""
         super().__init__(provider)
-
-    def collect(self):
-        """Collect data for this metrics instance."""
-        super().collect()
-
-        self.metric.count = self.provider.json['hits']['total']
