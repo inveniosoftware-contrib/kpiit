@@ -27,7 +27,7 @@ def collect_and_publish(*args, **kwargs):
     if 'publisher' not in kwargs or not isinstance(kwargs['publisher'], str):
         return collect_metrics.s(metrics_paths)
 
-    # Publish once collection is completed
+    # Publish when metrics collection is completed
     return chain(
         collect_metrics.s(metrics_paths),
         publish_metrics.s(kwargs['publisher'])
@@ -46,7 +46,9 @@ def collect_metrics(metrics_paths):
 
 
 @app.task
-def publish_metrics(metrics, publisher):
+def publish_metrics(metrics, publisher_path):
     """Publish metrics."""
-    logger.info(metrics)
-    logger.info(publisher)
+    Publisher = load_target(publisher_path)
+
+    publisher = Publisher()
+    publisher.publish(metrics)

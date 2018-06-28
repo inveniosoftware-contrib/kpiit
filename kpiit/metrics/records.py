@@ -20,7 +20,7 @@ class RecordsMetric(Metric):
     @property
     def count(self):
         """Records count getter."""
-        return self.values.get('num_records', None)
+        return self.values[self.name].get('num_records', None)
 
     @count.setter
     def count(self, value):

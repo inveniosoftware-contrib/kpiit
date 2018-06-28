@@ -32,7 +32,7 @@ beat_schedule = {
             'metrics': [
                 'kpiit.metricsinst.zenodo.ZenodoRecordsMetricInst'
             ],
-            'publisher': 'kpiit.publisher.cern.CERNGrafanaPublisher'
+            'publisher': 'kpiit.publishers.json.JSONFilePublisher'
         }
     }
 }

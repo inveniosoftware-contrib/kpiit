@@ -22,9 +22,9 @@ def test_metric_base():
     assert metric.name == 'testname'
 
     metric.update(test=5)
-    assert metric.values['test'] == 5
+    assert metric.values[metric.name]['test'] == 5
     metric.update(test=1)
-    assert metric.values['test'] == 1
+    assert metric.values[metric.name]['test'] == 1
 
 
 def test_metricinstance_base(url_provider):
