@@ -27,7 +27,7 @@ def json_url_provider():
 @pytest.fixture
 def records_metric(json_url_provider):
     """Fixture for records metric."""
-    return RecordsMetric('records', json_url_provider)
+    return RecordsMetric('records', json_url_provider, ['num_records'])
 
 
 @pytest.fixture
@@ -56,7 +56,7 @@ def new_collect(data):
         """Test."""
         self.provider.json = json_data
         num_records = self.provider.json['hits']['total']
-        self.update(num_records=num_records)
+        self.num_records = num_records
 
     return collect
 

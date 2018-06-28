@@ -11,30 +11,34 @@
 class Metric(object):
     """Abstract KPI metric class."""
 
-    def __init__(self, name, provider):
+    def __init__(self, name, provider, fields):
         """Metric initialization."""
         self.name = name
         self.provider = provider
-        self.__values = {name: {}}
 
-    def update(self, **kwargs):
-        """Update metric data."""
-        for key, value in kwargs.items():
-            self.__values[self.name][key] = value
+        self.fields = fields
+        for field in fields:
+            self.__dict__[field] = None
 
     def collect(self):
         """Collect metrics from the provider."""
         self.provider.collect()
 
+    def value(self, key):
+        """Get metric value."""
+        return self.__dict__[key]
+
     @property
     def values(self):
-        """Get metric values."""
-        return self.__values
+        """Get values."""
+        return {
+            self.name: {field: self.value(field) for field in self.fields}
+        }
 
     def __repr__(self):
         """Metric representation."""
-        pairs = [', {}={}'.format(key, value)
-                 for key, value in self.values[self.name].items()]
+        pairs = [', {}={}'.format(key, self.value(key))
+                 for key in self.fields]
 
         return '{clsname}("{name}"{value_pairs})'.format(
             clsname=self.__class__.__name__,

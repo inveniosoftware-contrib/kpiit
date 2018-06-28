@@ -16,17 +16,30 @@ def test_metric_base(records_metric):
     """Test metric base class."""
     assert records_metric.name == 'records'
 
-    records_metric.update(test=5)
-    assert records_metric.values[records_metric.name]['test'] == 5
-    records_metric.update(test=1)
-    assert records_metric.values[records_metric.name]['test'] == 1
+    records_metric.num_records = 5
+    assert records_metric.num_records == 5
+    assert records_metric.value('num_records') == 5
+    records_metric.num_records = 1
+    assert records_metric.num_records == 1
+    assert records_metric.value('num_records') == 1
+
+
+def test_metric_dynamic_attrs(records_metric):
+    with pytest.raises(AttributeError):
+        records_metric.num_records2
+
+    records_metric.num_records = 5
+    assert records_metric.num_records == 5
+
+    records_metric.num_records = 2
+    assert records_metric.num_records == 2
 
 
 def test_records_metric(records_metric):
-    records_metric.update(num_records=5)
-    assert records_metric.values['records']['num_records'] == 5
+    records_metric.num_records = 5
+    assert records_metric.num_records == 5
 
-    records_metric.update(num_records=3)
-    assert records_metric.values['records']['num_records'] == 3
+    records_metric.num_records = 3
+    assert records_metric.num_records == 3
 
     assert repr(records_metric) == 'RecordsMetric("records", num_records=3)'
