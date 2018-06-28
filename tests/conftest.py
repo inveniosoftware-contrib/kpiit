@@ -14,6 +14,7 @@ import pytest
 from kpiit.metrics.records import RecordsMetric
 from kpiit.metricsinst.zenodo import ZenodoRecordsMetricInst
 from kpiit.providers import JSONURLProvider
+from kpiit.publishers.json import JSONFilePublisher
 
 
 @pytest.fixture
@@ -41,3 +42,10 @@ def zenodo_records_json():
     with open('tests/data/zenodo_records.json', 'r') as f:
         data = f.read()
     return data
+
+
+@pytest.fixture
+def json_publisher(tmpdir):
+    """Fixture for JSON publisher."""
+    filename = '{}/output.json'.format(tmpdir.dirname)
+    return JSONFilePublisher(filename)

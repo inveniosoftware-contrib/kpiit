@@ -23,3 +23,12 @@ def test_publisher_base(records_metric):
 
     with pytest.raises(NotImplementedError):
         publisher.publish(metrics)
+
+
+def test_json_publisher(json_publisher, records_metric):
+    assert not os.path.exists(json_publisher.filename)
+
+    metrics = [records_metric.values]
+
+    json_publisher.publish(metrics)
+    assert os.path.exists(json_publisher.filename)
