@@ -16,9 +16,8 @@ from ..models import Provider
 class JSONURLProvider(Provider):
     """Basic URL-based provider."""
 
-    def __init__(self, metric, url):
+    def __init__(self, url):
         """URL provider initialization."""
-        super().__init__(metric)
         self.url = url
 
     def collect(self):

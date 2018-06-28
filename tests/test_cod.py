@@ -11,11 +11,8 @@ import os
 
 import pytest
 
-from kpiit.metricsinst.cod import CODRecordsMetricInst
-from kpiit.models import Metric, MetricInstance, Provider, Publisher
-
 
 def test_cod_records(cod_records):
     cod_records.collect()
 
-    assert cod_records.metric.count == 4613
+    assert cod_records.values[cod_records.name]['num_records'] == 4613

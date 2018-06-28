@@ -7,21 +7,24 @@
 
 """KPI models."""
 
-import requests
-
 
 class Metric(object):
     """Abstract KPI metric class."""
 
-    def __init__(self, name):
+    def __init__(self, name, provider):
         """Metric initialization."""
         self.name = name
+        self.provider = provider
         self.__values = {name: {}}
 
     def update(self, **kwargs):
         """Update metric data."""
         for key, value in kwargs.items():
             self.__values[self.name][key] = value
+
+    def collect(self):
+        """Collect metrics from the provider."""
+        self.provider.collect()
 
     @property
     def values(self):
@@ -40,25 +43,8 @@ class Metric(object):
         )
 
 
-class MetricInstance(object):
-    """Instance of a metric."""
-
-    def __init__(self, provider):
-        """Metric instance initialization."""
-        self.provider = provider
-        self.metric = provider.metric
-
-    def collect(self):
-        """Collect metrics from the provider."""
-        self.provider.collect()
-
-
 class Provider(object):
     """Abstract class for collecting data."""
-
-    def __init__(self, metric):
-        """Provider initialization."""
-        self.metric = metric
 
     def collect(self):
         """Collect metrics data."""

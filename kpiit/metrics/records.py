@@ -13,16 +13,9 @@ from ..models import Metric
 class RecordsMetric(Metric):
     """Metric for number of records."""
 
-    def __init__(self, name='records'):
-        """Records metric initialization."""
-        super().__init__(name)
+    def collect(self):
+        """Collect data for this instance."""
+        super().collect()
 
-    @property
-    def count(self):
-        """Records count getter."""
-        return self.values[self.name].get('num_records', None)
-
-    @count.setter
-    def count(self, value):
-        """Records count setter."""
-        return super().update(num_records=value)
+        num_records = self.provider.json['hits']['total']
+        self.update(num_records=num_records)

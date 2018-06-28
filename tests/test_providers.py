@@ -11,15 +11,18 @@ import os
 
 import pytest
 
-from kpiit.metricsinst.zenodo import ZenodoRecordsMetricInst
-from kpiit.models import Metric, MetricInstance, Provider, Publisher
+from kpiit.models import Provider
 
 
 def test_provider_base(records_metric):
     """Test provider base class."""
-    provider = Provider(records_metric)
-
-    assert provider.metric == records_metric
+    provider = Provider()
 
     with pytest.raises(NotImplementedError):
         provider.collect()
+
+
+def test_json_url_provider(records_metric):
+    """Test JSON URL provider."""
+    # TODO: add tess for json url provider
+    pass

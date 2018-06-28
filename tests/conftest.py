@@ -11,23 +11,22 @@ import json
 
 import pytest
 
+from kpiit.metrics import *
 from kpiit.metrics.records import RecordsMetric
-from kpiit.metricsinst.cod import CODRecordsMetricInst
-from kpiit.metricsinst.zenodo import ZenodoRecordsMetricInst
 from kpiit.providers import JSONURLProvider
 from kpiit.publishers.json import JSONFilePublisher
 
 
 @pytest.fixture
-def records_metric():
-    """Fixture for records metric."""
-    return RecordsMetric()
+def json_url_provider(records_metric):
+    """JSON URL provider fixture."""
+    return JSONURLProvider('http://opendata.cern.ch/api/records/?all_versions')
 
 
 @pytest.fixture
-def url_provider(records_metric):
-    """URL provider fixture."""
-    return JSONURLProvider(records_metric, ZenodoRecordsMetricInst.URL)
+def records_metric(json_url_provider):
+    """Fixture for records metric."""
+    return RecordsMetric('records', json_url_provider)
 
 
 @pytest.fixture
@@ -40,13 +39,13 @@ def zenodo_records_json():
 
 
 @pytest.fixture
-def zenodo_records(requests_mock, zenodo_records_json):
+def zenodo_records(zenodo_records_json):
     """Fixture for Zenodo records metric instance."""
-    requests_mock.get(
-        'https://zenodo.org/api/records/?all_versions',
-        text=zenodo_records_json
-    )
-    return ZenodoRecordsMetricInst()
+    # requests_mock.get(
+    #     'https://zenodo.org/api/records/?all_versions',
+    #     text=zenodo_records_json
+    # )
+    return zenodo_records_metric
 
 
 @pytest.fixture
@@ -59,13 +58,13 @@ def cod_records_json():
 
 
 @pytest.fixture
-def cod_records(requests_mock, cod_records_json):
+def cod_records(cod_records_json):
     """Fixture for COD records metric instance."""
-    requests_mock.get(
-        'http://opendata.cern.ch/api/records/?all_versions',
-        text=cod_records_json
-    )
-    return CODRecordsMetricInst()
+    # requests_mock.get(
+    #     'http://opendata.cern.ch/api/records/?all_versions',
+    #     text=cod_records_json
+    # )
+    return cod_records_metric
 
 
 @pytest.fixture

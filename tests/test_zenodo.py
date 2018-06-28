@@ -11,11 +11,8 @@ import os
 
 import pytest
 
-from kpiit.metricsinst.zenodo import ZenodoRecordsMetricInst
-from kpiit.models import Metric, MetricInstance, Provider, Publisher
-
 
 def test_zenodo_records(zenodo_records):
     zenodo_records.collect()
 
-    assert zenodo_records.metric.count == 406804
+    assert zenodo_records.values[zenodo_records.name]['num_records'] == 406804

@@ -11,19 +11,6 @@ import os
 
 import pytest
 
-from kpiit.metricsinst.zenodo import ZenodoRecordsMetricInst
-from kpiit.models import Metric, MetricInstance, Provider, Publisher
-
-
-def test_publisher_base(records_metric):
-    """Test publisher base class."""
-    metrics = [records_metric]
-
-    publisher = Publisher()
-
-    with pytest.raises(NotImplementedError):
-        publisher.publish(metrics)
-
 
 def test_json_publisher(json_publisher, records_metric):
     assert not os.path.exists(json_publisher.filename)
