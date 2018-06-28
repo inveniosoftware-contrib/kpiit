@@ -14,6 +14,7 @@ class RecordsMetric(Metric):
     """Metric for number of records."""
 
     def __init__(self, name, provider, fields=['num_records']):
+        """Records metric initialization."""
         super().__init__(name, provider, fields)
 
     def collect(self):
