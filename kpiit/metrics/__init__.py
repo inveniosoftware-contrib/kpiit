@@ -21,13 +21,13 @@ zenodo_records_metric = RecordsMetric(
 cds_videos_records_metric = RecordsMetric(
     name='cds_videos_records',
     provider=JSONURLProvider(
-        'https://videos.cern.ch/api/records/?all_versions'
+        'https://videos.cern.ch/api/records/'
     )
 )
 
 cod_records_metric = RecordsMetric(
     name='cod_records',
     provider=JSONURLProvider(
-        'http://opendata.cern.ch/api/records/?all_versions'
+        'http://opendata.cern.ch/api/records/'
     )
 )
