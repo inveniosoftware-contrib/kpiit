@@ -55,3 +55,13 @@ class MetricDecoder(json.JSONDecoder):
         )
         metric.update(**obj['values'])
         return metric
+
+
+def metric_dumps(metric):
+    """JSON encode a Metric instance."""
+    return json.dumps(metric, cls=MetricEncoder)
+
+
+def metric_loads(metric):
+    """JSON decode a Metric instance."""
+    return json.loads(metric, cls=MetricDecoder)

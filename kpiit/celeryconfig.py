@@ -10,18 +10,30 @@
 import os
 
 from celery.schedules import crontab
+from kombu.serialization import register
+
+from .json import metric_dumps, metric_loads
 
 
 def _env(key, default):
     return os.environ.get(key, default)
 
 
+# Register new JSON serializer
+register(
+    'metricjson',
+    metric_dumps,
+    metric_loads,
+    content_type='application/x-metricjson',
+    content_encoding='utf-8'
+)
+
 #: URL of message broker for Celery (default is Redis).
 broker_url = _env('BROKER_URL', 'redis://localhost:6379/0')
 #: URL of backend for result storage (default is Redis).
 result_backend = _env('CELERY_RESULT_BACKEND', 'redis://localhost:6379/1')
 #: List of modules to import when the Celery worker starts.
-imports = _env('CELERY_IMPORTS', ['kpiit.tasks'])
+imports = ['kpiit.tasks']
 #: Scheduled tasks configuration (aka cronjobs).
 beat_schedule = {
     'collect-kpi-every-day-after-midnight': {
@@ -36,3 +48,9 @@ beat_schedule = {
         }
     }
 }
+#: Accept the new serializer
+accept_content = ['metricjson']
+#: Serialize JSON with the custom serializer
+task_serializer = 'metricjson'
+#: Serialize result with the custom serializer
+result_serializer = 'metricjson'
