@@ -15,7 +15,7 @@ import pytest
 def test_json_publisher(json_publisher, records_metric):
     assert not os.path.exists(json_publisher.filename)
 
-    metrics = [records_metric.values]
+    metrics = [records_metric]
 
     json_publisher.publish(metrics)
     assert os.path.exists(json_publisher.filename)

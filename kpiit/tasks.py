@@ -42,7 +42,7 @@ def collect_metrics(metrics_paths):
     for inst in metric_instances:
         inst.collect()
 
-    return [inst.values for inst in metric_instances]
+    return [inst for inst in metric_instances]
 
 
 @app.task
