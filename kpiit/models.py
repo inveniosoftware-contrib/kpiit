@@ -28,6 +28,13 @@ class Metric(object):
         """Get metric value."""
         return self.__dict__[key]
 
+    def update(self, **kwargs):
+        """Update metric value."""
+        for key, value in kwargs.items():
+            if key not in self.__dict__:
+                raise AttributeError
+            self.__dict__[key] = value
+
     @property
     def values(self):
         """Get values."""

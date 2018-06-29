@@ -11,7 +11,8 @@ import json
 
 import pytest
 
-from kpiit.json import MetricEncoder
+from kpiit.json import MetricDecoder, MetricEncoder
+from kpiit.metrics.records import RecordsMetric
 
 
 def test_metric_json_encode(records_metric):
@@ -24,3 +25,7 @@ def test_metric_json_encode(records_metric):
                      ' "values": {"num_records": 8},'
                      ' "provider": null}')
     assert json_data == expected_json
+
+    metric = json.loads(json_data, cls=MetricDecoder)
+    assert isinstance(metric, RecordsMetric)
+    assert metric.num_records == 8
