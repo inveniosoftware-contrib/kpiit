@@ -27,9 +27,17 @@ is using KPIs to find what works/doesn't work.
 
 Intro to the harvester.
 
+* goal: collect KPI for different services then display them nicely
+* a harvester was used to collect the data
+* Grafana was used to display plots of the data using time series data
+
 #### Tasks
 
 Info about Celery and what the harvester is doing.
+
+* uses celery to schedule tasks
+1. first task: collect data
+2. second task: use collected data and publish to Grafana instance
 
 #### System Architecture
 
