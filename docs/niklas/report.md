@@ -92,9 +92,9 @@ Display the following:
 * How quickly is the sever responding to requests?
 * Does the response time depend anything on the time of the day
 
-# * # of support tickets
+# # of support tickets
 
-* See how # of tickets have increasedo
+* See how # of tickets have increased over time
 * Could be displayed as a line graph with exra details about when the support
 tickets were created to get a better spread internally.
 
