@@ -17,6 +17,12 @@
 General info about what KPIs are, which information was collected and how CERN
 is using KPIs to find what works/doesn't work.
 
+* type of performance measurement
+* used to evaluate result of the project
+* difficult to choose correct KPI - must know where to look
+* quantitative: numeric measurement preferably wihtout distortion from personal feelings
+* qualitative: based on interpretation and influenced by personal feelnings
+
 ### Harvester
 
 Intro to the harvester.
@@ -79,7 +85,9 @@ Number of records would work with:
 # Files (TBs)
 
 * Storage uses (percentage)
-* line diagram och how the used space has changed over time
+* line diagram och how the used space and maximum space has changed over time
+
+Do we want any stats related to 'max_files' and 'used_files'?
 
 # Uptime
 
@@ -96,9 +104,9 @@ Display the following:
 
 * See how # of tickets have increased over time
 * Could be displayed as a line graph with exra details about when the support
-tickets were created to get a better spread internally.
+tickets were created etc
 
 # Support waiting in line
 
 * Show line graph of how support waiting in line has changed over time
-* 
+* ???
