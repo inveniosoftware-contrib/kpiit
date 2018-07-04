@@ -13,6 +13,11 @@ class Metric(object):
 
     def __init__(self, name, provider, fields):
         """Metric initialization."""
+        if not name:
+            raise ValueError("name can't be empty")
+        if not fields:
+            raise ValueError("fields can't be empty")
+
         self.name = name
         self.provider = provider
 
