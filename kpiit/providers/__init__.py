@@ -63,7 +63,7 @@ class DataCiteProvider(Provider):
         # Generate URLs
         url_templates = DataCiteProvider.URLS
         self.urls = {}
-        for key in ('doi_total', ):
+        for key in ('doi_total', 'doi_2017', 'doi_last_30days'):
             template = url_templates[key]
             url = template.format(allocator=urllib.parse.quote_plus(self.allocator))
             self.urls[key] = url
@@ -74,6 +74,11 @@ class DataCiteProvider(Provider):
 
     def collect(self):
         """Collect DOI statistics from DataCite."""
-        data = [requests.get(url).text for key, url in self.urls.items()]
-        return data
+        data = {key: requests.get(url).text for key, url in self.urls.items()}
+        self.values = {name: {} for name in self.names}
+        for name in self.names:
+            for key, value in data.items():
+                self.values[name][key] = re.search(self.regex[name], value).group('value').strip()
+        return self.values
+
 
