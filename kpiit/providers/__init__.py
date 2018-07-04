@@ -35,14 +35,16 @@ class JSONURLProvider(Provider):
 class DataCiteProvider(Provider):
     """Retrieve DOI statistics from DataCite."""
 
+    BASE_URL = 'https://search.datacite.org/list/generic?fq=allocator_facet:'
+
     URLS = dict(
-        doi_total='https://search.datacite.org/list/generic?fq=allocator_facet:%22{allocator}%22&&facet.field=datacentre_facet',
-        doi_2017='https://search.datacite.org/list/generic?fq=allocator_facet:%22{allocator}%22&&fq=minted:[NOW/YEAR-1YEARS/YEAR+TO+NOW/YEAR]&facet.field=datacentre_facet',
-        doi_2018='https://search.datacite.org/list/generic?fq=allocator_facet:%22{allocator}%22&&fq=minted:[NOW/YEAR+TO+*]&facet.field=datacentre_facet',
-        doi_last_30days='https://search.datacite.org/list/generic?fq=allocator_facet:%22{allocator}%22&&fq=minted:[NOW-30DAYS/DAY+TO+*]&facet.field=datacentre_facet',
-        doi_searchable='https://search.datacite.org/list/generic?fq=allocator_facet:%22{allocator}%22&&fq=has_metadata:true&fq=is_active:true&facet.field=datacentre_facet',
-        doi_hidden='https://search.datacite.org/list/generic?fq=allocator_facet:%22{allocator}%22&&fq=is_active:false&facet.field=datacentre_facet',
-        doi_missing='https://search.datacite.org/list/generic?fq=allocator_facet:%22{allocator}%22&&fq=has_metadata:false&facet.field=datacentre_facet'
+        doi_total='{base_url}%22{allocator}%22&&facet.field=datacentre_facet',
+        doi_2017='{base_url}%22{allocator}%22&&fq=minted:[NOW/YEAR-1YEARS/YEAR+TO+NOW/YEAR]&facet.field=datacentre_facet',
+        doi_2018='{base_url}%22{allocator}%22&&fq=minted:[NOW/YEAR+TO+*]&facet.field=datacentre_facet',
+        doi_last_30days='{base_url}%22{allocator}%22&&fq=minted:[NOW-30DAYS/DAY+TO+*]&facet.field=datacentre_facet',
+        doi_searchable='{base_url}%22{allocator}%22&&fq=has_metadata:true&fq=is_active:true&facet.field=datacentre_facet',
+        doi_hidden='{base_url}%22{allocator}%22&&fq=is_active:false&facet.field=datacentre_facet',
+        doi_missing='{base_url}%22{allocator}%22&&fq=has_metadata:false&facet.field=datacentre_facet'
     )
 
     def __init__(self, allocator, names):
@@ -62,10 +64,11 @@ class DataCiteProvider(Provider):
 
         # Generate URLs
         url_templates = DataCiteProvider.URLS
+        base_url = DataCiteProvider.BASE_URL
         self.urls = {}
         for key in ('doi_total', 'doi_2017', 'doi_last_30days'):
             template = url_templates[key]
-            url = template.format(allocator=urllib.parse.quote_plus(self.allocator))
+            url = template.format(base_url=base_url,allocator=urllib.parse.quote_plus(self.allocator))
             self.urls[key] = url
     
         # Compile regular expressions
