@@ -65,9 +65,6 @@ Info about time series data and what InfluxDB is.
 ## References
 
 
-
-
-
 # Grafana Dashboard Layouts
 
 Discussion on how to design the layout for the KPI dashboard.
