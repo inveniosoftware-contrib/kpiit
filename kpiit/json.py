@@ -19,16 +19,16 @@ class MetricEncoder(json.JSONEncoder):
 
     def default(self, o):  # pylint: disable=E0202
         """JSON encode a metric instance."""
-        if isinstance(o, Metric):
-            _type = '{}.{}'.format(o.__module__, o.__class__.__name__)
-            return {
-                '_type': _type,
-                'name': o.name,
-                'values': {key: o.value(key) for key in o.fields},
-                'provider': None  # TODO: add support for encoding provider
-            }
+        if not isinstance(o, Metric):
+            return json.JSONEncoder.default(self, o)
 
-        return super().default(o)
+        _type = '{}.{}'.format(o.__module__, o.__class__.__name__)
+        return {
+            '_type': _type,
+            'name': o.name,
+            'values': {key: o.value(key) for key in o.fields},
+            'provider': None  # TODO: add support for encoding provider
+        }
 
 
 class MetricDecoder(json.JSONDecoder):
@@ -40,13 +40,15 @@ class MetricDecoder(json.JSONDecoder):
 
     def object_hook(self, obj):  # pylint: disable=E0202
         """Create a Metric instance."""
-        if '_type' not in obj:
-            return obj
         return MetricDecoder.json_to_metric(obj)
 
     @classmethod
     def json_to_metric(cls, obj):
         """Convert JSON object to Metric instance."""
+        print('obj: ' % obj)
+        if '_type' not in obj:
+            return obj
+
         MetricClass = load_target(obj['_type'])
         metric = MetricClass(
             obj['name'],
