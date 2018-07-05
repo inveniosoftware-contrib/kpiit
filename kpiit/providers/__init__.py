@@ -14,8 +14,13 @@ import requests
 import urllib
 
 from bs4 import BeautifulSoup
+from celery.utils.log import get_task_logger
 
+from ..app import app
 from ..models import Provider
+from ..util import load_target
+
+logger = get_task_logger(__name__)
 
 
 class JSONURLProvider(Provider):
@@ -32,27 +37,29 @@ class JSONURLProvider(Provider):
         self.data = requests.get(self.url)
         self.json = self.data.json()
 
+
 class DataCiteProvider(Provider):
     """Retrieve DOI statistics from DataCite."""
 
     BASE_URL = 'https://search.datacite.org/list/generic?fq=allocator_facet:'
 
-    URLS = dict(
-        doi_total='{base_url}%22{allocator}%22&&facet.field=datacentre_facet',
-        doi_2017='{base_url}%22{allocator}%22&&fq=minted:[NOW/YEAR-1YEARS/YEAR+TO+NOW/YEAR]&facet.field=datacentre_facet',
-        doi_2018='{base_url}%22{allocator}%22&&fq=minted:[NOW/YEAR+TO+*]&facet.field=datacentre_facet',
-        doi_last_30days='{base_url}%22{allocator}%22&&fq=minted:[NOW-30DAYS/DAY+TO+*]&facet.field=datacentre_facet',
-        doi_searchable='{base_url}%22{allocator}%22&&fq=has_metadata:true&fq=is_active:true&facet.field=datacentre_facet',
-        doi_hidden='{base_url}%22{allocator}%22&&fq=is_active:false&facet.field=datacentre_facet',
-        doi_missing='{base_url}%22{allocator}%22&&fq=has_metadata:false&facet.field=datacentre_facet'
+    ATTRS = dict(
+        doi_total='',
+        doi_2017='&fq=minted:[NOW/YEAR-1YEARS/YEAR+TO+NOW/YEAR]',
+        doi_2018='&fq=minted:[NOW/YEAR+TO+*]',
+        doi_last_30days='&fq=minted:[NOW-30DAYS/DAY+TO+*]',
+        doi_searchable='&fq=has_metadata:true&fq=is_active:true',
+        doi_hidden='&fq=is_active:false',
+        doi_missing='&fq=has_metadata:false'
     )
+    SUFFIX_URL = '&facet.field=datacentre_facet'
 
-    def __init__(self, allocator, names):
+    def __init__(self, allocator, names, attrs=('doi_total', )):
         """
-        DataCite provider initialization.
+        Provider DataCite initialization.
 
         :param allocator: Name of the allocator
-        :param names: List of data center names (e.g. ['CERN.CDS', 'CERN.ZENODO'])
+        :param names: List of data center names
         """
         if not allocator:
             raise ValueError("allocator can't be empty")
@@ -61,19 +68,25 @@ class DataCiteProvider(Provider):
 
         self.allocator = allocator
         self.names = names
+        self.attrs = attrs
 
         # Generate URLs
-        url_templates = DataCiteProvider.URLS
-        base_url = DataCiteProvider.BASE_URL
+        base = DataCiteProvider.BASE_URL
+        suffix = DataCiteProvider.SUFFIX_URL
         self.urls = {}
-        for key in ('doi_total', 'doi_2017', 'doi_last_30days'):
-            template = url_templates[key]
-            url = template.format(base_url=base_url,allocator=urllib.parse.quote_plus(self.allocator))
+        for key in self.attrs:
+            url = '{base}%22{allocator}%22&{attr}&{suffix}'.format(
+                base=base,
+                allocator=urllib.parse.quote_plus(self.allocator),
+                attr=DataCiteProvider.ATTRS[key],
+                suffix=suffix
+            )
             self.urls[key] = url
-    
+
         # Compile regular expressions
         re_value = r'{}[^\;]+\;(?P<value>[^\;]+)\;'
-        self.regex = {name: re.compile(re_value.format(name)) for name in names}
+        self.regex = {name: re.compile(re_value.format(name))
+                      for name in names}
 
     def collect(self):
         """Collect DOI statistics from DataCite."""
@@ -81,7 +94,7 @@ class DataCiteProvider(Provider):
         self.values = {name: {} for name in self.names}
         for name in self.names:
             for key, value in data.items():
-                self.values[name][key] = re.search(self.regex[name], value).group('value').strip()
+                m = self.regex[name].search(value)
+                if m:
+                    self.values[name][key] = m.group('value').strip()
         return self.values
-
-
