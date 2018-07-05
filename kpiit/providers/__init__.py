@@ -54,20 +54,20 @@ class DataCiteProvider(Provider):
     )
     SUFFIX_URL = '&facet.field=datacentre_facet'
 
-    def __init__(self, allocator, names, attrs=('doi_total', )):
+    def __init__(self, allocator, name, attrs=('doi_total', )):
         """
         Provider DataCite initialization.
 
         :param allocator: Name of the allocator
-        :param names: List of data center names
+        :param name: Name of data center
         """
         if not allocator:
             raise ValueError("allocator can't be empty")
-        if not names:
-            raise ValueError("names can't be empty")
+        if not name:
+            raise ValueError("name can't be empty")
 
         self.allocator = allocator
-        self.names = names
+        self.name = name
         self.attrs = attrs
 
         # Generate URLs
@@ -83,18 +83,16 @@ class DataCiteProvider(Provider):
             )
             self.urls[key] = url
 
-        # Compile regular expressions
+        # Compile regular expressions to get the values from the text
         re_value = r'{}[^\;]+\;(?P<value>[^\;]+)\;'
-        self.regex = {name: re.compile(re_value.format(name))
-                      for name in names}
+        self.regex = re.compile(re_value.format(name))
 
     def collect(self):
         """Collect DOI statistics from DataCite."""
         data = {key: requests.get(url).text for key, url in self.urls.items()}
-        self.values = {name: {} for name in self.names}
-        for name in self.names:
-            for key, value in data.items():
-                m = self.regex[name].search(value)
-                if m:
-                    self.values[name][key] = m.group('value').strip()
+        self.values = {attr: None for attr in self.attrs}
+        for key, value in data.items():
+            m = self.regex.search(value)
+            if m:
+                self.values[key] = int(m.group('value').strip())
         return self.values

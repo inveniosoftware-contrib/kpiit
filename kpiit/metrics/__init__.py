@@ -7,9 +7,12 @@
 
 """Metrics module."""
 
+from .doi import DOIMetric
 from .records import RecordsMetric
-from ..providers import JSONURLProvider
+from ..providers import DataCiteProvider, JSONURLProvider
 
+
+# Record metrics
 
 zenodo_records_metric = RecordsMetric(
     name='zenodo_records',
@@ -29,5 +32,17 @@ cod_records_metric = RecordsMetric(
     name='cod_records',
     provider=JSONURLProvider(
         'http://opendata.cern.ch/api/records/'
+    )
+)
+
+# DOI metrics
+doi_attrs = ('doi_total', 'doi_2018', 'doi_2017')
+
+zenodo_doi_metric = DOIMetric(
+    name='zenodo_doi',
+    provider=DataCiteProvider(
+        'CERN - CERN - European Organization for Nuclear Research',
+        'CERN.ZENODO',
+        doi_attrs
     )
 )
