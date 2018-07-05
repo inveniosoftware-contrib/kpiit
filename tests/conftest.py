@@ -14,6 +14,7 @@ import pytest
 
 from kpiit.metrics import *
 from kpiit.metrics.records import RecordsMetric
+from kpiit.models import Provider, Publisher
 from kpiit.providers import JSONURLProvider
 from kpiit.publishers.json import JSONFilePublisher
 
@@ -35,9 +36,44 @@ def data_cite_provider():
 
 
 @pytest.fixture
+def test_provider():
+    """Fixture for the test provider."""
+    class TestProvider(Provider):
+        def __init__(self):
+            super().__init__()
+            self.data = None
+            self.json = None
+
+        def collect(self):
+            self.data = 'empty'
+            self.values = dict(data='collected')
+            self.json = {
+                'hits': {
+                    'total': 9
+                }
+            }
+    return TestProvider()
+
+
+@pytest.fixture
+def test_publisher():
+    """Fixture for the test publisher."""
+    class TestPublisher(Publisher):
+        def publish(self, metrics):
+            pass
+    return TestPublisher()
+
+
+@pytest.fixture
 def records_metric(json_url_provider):
     """Fixture for records metric."""
     return RecordsMetric('records', json_url_provider, ['num_records'])
+
+
+@pytest.fixture
+def doi_metric(test_provider):
+    """Fixture for DOI metric."""
+    return DOIMetric('doi', test_provider, ['data'])
 
 
 @pytest.fixture

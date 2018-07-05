@@ -11,6 +11,7 @@ import os
 
 import pytest
 
+from kpiit.metrics.records import RecordsMetric
 from kpiit.models import Metric
 
 
@@ -26,11 +27,15 @@ def test_metric_base(records_metric):
     assert records_metric.value('num_records') == 1
 
 
-def test_fail_metric():
+def test_fail_metric(records_metric):
     with pytest.raises(ValueError):
         Metric(name=None, provider=None, fields=None)
+    with pytest.raises(ValueError):
         Metric(name='test', provider=None, fields=None)
+    with pytest.raises(ValueError):
         Metric(name=None, provider=None, fields=['abc'])
+    with pytest.raises(AttributeError):
+        records_metric.update(non_existant='test')
 
 
 def test_metric_dynamic_attrs(records_metric):
@@ -52,3 +57,21 @@ def test_records_metric(records_metric):
     assert records_metric.num_records == 3
 
     assert repr(records_metric) == 'RecordsMetric("records", num_records=3)'
+
+
+def test_records_metric_collect(test_provider):
+    m = RecordsMetric(
+        name='records',
+        provider=test_provider
+    )
+    assert m.provider.json is None
+    assert m.num_records is None
+    m.collect()
+    assert m.provider.json is not None
+    assert m.num_records == 9
+
+
+def test_doi_metric(doi_metric):
+    assert doi_metric.data is None
+    doi_metric.collect()
+    assert doi_metric.data == 'collected'

@@ -28,19 +28,20 @@ def test_json_url_provider(json_url_provider, records_metric):
     with pytest.raises(ValueError):
         JSONURLProvider(url=None)
 
+    # TODO: Test JSON content
     assert json_url_provider.json is None
     json_url_provider.collect()
     assert json_url_provider.json is not None
-    # TODO: Test JSON content
 
 
 def test_data_cite_provider(data_cite_provider):
     """Test DataCite provider."""
     with pytest.raises(ValueError):
         DataCiteProvider(allocator=None, name='test')
+    with pytest.raises(ValueError):
         DataCiteProvider(allocator='alloc', name=None)
 
+    # TODO: Validate DataCite content
     assert data_cite_provider.values is None
     data_cite_provider.collect()
     assert data_cite_provider.values is not None
-    # TODO: Validate DataCite content
