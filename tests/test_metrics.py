@@ -11,6 +11,8 @@ import os
 
 import pytest
 
+from kpiit.models import Metric
+
 
 def test_metric_base(records_metric):
     """Test metric base class."""
@@ -22,6 +24,13 @@ def test_metric_base(records_metric):
     records_metric.num_records = 1
     assert records_metric.num_records == 1
     assert records_metric.value('num_records') == 1
+
+
+def test_fail_metric():
+    with pytest.raises(ValueError):
+        Metric(name=None, provider=None, fields=None)
+        Metric(name='test', provider=None, fields=None)
+        Metric(name=None, provider=None, fields=['abc'])
 
 
 def test_metric_dynamic_attrs(records_metric):
