@@ -36,6 +36,7 @@ cod_records_metric = RecordsMetric(
 )
 
 # DOI metrics
+
 doi_attrs = ('doi_total', 'doi_2018', 'doi_2017')
 
 zenodo_doi_metric = DOIMetric(
@@ -43,6 +44,24 @@ zenodo_doi_metric = DOIMetric(
     provider=DataCiteProvider(
         'CERN - CERN - European Organization for Nuclear Research',
         'CERN.ZENODO',
+        doi_attrs
+    )
+)
+
+cds_videos_doi_metric = DOIMetric(
+    name='cds_videos_doi',
+    provider=DataCiteProvider(
+        'CERN - CERN - European Organization for Nuclear Research',
+        'CERN.CDS',
+        doi_attrs
+    )
+)
+
+opendata_doi_metric = DOIMetric(
+    name='opendata_doi',
+    provider=DataCiteProvider(
+        'CERN - CERN - European Organization for Nuclear Research',
+        'CERN.OPENDATA',
         doi_attrs
     )
 )

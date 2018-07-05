@@ -31,6 +31,8 @@ class JSONURLProvider(Provider):
         if not url:
             raise ValueError("url can't be empty")
         self.url = url
+        self.data = None
+        self.json = None
 
     def collect(self):
         """Get URL request."""
@@ -69,6 +71,7 @@ class DataCiteProvider(Provider):
         self.allocator = allocator
         self.name = name
         self.attrs = attrs
+        self.values = None
 
         # Generate URLs
         base = DataCiteProvider.BASE_URL

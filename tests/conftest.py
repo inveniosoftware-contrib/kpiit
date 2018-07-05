@@ -25,6 +25,16 @@ def json_url_provider():
 
 
 @pytest.fixture
+def data_cite_provider():
+    """Fixture for DataCite provider."""
+    return DataCiteProvider(
+        'CERN - CERN - European Organization for Nuclear Research',
+        'CERN.CDS',
+        ('doi_total', )
+    )
+
+
+@pytest.fixture
 def records_metric(json_url_provider):
     """Fixture for records metric."""
     return RecordsMetric('records', json_url_provider, ['num_records'])

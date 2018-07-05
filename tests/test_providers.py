@@ -12,6 +12,7 @@ import os
 import pytest
 
 from kpiit.models import Provider
+from kpiit.providers import DataCiteProvider, JSONURLProvider
 
 
 def test_provider_base(records_metric):
@@ -22,7 +23,24 @@ def test_provider_base(records_metric):
         provider.collect()
 
 
-def test_json_url_provider(records_metric):
+def test_json_url_provider(json_url_provider, records_metric):
     """Test JSON URL provider."""
-    # TODO: add tess for json url provider
-    pass
+    with pytest.raises(ValueError):
+        JSONURLProvider(url=None)
+
+    assert json_url_provider.json is None
+    json_url_provider.collect()
+    assert json_url_provider.json is not None
+    # TODO: Test JSON content
+
+
+def test_data_cite_provider(data_cite_provider):
+    """Test DataCite provider."""
+    with pytest.raises(ValueError):
+        DataCiteProvider(allocator=None, name='test')
+        DataCiteProvider(allocator='alloc', name=None)
+
+    assert data_cite_provider.values is None
+    data_cite_provider.collect()
+    assert data_cite_provider.values is not None
+    # TODO: Validate DataCite content
