@@ -53,25 +53,31 @@ def test_uptime_provider(uptime_provider):
     assert uptime_provider.url == 'https://api.uptimerobot.com/v2/'
     assert uptime_provider.api_key == 'API_KEY'
 
-    assert uptime_provider.uptime_ratio is None
+    # assert uptime_provider.uptime_ratio is None
     assert uptime_provider.response_time is None
 
     uptime_provider.collect()
 
-    assert uptime_provider.uptime_ratio is not None
+    # assert uptime_provider.uptime_ratio is not None
     assert uptime_provider.response_time is not None
 
 
 def test_fail_uptime_provider(mocker, uptime_provider):
     """Test failing Uptime Robot provider."""
     with pytest.raises(ValueError):
-        assert UptimeRobotProvider(url=None, api_key=None)
+        assert UptimeRobotProvider(url=None, api_key=None, monitor_name=None)
     with pytest.raises(ValueError):
-        assert UptimeRobotProvider(url='test', api_key=None)
+        assert UptimeRobotProvider(url='test', api_key=None, monitor_name=None)
     with pytest.raises(ValueError):
-        assert UptimeRobotProvider(url=None, api_key='test')
+        assert UptimeRobotProvider(url=None, api_key='test', monitor_name=None)
+    with pytest.raises(ValueError):
+        assert UptimeRobotProvider(url=None, api_key=None, monitor_name='test')
 
+
+def test_failed_api_uptime_provider(mocker, uptime_provider):
+    """Test failing API call for Uptime Robot provider."""
     # API call failed
+
     def send(self, *args, **kwargs):
         return {
             'stat': 'fail'

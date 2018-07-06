@@ -20,22 +20,25 @@ logger = get_task_logger(__name__)
 class UptimeRobotProvider(Provider):
     """Uptime Robot provider."""
 
-    def __init__(self, url, api_key):
+    def __init__(self, url, api_key, monitor_name):
         """Uptime Roobt provider initialization."""
         if not url:
             raise ValueError("url can't be empty")
         if not api_key:
             raise ValueError("api_key can't be empty")
+        if not monitor_name:
+            raise ValueError("monitor_name can't be empty")
 
         self.url = url
         self.api_key = api_key
-        self.uptime_ratio = None
+        self.monitor_name = monitor_name
+        # self.uptime_ratio = None
         self.response_time = None
 
     def collect(self):
         """Get data from Uptime Robot."""
         params = dict(
-            all_time_uptime_ratio=1,
+            # all_time_uptime_ratio=1,
             response_times=1
         )
         resp = self.send('getMonitors', **params)
@@ -45,10 +48,13 @@ class UptimeRobotProvider(Provider):
 
     def _update_data(self, resp):
         """Update uptime and response time attributes."""
-        # TODO: Support multiple monitors?
-        monitor = resp['monitors'][0]
-        self.uptime_ratio = monitor['all_time_uptime_ratio']
-        self.response_time = monitor['average_response_time']
+        for monitor in resp['monitors']:
+            name = monitor['friendly_name']
+            if name == self.monitor_name:
+                # self.uptime_ratio = monitor['all_time_uptime_ratio']
+                self.response_time = monitor['average_response_time']
+                return
+        logger.warn('no monitor with name: {}'.format(self.monitor_name))
 
     def send(self, action, **kwargs):
         """Send request to UptimeRobot API and return the JSON object."""

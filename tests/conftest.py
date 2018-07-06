@@ -61,22 +61,19 @@ def uptime_provider(mocker):
     """Fixture for the Uptime Robot provider."""
     class Request(object):
         def __init__(self, *args, **kwargs):
-            self.data = {
-                'stat': 'ok',
-                'monitors': [
-                    {
-                        'all_time_uptime_ratio': '100.000',
-                        'average_response_time': '217.750'
-                    }
-                ]
-            }
+            with open('tests/data/uptime_website.json', 'r') as f:
+                self.data = json.loads(f.read())
 
         def json(self):
             return self.data
 
     mocker.patch('requests.request', new=Request)
 
-    return UptimeRobotProvider('https://api.uptimerobot.com/v2/', 'API_KEY')
+    return UptimeRobotProvider(
+        'https://api.uptimerobot.com/v2/',
+        'API_KEY',
+        'Website'
+    )
 
 
 @pytest.fixture
