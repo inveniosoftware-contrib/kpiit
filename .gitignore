@@ -70,3 +70,5 @@ target/
 
 # Celery
 celerybeat-schedule
+
+.env
