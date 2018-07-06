@@ -38,8 +38,8 @@ imports = ['kpiit.tasks']
 beat_schedule = {
     'collect-kpi-every-day-after-midnight': {
         'task': 'kpiit.tasks.collect_and_publish_metrics',
-        # 'schedule': crontab(hour=0, minute=20),
-        'schedule': 10.0,
+        'schedule': crontab(hour=0, minute=20),
+        # 'schedule': 10.0,
         'kwargs': {
             'metrics': [
                 'kpiit.metrics.zenodo_records_metric',
