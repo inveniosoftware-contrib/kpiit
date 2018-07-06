@@ -16,6 +16,7 @@ from kpiit.metrics import *
 from kpiit.metrics.records import RecordsMetric
 from kpiit.models import Provider, Publisher
 from kpiit.providers import JSONURLProvider
+from kpiit.providers.uptime_robot import UptimeRobotProvider
 from kpiit.publishers.json import JSONFilePublisher
 
 
@@ -53,6 +54,29 @@ def test_provider():
                 }
             }
     return TestProvider()
+
+
+@pytest.fixture
+def uptime_provider(mocker):
+    """Fixture for the Uptime Robot provider."""
+    class Request(object):
+        def __init__(self, *args, **kwargs):
+            self.data = {
+                'stat': 'ok',
+                'monitors': [
+                    {
+                        'all_time_uptime_ratio': '100.000',
+                        'average_response_time': '217.750'
+                    }
+                ]
+            }
+
+        def json(self):
+            return self.data
+
+    mocker.patch('requests.request', new=Request)
+
+    return UptimeRobotProvider('https://api.uptimerobot.com/v2/', 'API_KEY')
 
 
 @pytest.fixture

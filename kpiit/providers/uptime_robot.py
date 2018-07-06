@@ -17,23 +17,28 @@ from kpiit.models import Provider
 logger = get_task_logger(__name__)
 
 
-class UptimeRootProvider(Provider):
+class UptimeRobotProvider(Provider):
     """Uptime Robot provider."""
 
     def __init__(self, url, api_key):
         """Uptime Roobt provider initialization."""
+        if not url:
+            raise ValueError("url can't be empty")
+        if not api_key:
+            raise ValueError("api_key can't be empty")
+
         self.url = url
         self.api_key = api_key
         self.uptime_ratio = None
         self.response_time = None
 
     def collect(self):
-        """Get URL request."""
+        """Get data from Uptime Robot."""
         params = dict(
             all_time_uptime_ratio=1,
             response_times=1
         )
-        resp = self.send('getMonitors', **params).json()
+        resp = self.send('getMonitors', **params)
         if resp['stat'] == 'fail':
             raise ValueError('failed to download monitor data')
         self._update_data(resp)
@@ -46,7 +51,7 @@ class UptimeRootProvider(Provider):
         self.response_time = monitor['average_response_time']
 
     def send(self, action, **kwargs):
-        """Send request to UptimeRobot API."""
+        """Send request to UptimeRobot API and return the JSON object."""
         url = os.path.join(self.url, action)
         kwargs['api_key'] = self.api_key
         if 'format' not in kwargs:
@@ -64,4 +69,4 @@ class UptimeRootProvider(Provider):
             url,
             data=payload,
             headers=headers
-        )
+        ).json()
