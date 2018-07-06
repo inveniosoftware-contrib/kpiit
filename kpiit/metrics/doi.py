@@ -17,9 +17,7 @@ class DOIMetric(Metric):
         """DOI metric initialization."""
         super().__init__(name, provider, fields or provider.attrs)
 
-    def collect(self):
-        """Collect data for this instance."""
-        super().collect()
-
+    def collect_done(self, data):
+        """Process collected data."""
         for field in self.fields:
-            setattr(self, field, self.provider.values[field])
+            setattr(self, field, data[field])

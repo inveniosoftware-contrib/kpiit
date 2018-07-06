@@ -53,6 +53,7 @@ def test_provider():
                     'total': 9
                 }
             }
+            return self.json
     return TestProvider()
 
 
@@ -94,7 +95,16 @@ def records_metric(json_url_provider):
 @pytest.fixture
 def doi_metric(test_provider):
     """Fixture for DOI metric."""
-    return DOIMetric('doi', test_provider, ['data'])
+    class TestProvider(Provider):
+        def __init__(self):
+            super().__init__()
+            self.data = None
+            self.json = None
+
+        def collect(self):
+            self.data = dict(data='collected')
+            return self.data
+    return DOIMetric('doi', TestProvider(), ['data'])
 
 
 @pytest.fixture

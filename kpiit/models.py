@@ -27,7 +27,12 @@ class Metric(object):
 
     def collect(self):
         """Collect metrics from the provider."""
-        self.provider.collect()
+        data = self.provider.collect()
+        self.collect_done(data)
+
+    def collect_done(self, data):
+        """Process collected data."""
+        raise NotImplementedError()
 
     def value(self, key):
         """Get metric value."""

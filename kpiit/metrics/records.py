@@ -17,9 +17,7 @@ class RecordsMetric(Metric):
         """Records metric initialization."""
         super().__init__(name, provider, fields)
 
-    def collect(self):
-        """Collect data for this instance."""
-        super().collect()
-
-        num_records = self.provider.json['hits']['total']
+    def collect_done(self, data):
+        """Process collected data."""
+        num_records = data['hits']['total']
         self.num_records = num_records

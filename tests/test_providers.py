@@ -43,9 +43,9 @@ def test_data_cite_provider(data_cite_provider):
         DataCiteProvider(allocator='alloc', name=None)
 
     # TODO: Validate DataCite content
-    assert data_cite_provider.values is None
+    assert data_cite_provider.data is None
     data_cite_provider.collect()
-    assert data_cite_provider.values is not None
+    assert data_cite_provider.data is not None
 
 
 def test_uptime_provider(uptime_provider):

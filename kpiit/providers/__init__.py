@@ -38,6 +38,7 @@ class JSONURLProvider(Provider):
         """Get URL request."""
         self.data = requests.get(self.url)
         self.json = self.data.json()
+        return self.json
 
 
 class DataCiteProvider(Provider):
@@ -71,7 +72,7 @@ class DataCiteProvider(Provider):
         self.allocator = allocator
         self.name = name
         self.attrs = attrs
-        self.values = None
+        self.data = None
 
         # Generate URLs
         base = DataCiteProvider.BASE_URL
@@ -93,9 +94,9 @@ class DataCiteProvider(Provider):
     def collect(self):
         """Collect DOI statistics from DataCite."""
         data = {key: requests.get(url).text for key, url in self.urls.items()}
-        self.values = {attr: None for attr in self.attrs}
+        self.data = {attr: None for attr in self.attrs}
         for key, value in data.items():
             m = self.regex.search(value)
             if m:
-                self.values[key] = int(m.group('value').strip())
-        return self.values
+                self.data[key] = int(m.group('value').strip())
+        return self.data
