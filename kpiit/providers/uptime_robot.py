@@ -44,7 +44,7 @@ class UptimeRobotProvider(Provider):
         resp = self.send('getMonitors', **params)
         if resp['stat'] == 'fail':
             raise ValueError('failed to download monitor data')
-        self._update_data(resp)
+        return self._update_data(resp)
 
     def _update_data(self, resp):
         """Update uptime and response time attributes."""
@@ -55,6 +55,9 @@ class UptimeRobotProvider(Provider):
                 self.response_time = monitor['average_response_time']
                 return
         logger.warn('no monitor with name: {}'.format(self.monitor_name))
+        return dict(
+            response_time=self.response_time
+        )
 
     def send(self, action, **kwargs):
         """Send request to UptimeRobot API and return the JSON object."""

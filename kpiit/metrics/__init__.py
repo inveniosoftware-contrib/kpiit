@@ -7,9 +7,19 @@
 
 """Metrics module."""
 
+import os
+
+from dotenv import load_dotenv
+
 from .doi import DOIMetric
 from .records import RecordsMetric
+from .uptime import UptimeMetric
 from ..providers import DataCiteProvider, JSONURLProvider
+from ..providers.uptime_robot import UptimeRobotProvider
+
+# Load .env config file
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(BASE_DIR, '..', '..', '.env'))
 
 
 # Record metrics
@@ -63,5 +73,16 @@ opendata_doi_metric = DOIMetric(
         'CERN - CERN - European Organization for Nuclear Research',
         'CERN.OPENDATA',
         doi_attrs
+    )
+)
+
+# Uptime metrics
+
+website_uptime_metric = UptimeMetric(
+    name='website_uptime',
+    provider=UptimeRobotProvider(
+        'https://api.uptimerobot.com/v2/',
+        os.getenv('UPTIME_WEBSITE_API_KEY'),
+        os.getenv('UPTIME_WEBSITE_NAME')
     )
 )

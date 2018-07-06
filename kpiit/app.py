@@ -10,12 +10,8 @@
 import os
 
 from celery import Celery
-from dotenv import load_dotenv
 
 from .factory import create_app
 
 #: Celery application instance.
 app = create_app(config_module='kpiit.celeryconfig')
-
-# Load .env config file
-load_dotenv()
