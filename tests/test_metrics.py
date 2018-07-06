@@ -75,3 +75,19 @@ def test_doi_metric(doi_metric):
     assert doi_metric.data is None
     doi_metric.collect()
     assert doi_metric.data == 'collected'
+
+
+def test_website_uptime_metric(website_uptime_metric):
+    website_uptime_metric.uptime is None
+    website_uptime_metric.response_time is None
+    website_uptime_metric.collect()
+    website_uptime_metric.uptime is None
+    website_uptime_metric.response_time is not None
+
+
+def test_search_uptime_metric(search_uptime_metric):
+    pass
+
+
+def test_files_uptime_metric(files_uptime_metric):
+    pass

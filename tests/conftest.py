@@ -12,10 +12,11 @@ import sys
 
 import pytest
 
-from kpiit.metrics import *
+import kpiit.metrics as metrics
 from kpiit.metrics.records import RecordsMetric
+from kpiit.metrics.uptime import UptimeMetric
 from kpiit.models import Provider, Publisher
-from kpiit.providers import JSONURLProvider
+from kpiit.providers import DataCiteProvider, JSONURLProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
 from kpiit.publishers.json import JSONFilePublisher
 
@@ -57,18 +58,23 @@ def test_provider():
     return TestProvider()
 
 
+class UptimeRequest(object):
+    """Uptime request test."""
+
+    def __init__(self, *args, **kwargs):
+        """Uptime request test initialization."""
+        with open('tests/data/uptime_website.json', 'r') as f:
+            self.data = json.loads(f.read())
+
+    def json(self):
+        """Get JSON data."""
+        return self.data
+
+
 @pytest.fixture
 def uptime_provider(mocker):
     """Fixture for the Uptime Robot provider."""
-    class Request(object):
-        def __init__(self, *args, **kwargs):
-            with open('tests/data/uptime_website.json', 'r') as f:
-                self.data = json.loads(f.read())
-
-        def json(self):
-            return self.data
-
-    mocker.patch('requests.request', new=Request)
+    mocker.patch('requests.request', new=UptimeRequest)
 
     return UptimeRobotProvider(
         'https://api.uptimerobot.com/v2/',
@@ -104,7 +110,31 @@ def doi_metric(test_provider):
         def collect(self):
             self.data = dict(data='collected')
             return self.data
-    return DOIMetric('doi', TestProvider(), ['data'])
+    return metrics.DOIMetric('doi', TestProvider(), ['data'])
+
+
+@pytest.fixture
+def website_uptime_metric(mocker):
+    """Fixture for website uptime metric."""
+    mocker.patch('requests.request', new=UptimeRequest)
+
+    return metrics.website_uptime_metric
+
+
+@pytest.fixture
+def search_uptime_metric(mocker):
+    """Fixture for search uptime metric."""
+    mocker.patch('requests.request', new=UptimeRequest)
+
+    return metrics.search_uptime_metric
+
+
+@pytest.fixture
+def files_uptime_metric(mocker):
+    """Fixture for files uptime metric."""
+    mocker.patch('requests.request', new=UptimeRequest)
+
+    return metrics.files_uptime_metric
 
 
 @pytest.fixture
@@ -143,7 +173,7 @@ def zenodo_records(mocker, zenodo_records_json):
     """Fixture for Zenodo records metric instance."""
     mocker.patch.object(RecordsMetric, 'collect',
                         new=new_collect(zenodo_records_json))
-    return zenodo_records_metric
+    return metrics.zenodo_records_metric
 
 
 @pytest.fixture
@@ -151,7 +181,7 @@ def cod_records(mocker, cod_records_json):
     """Fixture for COD records metric instance."""
     mocker.patch.object(RecordsMetric, 'collect',
                         new=new_collect(cod_records_json))
-    return cod_records_metric
+    return metrics.cod_records_metric
 
 
 @pytest.fixture

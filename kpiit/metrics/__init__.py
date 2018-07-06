@@ -86,3 +86,21 @@ website_uptime_metric = UptimeMetric(
         os.getenv('UPTIME_WEBSITE_NAME')
     )
 )
+
+search_uptime_metric = UptimeMetric(
+    name='search_uptime',
+    provider=UptimeRobotProvider(
+        'https://api.uptimerobot.com/v2/',
+        os.getenv('UPTIME_SEARCH_API_KEY'),
+        os.getenv('UPTIME_SEARCH_NAME')
+    )
+)
+
+files_uptime_metric = UptimeMetric(
+    name='files_uptime',
+    provider=UptimeRobotProvider(
+        'https://api.uptimerobot.com/v2/',
+        os.getenv('UPTIME_FILES_API_KEY'),
+        os.getenv('UPTIME_FILES_NAME')
+    )
+)

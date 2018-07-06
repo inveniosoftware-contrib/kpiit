@@ -20,4 +20,5 @@ class UptimeMetric(Metric):
     def collect_done(self, data):
         """Process collected data."""
         self.uptime = None
+        print(data)
         self.response_time = data['response_time']
