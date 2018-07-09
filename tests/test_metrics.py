@@ -27,7 +27,7 @@ def test_metric_base(records_metric):
     assert records_metric.value('num_records') == 1
 
 
-def test_fail_metric(records_metric):
+def test_fail_metric(records_metric, test_provider):
     with pytest.raises(ValueError):
         Metric(name=None, provider=None, fields=None)
     with pytest.raises(ValueError):
@@ -36,6 +36,9 @@ def test_fail_metric(records_metric):
         Metric(name=None, provider=None, fields=['abc'])
     with pytest.raises(AttributeError):
         records_metric.update(non_existant='test')
+    metric = Metric('test', test_provider, ('test'))
+    with pytest.raises(NotImplementedError):
+        metric.collect()
 
 
 def test_metric_dynamic_attrs(records_metric):

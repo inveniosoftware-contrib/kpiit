@@ -72,6 +72,8 @@ def test_fail_uptime_provider(mocker, uptime_provider):
         assert UptimeRobotProvider(url=None, api_key='test', monitor_name=None)
     with pytest.raises(ValueError):
         assert UptimeRobotProvider(url=None, api_key=None, monitor_name='test')
+    with pytest.raises(ValueError):
+        assert UptimeRobotProvider(url='a', api_key='a', monitor_name=None)
 
 
 def test_failed_api_uptime_provider(mocker, uptime_provider):
