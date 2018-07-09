@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.13.0 (84fa826)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: worker
+  name: worker
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: worker
+    spec:
+      containers:
+      - args:
+        - /opt/kpiit/src/scripts/server
+        env:
+        - name: BROKER_URL
+          value: redis://broker:6379/0
+        - name: CELERY_RESULT_BACKEND
+          value: redis://broker:6379/1
+        image: kpiit
+        name: worker
+        resources: {}
+      restartPolicy: Always
+status: {}
