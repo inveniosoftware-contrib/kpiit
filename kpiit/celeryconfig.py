@@ -43,9 +43,14 @@ beat_schedule = {
         'kwargs': {
             'metrics': [
                 'kpiit.metrics.zenodo_records_metric',
-                'kpiit.metrics.cod_records_metric',
+                # 'kpiit.metrics.cds_videos_records_metric',  # TODO: SSL error
+                # 'kpiit.metrics.cod_records_metric',
                 'kpiit.metrics.zenodo_doi_metric',
-                'kpiit.metrics.website_uptime_metric'
+                # 'kpiit.metrics.cds_videos_doi_metric',
+                # 'kpiit.metrics.cod_doi_metric',
+                'kpiit.metrics.website_uptime_metric',
+                # 'kpiit.metrics.search_uptime_metric',
+                # 'kpiit.metrics.files_uptime_metric'
             ],
             'publisher': 'kpiit.publishers.json.JSONFilePublisher'
         }

@@ -67,7 +67,7 @@ cds_videos_doi_metric = DOIMetric(
     )
 )
 
-opendata_doi_metric = DOIMetric(
+cod_doi_metric = DOIMetric(
     name='opendata_doi',
     provider=DataCiteProvider(
         'CERN - CERN - European Organization for Nuclear Research',
