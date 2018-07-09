@@ -45,6 +45,7 @@ beat_schedule = {
                 'kpiit.metrics.zenodo_records_metric',
                 'kpiit.metrics.cod_records_metric',
                 'kpiit.metrics.zenodo_doi_metric',
+                'kpiit.metrics.website_uptime_metric'
             ],
             'publisher': 'kpiit.publishers.json.JSONFilePublisher'
         }
