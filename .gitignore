@@ -72,3 +72,5 @@ target/
 celerybeat-schedule
 
 .env
+
+output.json

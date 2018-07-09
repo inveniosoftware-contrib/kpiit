@@ -13,6 +13,7 @@ import sys
 import pytest
 
 import kpiit.metrics as metrics
+from kpiit.app import app
 from kpiit.metrics.records import RecordsMetric
 from kpiit.metrics.uptime import UptimeMetric
 from kpiit.models import Provider, Publisher
@@ -155,7 +156,7 @@ def cod_records_json():
     return data
 
 
-def new_collect(data):
+def records_collect(data):
     """Mocked collect."""
     json_data = json.loads(data)
 
@@ -172,7 +173,7 @@ def new_collect(data):
 def zenodo_records(mocker, zenodo_records_json):
     """Fixture for Zenodo records metric instance."""
     mocker.patch.object(RecordsMetric, 'collect',
-                        new=new_collect(zenodo_records_json))
+                        new=records_collect(zenodo_records_json))
     return metrics.zenodo_records_metric
 
 
@@ -180,7 +181,7 @@ def zenodo_records(mocker, zenodo_records_json):
 def cod_records(mocker, cod_records_json):
     """Fixture for COD records metric instance."""
     mocker.patch.object(RecordsMetric, 'collect',
-                        new=new_collect(cod_records_json))
+                        new=records_collect(cod_records_json))
     return metrics.cod_records_metric
 
 
@@ -189,3 +190,9 @@ def json_publisher(tmpdir):
     """Fixture for JSON publisher."""
     filename = '{}/output.json'.format(tmpdir.dirname)
     return JSONFilePublisher(filename)
+
+
+@pytest.fixture(scope='module')
+def celery_app(request):
+    """Fixture returning the Celery app instance."""
+    return app
