@@ -45,7 +45,6 @@ class MetricDecoder(json.JSONDecoder):
     @classmethod
     def json_to_metric(cls, obj):
         """Convert JSON object to Metric instance."""
-        print('obj: ' % obj)
         if '_type' not in obj:
             return obj
 

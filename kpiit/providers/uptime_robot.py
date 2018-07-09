@@ -32,13 +32,13 @@ class UptimeRobotProvider(Provider):
         self.url = url
         self.api_key = api_key
         self.monitor_name = monitor_name
-        # self.uptime_ratio = None
+        self.uptime_ratio = None
         self.response_time = None
 
     def collect(self):
         """Get data from Uptime Robot."""
         params = dict(
-            # all_time_uptime_ratio=1,
+            all_time_uptime_ratio=1,
             response_times=1
         )
         resp = self.send('getMonitors', **params)
@@ -51,11 +51,12 @@ class UptimeRobotProvider(Provider):
         for monitor in resp['monitors']:
             name = monitor['friendly_name']
             if name == self.monitor_name:
-                # self.uptime_ratio = monitor['all_time_uptime_ratio']
+                self.uptime_ratio = monitor['all_time_uptime_ratio']
                 self.response_time = monitor['average_response_time']
                 break
         return {
-            'response_time': self.response_time
+            'response_time': self.response_time,
+            'uptime_ratio': self.uptime_ratio
         }
 
     def send(self, action, **kwargs):
