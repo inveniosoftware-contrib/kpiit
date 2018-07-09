@@ -21,7 +21,7 @@ class UptimeRobotProvider(Provider):
     """Uptime Robot provider."""
 
     def __init__(self, url, api_key, monitor_name):
-        """Uptime Roobt provider initialization."""
+        """Uptime Robot provider initialization."""
         if not url:
             raise ValueError("url can't be empty")
         if not api_key:
@@ -53,11 +53,10 @@ class UptimeRobotProvider(Provider):
             if name == self.monitor_name:
                 # self.uptime_ratio = monitor['all_time_uptime_ratio']
                 self.response_time = monitor['average_response_time']
-                return
-        logger.warn('no monitor with name: {}'.format(self.monitor_name))
-        return dict(
-            response_time=self.response_time
-        )
+                break
+        return {
+            'response_time': self.response_time
+        }
 
     def send(self, action, **kwargs):
         """Send request to UptimeRobot API and return the JSON object."""
