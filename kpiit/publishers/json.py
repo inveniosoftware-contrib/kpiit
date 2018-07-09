@@ -20,9 +20,7 @@ logger = get_task_logger(__name__)
 class JSONFilePublisher(Publisher):
     """Test class that manages publishing metrics to a JSON file."""
 
-    FILENAME = 'output.json'
-
-    def __init__(self, filename=FILENAME):
+    def __init__(self, filename):
         """JSON file provider initialization."""
         super().__init__()
         self.filename = filename
