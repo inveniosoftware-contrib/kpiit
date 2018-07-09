@@ -86,8 +86,16 @@ def test_website_uptime_metric(website_uptime_metric):
 
 
 def test_search_uptime_metric(search_uptime_metric):
-    pass
+    search_uptime_metric.uptime is None
+    search_uptime_metric.response_time is None
+    search_uptime_metric.collect()
+    search_uptime_metric.uptime is None
+    search_uptime_metric.response_time is not None
 
 
 def test_files_uptime_metric(files_uptime_metric):
-    pass
+    files_uptime_metric.uptime is None
+    files_uptime_metric.response_time is None
+    files_uptime_metric.collect()
+    files_uptime_metric.uptime is None
+    files_uptime_metric.response_time is not None
