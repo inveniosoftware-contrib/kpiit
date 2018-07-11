@@ -45,6 +45,7 @@ class DataCiteProvider(Provider):
     """Retrieve DOI statistics from DataCite."""
 
     INDEX_URL = 'https://stats.datacite.org/stats/resolution-report/index.html'
+    STATS_URL = 'https://stats.datacite.org/stats/resolution-report/'
 
     def __init__(self, prefix):
         """
@@ -58,4 +59,26 @@ class DataCiteProvider(Provider):
 
     def collect(self):
         """Collect DOI statistics from DataCite."""
-        return self.data
+        index = BeautifulSoup(requests.get(self.INDEX_URL).text, 'html.parser')
+        links = index.find_all('a')[-1]
+
+        stats_url = '{base}{file}'.format(
+            base=self.STATS_URL,
+            file=links.get('href')
+        )
+        stats_data = requests.get(stats_url)
+        stats = BeautifulSoup(stats_data.text, 'html.parser')
+
+        for tr in stats.find_all('tr'):
+            if tr.find('a').get_text() == self.prefix:
+                tds = tr.find_all('td')
+                self.data = dict(
+                    total_attempts=tds[2].get_text(),
+                    successful=tds[3].get_text(),
+                    failed=tds[4].get_text(),
+                    unique_doi_total=tds[5].get_text(),
+                    unique_doi_successful=tds[6].get_text(),
+                    unique_doi_failed=tds[7].get_text()
+                )
+                return self.data
+        return None
