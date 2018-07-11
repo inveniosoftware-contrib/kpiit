@@ -38,8 +38,8 @@ imports = ['kpiit.tasks']
 beat_schedule = {
     'collect-zenodo-kpis-every-day-after-midnight': {
         'task': 'kpiit.tasks.collect_and_publish_metrics',
-        'schedule': crontab(hour=0, minute=20),
-        # 'schedule': 10.0,
+        # 'schedule': crontab(hour=0, minute=20),
+        'schedule': 100.0,
         'kwargs': {
             'metrics': [
                 'kpiit.metrics.zenodo_records_metric',
@@ -49,32 +49,32 @@ beat_schedule = {
             'publisher': 'kpiit.publishers.json.JSONFilePublisher'
         }
     },
-    'collect-cds-videos-kpis-every-day-after-midnight': {
-        'task': 'kpiit.tasks.collect_and_publish_metrics',
-        'schedule': crontab(hour=0, minute=20),
-        # 'schedule': 10.0,
-        'kwargs': {
-            'metrics': [
-                'kpiit.metrics.cds_videos_records_metric',  # TODO: SSL error
-                'kpiit.metrics.cds_videos_doi_metric',
-                'kpiit.metrics.search_uptime_metric',
-            ],
-            'publisher': 'kpiit.publishers.json.JSONFilePublisher'
-        }
-    },
-    'collect-cod-kpis-every-day-after-midnight': {
-        'task': 'kpiit.tasks.collect_and_publish_metrics',
-        'schedule': crontab(hour=0, minute=20),
-        # 'schedule': 10.0,
-        'kwargs': {
-            'metrics': [
-                'kpiit.metrics.cod_records_metric',
-                'kpiit.metrics.cod_doi_metric',
-                'kpiit.metrics.files_uptime_metric'
-            ],
-            'publisher': 'kpiit.publishers.json.JSONFilePublisher'
-        }
-    }
+    # 'collect-cds-videos-kpis-every-day-after-midnight': {
+    #     'task': 'kpiit.tasks.collect_and_publish_metrics',
+    #     'schedule': crontab(hour=0, minute=20),
+    #     # 'schedule': 10.0,
+    #     'kwargs': {
+    #         'metrics': [
+    #             'kpiit.metrics.cds_videos_records_metric',  # TODO: SSL error
+    #             'kpiit.metrics.cds_videos_doi_metric',
+    #             'kpiit.metrics.search_uptime_metric',
+    #         ],
+    #         'publisher': 'kpiit.publishers.json.JSONFilePublisher'
+    #     }
+    # },
+    # 'collect-cod-kpis-every-day-after-midnight': {
+    #     'task': 'kpiit.tasks.collect_and_publish_metrics',
+    #     'schedule': crontab(hour=0, minute=20),
+    #     # 'schedule': 10.0,
+    #     'kwargs': {
+    #         'metrics': [
+    #             'kpiit.metrics.cod_records_metric',
+    #             'kpiit.metrics.cod_doi_metric',
+    #             'kpiit.metrics.files_uptime_metric'
+    #         ],
+    #         'publisher': 'kpiit.publishers.json.JSONFilePublisher'
+    #     }
+    # }
 }
 #: Accept the new serializer
 accept_content = ['metricjson']
