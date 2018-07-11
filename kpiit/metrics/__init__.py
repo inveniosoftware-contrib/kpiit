@@ -9,17 +9,11 @@
 
 import os
 
-from dotenv import load_dotenv
-
 from .doi import DOIMetric
 from .records import RecordsMetric
 from .uptime import UptimeMetric
 from ..providers import DataCiteProvider, JSONURLProvider
 from ..providers.uptime_robot import UptimeRobotProvider
-
-# Load .env config file
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(BASE_DIR, '..', '..', '.env'))
 
 
 # Record metrics
@@ -83,7 +77,7 @@ website_uptime_metric = UptimeMetric(
     provider=UptimeRobotProvider(
         'https://api.uptimerobot.com/v2/',
         os.getenv('UPTIME_WEBSITE_API_KEY'),
-        os.getenv('UPTIME_WEBSITE_NAME')
+        'Website'
     )
 )
 
@@ -92,7 +86,7 @@ search_uptime_metric = UptimeMetric(
     provider=UptimeRobotProvider(
         'https://api.uptimerobot.com/v2/',
         os.getenv('UPTIME_SEARCH_API_KEY'),
-        os.getenv('UPTIME_SEARCH_NAME')
+        'Search'
     )
 )
 
@@ -101,6 +95,6 @@ files_uptime_metric = UptimeMetric(
     provider=UptimeRobotProvider(
         'https://api.uptimerobot.com/v2/',
         os.getenv('UPTIME_FILES_API_KEY'),
-        os.getenv('UPTIME_FILES_NAME')
+        'Files upload/download'
     )
 )

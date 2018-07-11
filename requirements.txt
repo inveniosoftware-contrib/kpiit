@@ -11,3 +11,4 @@ kombu==4.2.1              # via celery
 pytz==2018.4              # via celery
 redis==2.10.6             # via celery
 vine==1.1.4               # via amqp
+BeautifulSoup4==4.6.0

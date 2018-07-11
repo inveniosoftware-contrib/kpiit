@@ -21,7 +21,7 @@ class CERNGrafanaPublisher(Publisher):
     def publish(self, metrics):
         """Publish KPIs to the grafana instance."""
         status = 'available'  # TODO: Implement proper status checking
-        msg = CERNGrafanaPublisher.build_message(SERVICE_ID, status, metrics)
+        msg = self.build_message(SERVICE_ID, status, metrics)
 
         return msg
 
