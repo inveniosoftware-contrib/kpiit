@@ -1,0 +1,16 @@
+{
+    "producer": "invenio",
+    "type_prefix": "raw",
+    "type": "doikpi",
+    "timestamp": 1483696735836,
+    "service": "10.5281",
+    "doi_success": 710383,
+    "doi_failed": 17164,
+    "idb_tags": [
+        "service"
+    ],
+    "idb_fields": [
+        "doi_success",
+        "doi_failed"
+    ]
+}
