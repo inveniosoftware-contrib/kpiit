@@ -1,8 +1,9 @@
 {
     "producer": "invenio",
-    "type_prefix": "raw",
     "type": "repokpi",
+    "type_prefix": "raw",
     "timestamp": 1483696735836,
+    "host": "invenio-software.org",
     "service": "zenodo",
     "env": "prod",
     "records": 433830,
@@ -19,6 +20,7 @@
         "env"
     ],
     "idb_fields": [
+        "records",
         "visits",
         "visits_unique",
         "uptime_web",
