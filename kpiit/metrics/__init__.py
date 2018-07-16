@@ -7,9 +7,19 @@
 
 """Metrics module."""
 
+import os
+
+from dotenv import load_dotenv
+
 from .doi import DOIMetric
 from .records import RecordsMetric
+from .uptime import UptimeMetric
 from ..providers import DataCiteProvider, JSONURLProvider
+from ..providers.uptime_robot import UptimeRobotProvider
+
+# Load .env config file
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(BASE_DIR, '..', '..', '.env'))
 
 
 # Record metrics
@@ -37,31 +47,46 @@ cod_records_metric = RecordsMetric(
 
 # DOI metrics
 
-doi_attrs = ('doi_total', 'doi_2018', 'doi_2017')
-
 zenodo_doi_metric = DOIMetric(
     name='zenodo_doi',
-    provider=DataCiteProvider(
-        'CERN - CERN - European Organization for Nuclear Research',
-        'CERN.ZENODO',
-        doi_attrs
-    )
+    provider=DataCiteProvider('10.5281')
 )
 
 cds_videos_doi_metric = DOIMetric(
     name='cds_videos_doi',
-    provider=DataCiteProvider(
-        'CERN - CERN - European Organization for Nuclear Research',
-        'CERN.CDS',
-        doi_attrs
+    provider=DataCiteProvider('10.17181')
+)
+
+cod_doi_metric = DOIMetric(
+    name='opendata_doi',
+    provider=DataCiteProvider('10.7483')
+)
+
+# Uptime metrics
+
+website_uptime_metric = UptimeMetric(
+    name='website_uptime',
+    provider=UptimeRobotProvider(
+        'https://api.uptimerobot.com/v2/',
+        os.getenv('UPTIME_WEBSITE_API_KEY'),
+        os.getenv('UPTIME_WEBSITE_NAME')
     )
 )
 
-opendata_doi_metric = DOIMetric(
-    name='opendata_doi',
-    provider=DataCiteProvider(
-        'CERN - CERN - European Organization for Nuclear Research',
-        'CERN.OPENDATA',
-        doi_attrs
+search_uptime_metric = UptimeMetric(
+    name='search_uptime',
+    provider=UptimeRobotProvider(
+        'https://api.uptimerobot.com/v2/',
+        os.getenv('UPTIME_SEARCH_API_KEY'),
+        os.getenv('UPTIME_SEARCH_NAME')
+    )
+)
+
+files_uptime_metric = UptimeMetric(
+    name='files_uptime',
+    provider=UptimeRobotProvider(
+        'https://api.uptimerobot.com/v2/',
+        os.getenv('UPTIME_FILES_API_KEY'),
+        os.getenv('UPTIME_FILES_NAME')
     )
 )

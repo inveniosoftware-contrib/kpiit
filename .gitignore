@@ -70,3 +70,7 @@ target/
 
 # Celery
 celerybeat-schedule
+
+.env
+
+output.json

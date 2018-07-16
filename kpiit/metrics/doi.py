@@ -13,13 +13,16 @@ from ..models import Metric
 class DOIMetric(Metric):
     """Metric for DOI."""
 
-    def __init__(self, name, provider, fields=None):
+    FIELDS = [
+        'total_attempts', 'successful', 'failed', 'unique_doi_total',
+        'unique_doi_successful', 'unique_doi_failed'
+    ]
+
+    def __init__(self, name, provider, fields=FIELDS):
         """DOI metric initialization."""
-        super().__init__(name, provider, fields or provider.attrs)
+        super().__init__(name, provider, fields)
 
-    def collect(self):
-        """Collect data for this instance."""
-        super().collect()
-
-        for field in self.fields:
-            setattr(self, field, self.provider.values[field])
+    def collect_done(self, data):
+        """Process collected data."""
+        for key, value in data.items():
+            setattr(self, key, int(value))

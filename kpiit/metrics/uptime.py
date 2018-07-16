@@ -10,14 +10,14 @@
 from ..models import Metric
 
 
-class RecordsMetric(Metric):
-    """Metric for number of records."""
+class UptimeMetric(Metric):
+    """Metric for uptime and response time."""
 
-    def __init__(self, name, provider, fields=['num_records']):
-        """Records metric initialization."""
+    def __init__(self, name, provider, fields=['uptime', 'response_time']):
+        """Uptime metric initialization."""
         super().__init__(name, provider, fields)
 
     def collect_done(self, data):
         """Process collected data."""
-        num_records = data['hits']['total']
-        self.num_records = num_records
+        self.uptime = data['uptime_ratio']
+        self.response_time = data['response_time']

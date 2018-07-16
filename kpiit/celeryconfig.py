@@ -36,15 +36,41 @@ result_backend = _env('CELERY_RESULT_BACKEND', 'redis://localhost:6379/1')
 imports = ['kpiit.tasks']
 #: Scheduled tasks configuration (aka cronjobs).
 beat_schedule = {
-    'collect-kpi-every-day-after-midnight': {
+    'collect-zenodo-kpis-every-day-after-midnight': {
         'task': 'kpiit.tasks.collect_and_publish_metrics',
         'schedule': crontab(hour=0, minute=20),
         # 'schedule': 10.0,
         'kwargs': {
             'metrics': [
                 'kpiit.metrics.zenodo_records_metric',
-                'kpiit.metrics.cod_records_metric',
                 'kpiit.metrics.zenodo_doi_metric',
+                'kpiit.metrics.website_uptime_metric',
+            ],
+            'publisher': 'kpiit.publishers.json.JSONFilePublisher'
+        }
+    },
+    'collect-cds-videos-kpis-every-day-after-midnight': {
+        'task': 'kpiit.tasks.collect_and_publish_metrics',
+        'schedule': crontab(hour=0, minute=20),
+        # 'schedule': 10.0,
+        'kwargs': {
+            'metrics': [
+                'kpiit.metrics.cds_videos_records_metric',  # TODO: SSL error
+                'kpiit.metrics.cds_videos_doi_metric',
+                'kpiit.metrics.search_uptime_metric',
+            ],
+            'publisher': 'kpiit.publishers.json.JSONFilePublisher'
+        }
+    },
+    'collect-cod-kpis-every-day-after-midnight': {
+        'task': 'kpiit.tasks.collect_and_publish_metrics',
+        'schedule': crontab(hour=0, minute=20),
+        # 'schedule': 10.0,
+        'kwargs': {
+            'metrics': [
+                'kpiit.metrics.cod_records_metric',
+                'kpiit.metrics.cod_doi_metric',
+                'kpiit.metrics.files_uptime_metric'
             ],
             'publisher': 'kpiit.publishers.json.JSONFilePublisher'
         }

@@ -58,9 +58,7 @@ class CERNGrafanaPublisher(Publisher):
     def metrics_to_dict(metrics):
         """Convert an array of metrics to a dict."""
         data = {}
-        print(metrics)
         for metric in metrics:
-            print(metric)
             for name, values in metric.values.items():
                 for key, value in values.items():
                     unique_key = '{}_{}'.format(name, key)
