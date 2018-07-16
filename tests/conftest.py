@@ -9,11 +9,13 @@
 
 import json
 import sys
+from collections import namedtuple
 
 import pytest
 
 import kpiit.metrics as metrics
 from kpiit.app import app
+from kpiit.metrics.doi import DOIMetric
 from kpiit.metrics.records import RecordsMetric
 from kpiit.metrics.uptime import UptimeMetric
 from kpiit.models import Provider, Publisher
@@ -26,16 +28,6 @@ from kpiit.publishers.json import JSONFilePublisher
 def json_url_provider():
     """JSON URL provider fixture."""
     return JSONURLProvider('http://opendata.cern.ch/api/records/?all_versions')
-
-
-@pytest.fixture
-def data_cite_provider():
-    """Fixture for DataCite provider."""
-    return DataCiteProvider(
-        'CERN - CERN - European Organization for Nuclear Research',
-        'CERN.CDS',
-        ('doi_total', )
-    )
 
 
 @pytest.fixture
@@ -93,31 +85,24 @@ def test_publisher():
     return TestPublisher()
 
 
-@pytest.fixture
-def records_metric(json_url_provider):
-    """Fixture for records metric."""
-    return RecordsMetric('records', json_url_provider, ['num_records'])
+def uptime_collect(self):
+    """Static collected uptime data for testing."""
+    return {
+        'response_time': 120.10,
+        'uptime_ratio': 99.96
+    }
 
 
 @pytest.fixture
-def doi_metric(test_provider):
-    """Fixture for DOI metric."""
-    class TestProvider(Provider):
-        def __init__(self):
-            super().__init__()
-            self.data = None
-            self.json = None
-
-        def collect(self):
-            self.data = dict(data='collected')
-            return self.data
-    return metrics.DOIMetric('doi', TestProvider(), ['data'])
+def dummy_visits_metric():
+    """Fixture for dummy visits metric."""
+    return metrics.dummy_visits_metric
 
 
 @pytest.fixture
 def website_uptime_metric(mocker):
     """Fixture for website uptime metric."""
-    mocker.patch('requests.request', new=UptimeRequest)
+    mocker.patch.object(UptimeRobotProvider, 'collect', new=uptime_collect)
 
     return metrics.website_uptime_metric
 
@@ -125,7 +110,7 @@ def website_uptime_metric(mocker):
 @pytest.fixture
 def search_uptime_metric(mocker):
     """Fixture for search uptime metric."""
-    mocker.patch('requests.request', new=UptimeRequest)
+    mocker.patch.object(UptimeRobotProvider, 'collect', new=uptime_collect)
 
     return metrics.search_uptime_metric
 
@@ -133,7 +118,7 @@ def search_uptime_metric(mocker):
 @pytest.fixture
 def files_uptime_metric(mocker):
     """Fixture for files uptime metric."""
-    mocker.patch('requests.request', new=UptimeRequest)
+    mocker.patch.object(UptimeRobotProvider, 'collect', new=uptime_collect)
 
     return metrics.files_uptime_metric
 
@@ -156,6 +141,24 @@ def cod_records_json():
     return data
 
 
+@pytest.fixture
+def zenodo_doi_index_html():
+    """Load HTML content for Zenodo DataCite index page."""
+    data = None
+    with open('tests/data/datacite_doi_index.html', 'r') as f:
+        data = f.read()
+    return data
+
+
+@pytest.fixture
+def zenodo_doi_june_html():
+    """Load HTML content for Zenodo DataCite stats page for June 2018."""
+    data = None
+    with open('tests/data/datacite_doi_2018-06.html', 'r') as f:
+        data = f.read()
+    return data
+
+
 def records_collect(data):
     """Mocked collect."""
     json_data = json.loads(data)
@@ -164,7 +167,7 @@ def records_collect(data):
         """Test."""
         self.provider.json = json_data
         num_records = self.provider.json['hits']['total']
-        self.num_records = num_records
+        self.records = num_records
 
     return collect
 
@@ -186,10 +189,31 @@ def cod_records(mocker, cod_records_json):
 
 
 @pytest.fixture
+def zenodo_doi_metric(mocker, zenodo_doi_index_html, zenodo_doi_june_html):
+    """Fixture for COD records metric instance."""
+    data = None
+
+    def load_index_data(self, url):
+        return zenodo_doi_index_html
+
+    def load_stats_data(self, url):
+        return zenodo_doi_june_html
+
+    mocker.patch.object(DataCiteProvider, 'load_index_data',
+                        new=load_index_data)
+    mocker.patch.object(DataCiteProvider, 'load_stats_data',
+                        new=load_stats_data)
+    return DOIMetric(
+        name='zenodo_doi',
+        provider=DataCiteProvider('10.5281')
+    )
+
+
+@pytest.fixture
 def json_publisher(tmpdir):
     """Fixture for JSON publisher."""
     filename = '{}/output.json'.format(tmpdir.dirname)
-    return JSONFilePublisher(filename)
+    return JSONFilePublisher(filename, 'doikpi', doi_prefix='10.5281')
 
 
 @pytest.fixture(scope='module')

@@ -23,6 +23,14 @@ from ..util import load_target
 logger = get_task_logger(__name__)
 
 
+class DummyProvider(Provider):
+    """Dummy provider."""
+
+    def collect(self):
+        """Get dummy data."""
+        pass
+
+
 class JSONURLProvider(Provider):
     """Basic URL-based provider."""
 
@@ -44,59 +52,50 @@ class JSONURLProvider(Provider):
 class DataCiteProvider(Provider):
     """Retrieve DOI statistics from DataCite."""
 
-    BASE_URL = 'https://search.datacite.org/list/generic?fq=allocator_facet:'
+    INDEX_URL = 'https://stats.datacite.org/stats/resolution-report/index.html'
+    STATS_URL = 'https://stats.datacite.org/stats/resolution-report/'
 
-    ATTRS = dict(
-        doi_total='',
-        doi_2017='&fq=minted:[NOW/YEAR-1YEARS/YEAR+TO+NOW/YEAR]',
-        doi_2018='&fq=minted:[NOW/YEAR+TO+*]',
-        doi_last_30days='&fq=minted:[NOW-30DAYS/DAY+TO+*]',
-        doi_searchable='&fq=has_metadata:true&fq=is_active:true',
-        doi_hidden='&fq=is_active:false',
-        doi_missing='&fq=has_metadata:false'
-    )
-    SUFFIX_URL = '&facet.field=datacentre_facet'
+    def __init__(self, prefix):
+        """Provider DataCite initialization."""
+        if not prefix:
+            raise ValueError("prefix can't be empty")
 
-    def __init__(self, allocator, name, attrs=('doi_total', )):
-        """
-        Provider DataCite initialization.
-
-        :param allocator: Name of the allocator
-        :param name: Name of data center
-        """
-        if not allocator:
-            raise ValueError("allocator can't be empty")
-        if not name:
-            raise ValueError("name can't be empty")
-
-        self.allocator = allocator
-        self.name = name
-        self.attrs = attrs
+        self.prefix = prefix
         self.data = None
 
-        # Generate URLs
-        base = DataCiteProvider.BASE_URL
-        suffix = DataCiteProvider.SUFFIX_URL
-        self.urls = {}
-        for key in self.attrs:
-            url = '{base}%22{allocator}%22&{attr}&{suffix}'.format(
-                base=base,
-                allocator=urllib.parse.quote_plus(self.allocator),
-                attr=DataCiteProvider.ATTRS[key],
-                suffix=suffix
-            )
-            self.urls[key] = url
+    def load_index_data(self, url):
+        """Download DOI index HTML data."""
+        return requests.get(url).text
 
-        # Compile regular expressions to get the values from the text
-        re_value = r'{}[^\;]+\;(?P<value>[^\;]+)\;'
-        self.regex = re.compile(re_value.format(name))
+    def load_stats_data(self, url):
+        """Download DOI stats HTML data."""
+        return requests.get(url).text
 
     def collect(self):
         """Collect DOI statistics from DataCite."""
-        data = {key: requests.get(url).text for key, url in self.urls.items()}
-        self.data = {attr: None for attr in self.attrs}
-        for key, value in data.items():
-            m = self.regex.search(value)
-            if m:
-                self.data[key] = int(m.group('value').strip())
-        return self.data
+        html_code = self.load_index_data(self.INDEX_URL)
+
+        html = BeautifulSoup(html_code, 'html.parser')
+        links = html.find_all('a')[-1]
+
+        stats_url = '{base}{file}'.format(
+            base=self.STATS_URL,
+            file=links.get('href')
+        )
+        stats_data = self.load_stats_data(stats_url)
+        stats = BeautifulSoup(stats_data, 'html.parser')
+
+        for tr in stats.find_all('tr'):
+            a = tr.find('a')
+            if a and a.get_text() == self.prefix:
+                tds = tr.find_all('td')
+                self.data = dict(
+                    # total_attempts=tds[2].get_text(),
+                    doi_success=tds[3].get_text(),
+                    doi_failed=tds[4].get_text(),
+                    # unique_doi_total=tds[5].get_text(),
+                    # unique_doi_successful=tds[6].get_text(),
+                    # unique_doi_failed=tds[7].get_text()
+                )
+                return self.data
+        return None

@@ -13,11 +13,11 @@ from ..models import Metric
 class RecordsMetric(Metric):
     """Metric for number of records."""
 
-    def __init__(self, name, provider, fields=['num_records']):
+    def __init__(self, provider, name='records', fields=['records']):
         """Records metric initialization."""
         super().__init__(name, provider, fields)
 
     def collect_done(self, data):
         """Process collected data."""
         num_records = data['hits']['total']
-        self.num_records = num_records
+        self.records = num_records

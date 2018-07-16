@@ -16,24 +16,18 @@ from kpiit.metrics.records import RecordsMetric
 from kpiit.models import Provider, Publisher
 
 
-def test_metric_json_encode(records_metric):
+def test_metric_json_encode(zenodo_records):
     """Test JSON encoding of Metric."""
-    records_metric.num_records = 8
-    json_data = metric_dumps(records_metric)
-
-    expected_json = ('{"_type": "kpiit.metrics.records.RecordsMetric",'
-                     ' "name": "records",'
-                     ' "values": {"num_records": 8},'
-                     ' "provider": null}')
-    assert json_data == expected_json
+    zenodo_records.collect()
+    json_data = metric_dumps(zenodo_records)
 
     metric = metric_loads(json_data)
     assert isinstance(metric, RecordsMetric)
-    assert metric.num_records == 8
+    assert metric.records == 406804
 
 
-def test_fail_metric_json_encode(records_metric):
-    records_metric.num_records = 4
+def test_fail_metric_json_encode(zenodo_records):
+    zenodo_records.records = 4
 
     a = Provider()
     b = Publisher()

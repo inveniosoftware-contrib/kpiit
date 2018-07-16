@@ -15,4 +15,4 @@ import pytest
 def test_cod_records(cod_records):
     cod_records.collect()
 
-    assert cod_records.num_records == 4613
+    assert cod_records.records == 4613

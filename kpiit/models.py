@@ -15,6 +15,8 @@ class Metric(object):
         """Metric initialization."""
         if not name:
             raise ValueError("name can't be empty")
+        if not isinstance(name, str):
+            raise TypeError("name needs to be a string")
         if not fields:
             raise ValueError("fields can't be empty")
 
@@ -75,6 +77,10 @@ class Provider(object):
 class Publisher(object):
     """Abstract class for publishing metrics."""
 
+    def build_message(self, metrics):
+        """Build message to be published."""
+        raise NotImplementedError()
+
     def publish(self, metrics):
         """Publish metrics."""
-        raise NotImplementedError()
+        self.build_message(metrics)

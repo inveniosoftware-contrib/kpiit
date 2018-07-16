@@ -10,57 +10,77 @@
 import json
 from datetime import datetime
 
+from ..metrics.doi import DOIMetric
 from ..models import Publisher
 
-SERVICE_ID = 'testserviceid'
 
+class CERNPublisher(Publisher):
+    """Publish metrics to CERN's Grafana instance."""
 
-class CERNGrafanaPublisher(Publisher):
-    """Publish metrics to CERN monit grafana instance."""
+    def __init__(self, type, **tags):
+        """CERN publisher initialize."""
+        self.data = dict(
+            producer='invenio',
+            type=type,
+            type_prefix='raw',
+            timestamp=None,
+            idb_tags=[],
+            idb_fields=[]
+        )
+
+        # Add tags
+        for key, value in tags.items():
+            self.add_tag(key, value)
+
+    def add_tag(self, name, value):
+        """Add tag to message."""
+        if name not in self.data['idb_tags']:
+            self.data['idb_tags'].append(name)
+        self.data[name] = value
+
+    def delete_tag(self, name):
+        """Remove tag from message."""
+        self.data['idb_tags'].remove(name)
+        if name in self.data:
+            del self.data[name]
+
+    def add_field(self, name, value):
+        """Add field to message."""
+        if name not in self.data['idb_fields']:
+            self.data['idb_fields'].append(name)
+        self.data[name] = value
+
+    def delete_field(self, name):
+        """Remove field from message."""
+        self.data['idb_fields'].remove(name)
+        if name in self.data:
+            del self.data[name]
+
+    def build_message(self, metrics):
+        """Build KPI object from the given metrics."""
+        for metric in metrics:
+            for name, values in metric.values.items():
+                for key, value in values.items():
+                    self.add_field(key, value)
 
     def publish(self, metrics):
         """Publish KPIs to the grafana instance."""
-        status = 'available'  # TODO: Implement proper status checking
-        msg = self.build_message(SERVICE_ID, status, metrics)
+        super().publish(metrics)
+        self.data['timestamp'] = self.get_timestamp()
 
-        return msg
-
-    @classmethod
-    def build_message(cls, serviceid, service_status, metrics, **kwargs):
-        """Build a KPI message (JSON) that will be sent to monit."""
-        data = cls.metrics_to_dict(metrics)
-        timestamp = cls.get_timestamp()
-
-        producer = kwargs.get('producer', 'kpi')
-        type_ = kwargs.get('type', 'service')
-        type_prefix = kwargs.get('type_prefix', 'raw')
-        availabilityinfo = kwargs.get('availabilityinfo', None)
-        availabilitydesc = kwargs.get('availabilitydesc', None)
-
-        return json.dumps({
-            'producer': producer,
-            'type': type_,
-            'serviceid': serviceid,
-            'service_status': service_status,
-            'type_prefix': type_prefix,
-            'timestamp': timestamp,
-            'availabilityinfo': availabilityinfo,
-            'availabilitydesc': availabilitydesc,
-            **data
-        })
+        # TODO: Send data to CERN
 
     @staticmethod
     def get_timestamp():
         """Get timestamp in milliseconds without decimals."""
         return round(datetime.utcnow().timestamp() * 1000)
 
-    @staticmethod
-    def metrics_to_dict(metrics):
-        """Convert an array of metrics to a dict."""
-        data = {}
-        for metric in metrics:
-            for name, values in metric.values.items():
-                for key, value in values.items():
-                    unique_key = '{}_{}'.format(name, key)
-                    data[unique_key] = value
-        return data
+    @classmethod
+    def create_doi(cls, prefix):
+        """Create a DOI publisher."""
+        return CERNPublisher('doikpi', doi_prefix=prefix)
+
+    @classmethod
+    def create_repo(cls, service, env):
+        """Create a repo publisher."""
+        return CERNPublisher('repokpi', service=service, env=env)

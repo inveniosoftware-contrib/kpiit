@@ -15,4 +15,4 @@ import pytest
 def test_zenodo_records(zenodo_records):
     zenodo_records.collect()
 
-    assert zenodo_records.num_records == 406804
+    assert zenodo_records.records == 406804
