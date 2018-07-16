@@ -58,6 +58,6 @@ def publish_metrics(metrics, publisher_path):
     publisher = Publisher('output_{id}_{now}.json'.format(
         id=PUBLISH_ID,
         now=time.strftime("%Y%m%d-%H%M%S")
-    ))
+    ), 'doikpi', doi_prefix='10.5281')
     PUBLISH_ID += 1
     publisher.publish(metrics)
