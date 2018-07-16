@@ -23,6 +23,14 @@ from ..util import load_target
 logger = get_task_logger(__name__)
 
 
+class DummyProvider(Provider):
+    """Dummy provider."""
+
+    def collect(self):
+        """Get dummy data."""
+        pass
+
+
 class JSONURLProvider(Provider):
     """Basic URL-based provider."""
 

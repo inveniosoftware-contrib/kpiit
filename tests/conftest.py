@@ -94,6 +94,12 @@ def uptime_collect(self):
 
 
 @pytest.fixture
+def dummy_visits_metric():
+    """Fixture for dummy visits metric."""
+    return metrics.dummy_visits_metric
+
+
+@pytest.fixture
 def website_uptime_metric(mocker):
     """Fixture for website uptime metric."""
     mocker.patch.object(UptimeRobotProvider, 'collect', new=uptime_collect)

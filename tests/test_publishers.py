@@ -67,17 +67,22 @@ def test_cern_doi_publisher_message(zenodo_doi_metric):
 
 def test_cern_repo_publisher_message(zenodo_records, website_uptime_metric,
                                      files_uptime_metric,
-                                     search_uptime_metric):
+                                     search_uptime_metric,
+                                     dummy_visits_metric):
     zenodo_records.collect()
     website_uptime_metric.collect()
     files_uptime_metric.collect()
     search_uptime_metric.collect()
+    dummy_visits_metric.collect()
+
+    # TODO: Use normal visits metric once it's implemented
 
     publisher = CERNPublisher.create_repo(service='zenodo', env='prod')
 
     metrics = [
         zenodo_records, website_uptime_metric,
-        search_uptime_metric, files_uptime_metric
+        search_uptime_metric, files_uptime_metric,
+        dummy_visits_metric
     ]
 
     publisher.build_message(metrics)
@@ -90,8 +95,8 @@ def test_cern_repo_publisher_message(zenodo_records, website_uptime_metric,
         "service": "zenodo",
         "env": "prod",
         "records": 406804,
-        # "visits": 1000,
-        # "visits_unique": 500,
+        "visits": 1000,
+        "visits_unique": 500,
         "uptime_web": 99.96,
         "uptime_search": 99.96,
         "uptime_files": 99.96,
@@ -104,14 +109,14 @@ def test_cern_repo_publisher_message(zenodo_records, website_uptime_metric,
         ],
         "idb_fields": [
             "records",
-            # "visits",
-            # "visits_unique",
             "uptime_web",
             "response_time_web",
             "uptime_search",
             "response_time_search",
             "uptime_files",
-            "response_time_files"
+            "response_time_files",
+            "visits",
+            "visits_unique"
         ]
     }
     b = publisher.data
