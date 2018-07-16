@@ -15,9 +15,9 @@ class DOIMetric(Metric):
 
     FIELDS = ['doi_success', 'doi_failed']
 
-    def __init__(self, provider, fields=FIELDS):
+    def __init__(self, provider, name='doi', fields=FIELDS):
         """DOI metric initialization."""
-        super().__init__('doi', provider, fields)
+        super().__init__(name, provider, fields)
 
     def collect_done(self, data):
         """Process collected data."""
