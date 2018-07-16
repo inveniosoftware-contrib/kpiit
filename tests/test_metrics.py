@@ -74,10 +74,14 @@ def test_records_metric_collect(test_provider):
     assert m.num_records == 9
 
 
-def test_doi_metric(doi_metric):
-    assert doi_metric.data is None
-    doi_metric.collect()
-    assert doi_metric.data == 'collected'
+def test_doi_metric(zenodo_doi_metric):
+    zenodo_doi_metric.collect()
+    assert zenodo_doi_metric.failed == 17164
+    assert zenodo_doi_metric.successful == 710383
+    assert zenodo_doi_metric.total_attempts == 727547
+    assert zenodo_doi_metric.unique_doi_failed == 2850
+    assert zenodo_doi_metric.unique_doi_successful == 320004
+    assert zenodo_doi_metric.unique_doi_total == 322854
 
 
 def test_website_uptime_metric(website_uptime_metric):

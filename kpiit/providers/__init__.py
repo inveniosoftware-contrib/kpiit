@@ -48,29 +48,38 @@ class DataCiteProvider(Provider):
     STATS_URL = 'https://stats.datacite.org/stats/resolution-report/'
 
     def __init__(self, prefix):
-        """
-        Provider DataCite initialization.
-        """
+        """Provider DataCite initialization."""
         if not prefix:
             raise ValueError("prefix can't be empty")
 
         self.prefix = prefix
         self.data = None
 
+    def load_index_data(self, url):
+        """Download DOI index HTML data."""
+        return requests.get(url).text
+
+    def load_stats_data(self, url):
+        """Download DOI stats HTML data."""
+        return requests.get(url).text
+
     def collect(self):
         """Collect DOI statistics from DataCite."""
-        index = BeautifulSoup(requests.get(self.INDEX_URL).text, 'html.parser')
-        links = index.find_all('a')[-1]
+        html_code = self.load_index_data(self.INDEX_URL)
+
+        html = BeautifulSoup(html_code, 'html.parser')
+        links = html.find_all('a')[-1]
 
         stats_url = '{base}{file}'.format(
             base=self.STATS_URL,
             file=links.get('href')
         )
-        stats_data = requests.get(stats_url)
-        stats = BeautifulSoup(stats_data.text, 'html.parser')
+        stats_data = self.load_stats_data(stats_url)
+        stats = BeautifulSoup(stats_data, 'html.parser')
 
         for tr in stats.find_all('tr'):
-            if tr.find('a').get_text() == self.prefix:
+            a = tr.find('a')
+            if a and a.get_text() == self.prefix:
                 tds = tr.find_all('td')
                 self.data = dict(
                     total_attempts=tds[2].get_text(),

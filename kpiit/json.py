@@ -39,7 +39,7 @@ class MetricDecoder(json.JSONDecoder):
         super().__init__(object_hook=self.object_hook, *args, **kwargs)
 
     def object_hook(self, obj):  # pylint: disable=E0202
-        """Create a Metric instance."""
+        """Create a Metric instance from JSON data."""
         return MetricDecoder.json_to_metric(obj)
 
     @classmethod

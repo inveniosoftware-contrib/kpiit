@@ -47,33 +47,19 @@ cod_records_metric = RecordsMetric(
 
 # DOI metrics
 
-doi_attrs = ('doi_total', 'doi_2018', 'doi_2017')
-
 zenodo_doi_metric = DOIMetric(
     name='zenodo_doi',
-    provider=DataCiteProvider(
-        'CERN - CERN - European Organization for Nuclear Research',
-        'CERN.ZENODO',
-        doi_attrs
-    )
+    provider=DataCiteProvider('10.5281')
 )
 
 cds_videos_doi_metric = DOIMetric(
     name='cds_videos_doi',
-    provider=DataCiteProvider(
-        'CERN - CERN - European Organization for Nuclear Research',
-        'CERN.CDS',
-        doi_attrs
-    )
+    provider=DataCiteProvider('10.17181')
 )
 
 cod_doi_metric = DOIMetric(
     name='opendata_doi',
-    provider=DataCiteProvider(
-        'CERN - CERN - European Organization for Nuclear Research',
-        'CERN.OPENDATA',
-        doi_attrs
-    )
+    provider=DataCiteProvider('10.7483')
 )
 
 # Uptime metrics
