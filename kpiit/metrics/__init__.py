@@ -9,18 +9,12 @@
 
 import os
 
-from dotenv import load_dotenv
-
 from .doi import DOIMetric
 from .records import RecordsMetric
 from .visits import DummyVisitsMetric
 from .uptime import UptimeMetric
 from ..providers import DataCiteProvider, JSONURLProvider
 from ..providers.uptime_robot import UptimeRobotProvider
-
-# Load .env config file
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(BASE_DIR, '..', '..', '.env'))
 
 
 # Dummy metric
