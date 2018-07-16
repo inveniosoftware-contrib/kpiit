@@ -23,7 +23,7 @@ class CERNPublisher(Publisher):
             producer='invenio',
             type=type,
             type_prefix='raw',
-            timestamp=self.get_timestamp(),
+            timestamp=None,
             idb_tags=[],
             idb_fields=[]
         )
@@ -66,6 +66,7 @@ class CERNPublisher(Publisher):
     def publish(self, metrics):
         """Publish KPIs to the grafana instance."""
         super().publish(metrics)
+        self.data['timestamp'] = self.get_timestamp()
 
         # TODO: Send data to CERN
 
