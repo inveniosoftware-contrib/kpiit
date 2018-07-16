@@ -86,12 +86,6 @@ def test_publisher():
 
 
 @pytest.fixture
-def records_metric(json_url_provider):
-    """Fixture for records metric."""
-    return RecordsMetric('records', json_url_provider, ['num_records'])
-
-
-@pytest.fixture
 def website_uptime_metric(mocker):
     """Fixture for website uptime metric."""
     mocker.patch('requests.request', new=UptimeRequest)
@@ -159,7 +153,7 @@ def records_collect(data):
         """Test."""
         self.provider.json = json_data
         num_records = self.provider.json['hits']['total']
-        self.num_records = num_records
+        self.records = num_records
 
     return collect
 
@@ -205,7 +199,7 @@ def zenodo_doi_metric(mocker, zenodo_doi_index_html, zenodo_doi_june_html):
 def json_publisher(tmpdir):
     """Fixture for JSON publisher."""
     filename = '{}/output.json'.format(tmpdir.dirname)
-    return JSONFilePublisher(filename)
+    return JSONFilePublisher(filename, 'doikpi', doi_prefix='10.5281')
 
 
 @pytest.fixture(scope='module')

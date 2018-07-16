@@ -15,7 +15,7 @@ from ..models import Publisher
 
 
 class CERNPublisher(Publisher):
-    """Abstract CERN publisher for publishing to the Grafana instance."""
+    """Publish metrics to CERN's Grafana instance."""
 
     def __init__(self, type, **tags):
         """CERN publisher initialize."""
@@ -41,7 +41,8 @@ class CERNPublisher(Publisher):
     def delete_tag(self, name):
         """Remove tag from message."""
         self.data['idb_tags'].remove(name)
-        del self.data[name]
+        if name in self.data:
+            del self.data[name]
 
     def add_field(self, name, value):
         """Add field to message."""
@@ -52,7 +53,8 @@ class CERNPublisher(Publisher):
     def delete_field(self, name):
         """Remove field from message."""
         self.data['idb_fields'].remove(name)
-        del self.data[name]
+        if name in self.data:
+            del self.data[name]
 
     def build_message(self, metrics):
         """Build KPI object from the given metrics."""
@@ -63,11 +65,21 @@ class CERNPublisher(Publisher):
 
     def publish(self, metrics):
         """Publish KPIs to the grafana instance."""
-        # TODO: Send to Grafana
-        self.build_message(metrics)
-        return json.dumps(self.data)
+        super().publish(metrics)
+
+        # TODO: Send data to CERN
 
     @staticmethod
     def get_timestamp():
         """Get timestamp in milliseconds without decimals."""
         return round(datetime.utcnow().timestamp() * 1000)
+
+    @classmethod
+    def create_doi(cls, prefix):
+        """Create a DOI publisher."""
+        return CERNPublisher('doikpi', doi_prefix=prefix)
+
+    @classmethod
+    def create_repo(cls, service, env):
+        """Create a repo publisher."""
+        return CERNPublisher('repokpi', service=service, env=env)

@@ -16,7 +16,7 @@ from kpiit.providers import DataCiteProvider, JSONURLProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
 
 
-def test_provider_base(records_metric):
+def test_provider_base():
     """Test provider base class."""
     provider = Provider()
 
@@ -24,7 +24,7 @@ def test_provider_base(records_metric):
         provider.collect()
 
 
-def test_json_url_provider(json_url_provider, records_metric):
+def test_json_url_provider(json_url_provider):
     """Test JSON URL provider."""
     with pytest.raises(ValueError):
         JSONURLProvider(url=None)

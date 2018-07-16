@@ -11,28 +11,23 @@ import json
 
 from celery.utils.log import get_task_logger
 
-from ..models import Publisher
-from ..publishers.cern import CERNGrafanaPublisher
+from ..publishers.cern import CERNPublisher
 
 logger = get_task_logger(__name__)
 
 
-class JSONFilePublisher(Publisher):
+class JSONFilePublisher(CERNPublisher):
     """Test class that manages publishing metrics to a JSON file."""
 
-    def __init__(self, filename):
+    def __init__(self, filename, type, **tags):
         """JSON file provider initialization."""
-        super().__init__()
+        super().__init__(type, **tags)
         self.filename = filename
 
     def publish(self, metrics):
         """Publish metrics to JSON file."""
-        msg = CERNGrafanaPublisher.build_message(
-            'testserviceid',
-            'available',
-            metrics
-        )
+        super().publish(metrics)
 
         with open(self.filename, 'w+') as f:
-            f.write(msg)
+            f.write(json.dumps(self.data))
             logger.info('Saved output JSON to: {}'.format(self.filename))

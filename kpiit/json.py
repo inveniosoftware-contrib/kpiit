@@ -50,9 +50,9 @@ class MetricDecoder(json.JSONDecoder):
 
         MetricClass = load_target(obj['_type'])
         metric = MetricClass(
-            obj['name'],
-            obj['provider'],
-            obj['values'].keys()
+            name=obj['name'],
+            provider=obj['provider'],
+            fields=obj['values'].keys()
         )
         metric.update(**obj['values'])
         return metric
