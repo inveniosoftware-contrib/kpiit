@@ -47,20 +47,11 @@ cod_records_metric = RecordsMetric(
 
 # DOI metrics
 
-zenodo_doi_metric = DOIMetric(
-    name='zenodo_doi',
-    provider=DataCiteProvider('10.5281')
-)
+zenodo_doi_metric = DOIMetric(provider=DataCiteProvider('10.5281'))
 
-cds_videos_doi_metric = DOIMetric(
-    name='cds_videos_doi',
-    provider=DataCiteProvider('10.17181')
-)
+cds_videos_doi_metric = DOIMetric(provider=DataCiteProvider('10.17181'))
 
-cod_doi_metric = DOIMetric(
-    name='opendata_doi',
-    provider=DataCiteProvider('10.7483')
-)
+cod_doi_metric = DOIMetric(provider=DataCiteProvider('10.7483'))
 
 # Uptime metrics
 

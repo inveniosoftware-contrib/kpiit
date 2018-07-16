@@ -82,12 +82,12 @@ class DataCiteProvider(Provider):
             if a and a.get_text() == self.prefix:
                 tds = tr.find_all('td')
                 self.data = dict(
-                    total_attempts=tds[2].get_text(),
-                    successful=tds[3].get_text(),
-                    failed=tds[4].get_text(),
-                    unique_doi_total=tds[5].get_text(),
-                    unique_doi_successful=tds[6].get_text(),
-                    unique_doi_failed=tds[7].get_text()
+                    # total_attempts=tds[2].get_text(),
+                    doi_success=tds[3].get_text(),
+                    doi_failed=tds[4].get_text(),
+                    # unique_doi_total=tds[5].get_text(),
+                    # unique_doi_successful=tds[6].get_text(),
+                    # unique_doi_failed=tds[7].get_text()
                 )
                 return self.data
         return None
