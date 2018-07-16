@@ -81,24 +81,24 @@ def test_doi_metric(zenodo_doi_metric):
 
 
 def test_website_uptime_metric(website_uptime_metric):
-    website_uptime_metric.uptime is None
-    website_uptime_metric.response_time is None
+    website_uptime_metric.uptime_web is None
+    website_uptime_metric.response_time_web is None
     website_uptime_metric.collect()
-    website_uptime_metric.uptime is None
-    website_uptime_metric.response_time is not None
+    website_uptime_metric.uptime_web is None
+    website_uptime_metric.response_time_web is not None
 
 
 def test_search_uptime_metric(search_uptime_metric):
-    search_uptime_metric.uptime is None
-    search_uptime_metric.response_time is None
+    search_uptime_metric.uptime_search is None
+    search_uptime_metric.response_time_search is None
     search_uptime_metric.collect()
-    search_uptime_metric.uptime is not None
-    search_uptime_metric.response_time is not None
+    search_uptime_metric.uptime_search is not None
+    search_uptime_metric.response_time_search is not None
 
 
 def test_files_uptime_metric(files_uptime_metric):
-    files_uptime_metric.uptime is None
-    files_uptime_metric.response_time is None
+    files_uptime_metric.uptime_files is None
+    files_uptime_metric.response_time_files is None
     files_uptime_metric.collect()
-    files_uptime_metric.uptime is not None
-    files_uptime_metric.response_time is not None
+    files_uptime_metric.uptime_files is not None
+    files_uptime_metric.response_time_files is not None

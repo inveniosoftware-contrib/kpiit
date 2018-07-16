@@ -56,7 +56,7 @@ cod_doi_metric = DOIMetric(provider=DataCiteProvider('10.7483'))
 # Uptime metrics
 
 website_uptime_metric = UptimeMetric(
-    name='website_uptime',
+    name='web',
     provider=UptimeRobotProvider(
         'https://api.uptimerobot.com/v2/',
         os.getenv('UPTIME_WEBSITE_API_KEY'),
@@ -65,7 +65,7 @@ website_uptime_metric = UptimeMetric(
 )
 
 search_uptime_metric = UptimeMetric(
-    name='search_uptime',
+    name='search',
     provider=UptimeRobotProvider(
         'https://api.uptimerobot.com/v2/',
         os.getenv('UPTIME_SEARCH_API_KEY'),
@@ -74,7 +74,7 @@ search_uptime_metric = UptimeMetric(
 )
 
 files_uptime_metric = UptimeMetric(
-    name='files_uptime',
+    name='files',
     provider=UptimeRobotProvider(
         'https://api.uptimerobot.com/v2/',
         os.getenv('UPTIME_FILES_API_KEY'),

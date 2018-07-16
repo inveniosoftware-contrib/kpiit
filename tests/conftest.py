@@ -85,10 +85,18 @@ def test_publisher():
     return TestPublisher()
 
 
+def uptime_collect(self):
+    """Static collected uptime data for testing."""
+    return {
+        'response_time': 120.10,
+        'uptime_ratio': 99.96
+    }
+
+
 @pytest.fixture
 def website_uptime_metric(mocker):
     """Fixture for website uptime metric."""
-    mocker.patch('requests.request', new=UptimeRequest)
+    mocker.patch.object(UptimeRobotProvider, 'collect', new=uptime_collect)
 
     return metrics.website_uptime_metric
 
@@ -96,7 +104,7 @@ def website_uptime_metric(mocker):
 @pytest.fixture
 def search_uptime_metric(mocker):
     """Fixture for search uptime metric."""
-    mocker.patch('requests.request', new=UptimeRequest)
+    mocker.patch.object(UptimeRobotProvider, 'collect', new=uptime_collect)
 
     return metrics.search_uptime_metric
 
@@ -104,7 +112,7 @@ def search_uptime_metric(mocker):
 @pytest.fixture
 def files_uptime_metric(mocker):
     """Fixture for files uptime metric."""
-    mocker.patch('requests.request', new=UptimeRequest)
+    mocker.patch.object(UptimeRobotProvider, 'collect', new=uptime_collect)
 
     return metrics.files_uptime_metric
 

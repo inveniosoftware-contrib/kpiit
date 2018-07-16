@@ -35,6 +35,8 @@ def test_json_publisher(json_publisher, zenodo_records):
 def test_cern_doi_publisher_message(zenodo_doi_metric):
     publisher = CERNPublisher.create_doi(prefix='10.5281')
 
+    zenodo_doi_metric.collect()
+
     publisher.build_message([zenodo_doi_metric])
 
     a = {
@@ -55,4 +57,68 @@ def test_cern_doi_publisher_message(zenodo_doi_metric):
     }
     b = publisher.data
 
-    assert a['producer'] == b['producer']
+    assert 'timestamp' in b
+
+    del a['timestamp']
+    del b['timestamp']
+
+    assert a == b
+
+
+def test_cern_repo_publisher_message(zenodo_records, website_uptime_metric,
+                                     files_uptime_metric,
+                                     search_uptime_metric):
+    zenodo_records.collect()
+    website_uptime_metric.collect()
+    files_uptime_metric.collect()
+    search_uptime_metric.collect()
+
+    publisher = CERNPublisher.create_repo(service='zenodo', env='prod')
+
+    metrics = [
+        zenodo_records, website_uptime_metric,
+        search_uptime_metric, files_uptime_metric
+    ]
+
+    publisher.build_message(metrics)
+
+    a = {
+        "producer": "invenio",
+        "type": "repokpi",
+        "type_prefix": "raw",
+        "timestamp": 1483696735836,
+        "service": "zenodo",
+        "env": "prod",
+        "records": 406804,
+        # "visits": 1000,
+        # "visits_unique": 500,
+        "uptime_web": 99.96,
+        "uptime_search": 99.96,
+        "uptime_files": 99.96,
+        "response_time_web": 120.10,
+        "response_time_search": 120.10,
+        "response_time_files": 120.10,
+        "idb_tags": [
+            "service",
+            "env"
+        ],
+        "idb_fields": [
+            "records",
+            # "visits",
+            # "visits_unique",
+            "uptime_web",
+            "response_time_web",
+            "uptime_search",
+            "response_time_search",
+            "uptime_files",
+            "response_time_files"
+        ]
+    }
+    b = publisher.data
+
+    assert 'timestamp' in b
+
+    del a['timestamp']
+    del b['timestamp']
+
+    assert a == b
