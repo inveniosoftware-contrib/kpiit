@@ -24,11 +24,12 @@ def test_provider_base(zenodo_records):
 
 
 def test_json_publisher(json_publisher, zenodo_records):
-    assert not os.path.exists(json_publisher.filename)
+    assert json_publisher.filename is None
 
     metrics = [zenodo_records]
 
     json_publisher.publish(metrics)
+    assert json_publisher.filename is not None
     assert os.path.exists(json_publisher.filename)
 
 

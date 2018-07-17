@@ -41,7 +41,7 @@ beat_schedule = {
         'schedule': crontab(day_of_month=4),
         'kwargs': {
             'metrics': ['kpiit.metrics.zenodo_doi_metric'],
-            'publisher': 'kpiit.publishers.json.JSONFilePublisher'
+            'publisher': 'kpiit.publishers.zenodo_doi'
         }
     },
     'collect-cds-videos-doi-kpis-every-month': {
@@ -49,7 +49,7 @@ beat_schedule = {
         'schedule': crontab(day_of_month=4),
         'kwargs': {
             'metrics': ['kpiit.metrics.cds_videos_doi_metric'],
-            'publisher': 'kpiit.publishers.json.JSONFilePublisher'
+            'publisher': 'kpiit.publishers.cds_videos_doi'
         }
     },
     'collect-cod-doi-kpis-every-month': {
@@ -57,7 +57,7 @@ beat_schedule = {
         'schedule': crontab(day_of_month=4),
         'kwargs': {
             'metrics': ['kpiit.metrics.cod_doi_metric'],
-            'publisher': 'kpiit.publishers.json.JSONFilePublisher'
+            'publisher': 'kpiit.publishers.cod_doi'
         }
     },
 }

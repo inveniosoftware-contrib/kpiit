@@ -78,9 +78,9 @@ class CERNPublisher(Publisher):
     @classmethod
     def create_doi(cls, prefix):
         """Create a DOI publisher."""
-        return CERNPublisher('doikpi', doi_prefix=prefix)
+        return cls('doikpi', doi_prefix=prefix)
 
     @classmethod
     def create_repo(cls, service, env):
         """Create a repo publisher."""
-        return CERNPublisher('repokpi', service=service, env=env)
+        return cls('repokpi', service=service, env=env)
