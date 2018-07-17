@@ -1,0 +1,32 @@
+{
+    "producer": "invenio",
+    "type": "repokpi",
+    "type_prefix": "raw",
+    "timestamp": 1483696735836,
+    "service": "zenodo",
+    "env": "prod",
+    "records": 433830,
+    "visits": 1000,
+    "visits_unique": 500,
+    "uptime_web": 99.961,
+    "uptime_search": 99.961,
+    "uptime_files": 99.961,
+    "response_time_web": 631.404,
+    "response_time_search": 631.404,
+    "response_time_files": 631.404,
+    "idb_tags": [
+        "service",
+        "env"
+    ],
+    "idb_fields": [
+        "records",
+        "visits",
+        "visits_unique",
+        "uptime_web",
+        "uptime_search",
+        "uptime_files",
+        "response_time_web",
+        "response_time_search",
+        "response_time_files"
+    ]
+}
