@@ -10,15 +10,19 @@
 import json
 from datetime import datetime
 
+from celery.utils.log import get_task_logger
+
 from ..metrics.doi import DOIMetric
 from ..models import Publisher
 from ..send_check import send
+
+logger = get_task_logger(__name__)
 
 
 class CERNPublisher(Publisher):
     """Publish metrics to CERN's Grafana instance."""
 
-    def __init__(self, type, skip_fields=False, **tags):
+    def __init__(self, type, skip_fields=False, save_json=True, **tags):
         """CERN publisher initialize."""
         self.data = dict(
             producer='digitalrepos',
@@ -30,6 +34,16 @@ class CERNPublisher(Publisher):
 
         if not skip_fields:
             self.data['idb_fields'] = []
+
+        self.save_json = save_json
+        self.filename = None
+        if save_json:
+            if 'doi_prefix' in tags:
+                self.name = tags['doi_prefix']
+            elif 'service' in tags:
+                self.name = tags['service']
+            else:
+                self.name = type
 
         # Add tags
         for key, value in tags.items():
@@ -60,6 +74,24 @@ class CERNPublisher(Publisher):
         if name in self.data:
             del self.data[name]
 
+    def save(self, format='json'):
+        """Save data to file."""
+        if format == 'json':
+            encoded = json.dumps(self.data)
+        else:
+            raise NotImplementedError('format "%s" is not supported' % format)
+
+        self.filename = 'logs/{type}_{name}_{now}.{format}'.format(
+            type=self.data['type'],
+            name=self.name,
+            now=self.get_timestamp(),
+            format=format
+        )
+
+        with open(self.filename, 'w+') as f:
+            f.write(encoded)
+            logger.info('saved output to: {}'.format(self.filename))
+
     def build_message(self, metrics):
         """Build KPI object from the given metrics."""
         for metric in metrics:
@@ -72,18 +104,21 @@ class CERNPublisher(Publisher):
         super().publish(metrics)
         self.data['timestamp'] = self.get_timestamp()
 
+        if self.save_json:
+            self.save(format='json')
+
     @staticmethod
     def get_timestamp():
         """Get timestamp in milliseconds without decimals."""
         return round(datetime.utcnow().timestamp() * 1000)
 
     @classmethod
-    def create_doi(cls, prefix, skip_fields=False):
+    def create_doi(cls, prefix, skip_fields=False, save_json=True):
         """Create a DOI publisher."""
         return cls('doikpi', doi_prefix=prefix, skip_fields=skip_fields)
 
     @classmethod
-    def create_repo(cls, service, env, skip_fields=False):
+    def create_repo(cls, service, env, skip_fields=False, save_json=True):
         """Create a repo publisher."""
         return cls(
             'repokpi',
