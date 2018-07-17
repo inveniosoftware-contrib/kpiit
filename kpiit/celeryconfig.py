@@ -36,19 +36,30 @@ result_backend = _env('CELERY_RESULT_BACKEND', 'redis://localhost:6379/1')
 imports = ['kpiit.tasks']
 #: Scheduled tasks configuration (aka cronjobs).
 beat_schedule = {
-    'collect-zenodo-doi-kpis-every-day-after-midnight': {
+    'collect-zenodo-doi-kpis-every-month': {
         'task': 'kpiit.tasks.collect_and_publish_metrics',
-        'schedule': crontab(hour=0, minute=20),
-        # 'schedule': 100.0,
+        'schedule': crontab(day_of_month=4),
         'kwargs': {
-            'metrics': [
-                # 'kpiit.metrics.zenodo_records_metric',
-                'kpiit.metrics.zenodo_doi_metric',
-                # 'kpiit.metrics.website_uptime_metric',
-            ],
+            'metrics': ['kpiit.metrics.zenodo_doi_metric'],
             'publisher': 'kpiit.publishers.json.JSONFilePublisher'
         }
-    }
+    },
+    'collect-cds-videos-doi-kpis-every-month': {
+        'task': 'kpiit.tasks.collect_and_publish_metrics',
+        'schedule': crontab(day_of_month=4),
+        'kwargs': {
+            'metrics': ['kpiit.metrics.cds_videos_doi_metric'],
+            'publisher': 'kpiit.publishers.json.JSONFilePublisher'
+        }
+    },
+    'collect-cod-doi-kpis-every-month': {
+        'task': 'kpiit.tasks.collect_and_publish_metrics',
+        'schedule': crontab(day_of_month=4),
+        'kwargs': {
+            'metrics': ['kpiit.metrics.cod_doi_metric'],
+            'publisher': 'kpiit.publishers.json.JSONFilePublisher'
+        }
+    },
 }
 #: Accept the new serializer
 accept_content = ['metricjson']
