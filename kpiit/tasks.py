@@ -18,8 +18,6 @@ from .util import load_target
 
 logger = get_task_logger(__name__)
 
-PUBLISH_ID = 1
-
 
 @app.task
 def collect_and_publish_metrics(*args, **kwargs):
@@ -51,13 +49,5 @@ def collect_metrics(metrics_paths):
 @app.task
 def publish_metrics(metrics, publisher_path):
     """Publish metrics."""
-    Publisher = load_target(publisher_path)
-
-    global PUBLISH_ID
-
-    publisher = Publisher('output_{id}_{now}.json'.format(
-        id=PUBLISH_ID,
-        now=time.strftime("%Y%m%d-%H%M%S")
-    ), 'doikpi', doi_prefix='10.5281')
-    PUBLISH_ID += 1
+    publisher = load_target(publisher_path)
     publisher.publish(metrics)

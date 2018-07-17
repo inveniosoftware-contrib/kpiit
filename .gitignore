@@ -74,3 +74,4 @@ celerybeat-schedule
 .env
 
 output.json
+logs

@@ -48,7 +48,9 @@ class MetricDecoder(json.JSONDecoder):
         if '_type' not in obj:
             return obj
 
+        print('TYPE: {}'.format(obj))
         MetricClass = load_target(obj['_type'])
+        print('METRIC: {}'.format(MetricClass))
         metric = MetricClass(
             name=obj['name'],
             provider=obj['provider'],

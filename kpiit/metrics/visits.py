@@ -24,14 +24,15 @@ class VisitsMetric(Metric):
         raise NotImplementedError()
 
 
-class DummyVisitsMetric(VisitsMetric):
+class DummyVisitsMetric(Metric):
     """Dummy metric with fixed data."""
 
-    def __init__(self, visits=1000, visits_unique=500):
+    def __init__(self, provider=DummyProvider(), name='visits',
+                 fields=['visits', 'visits_unique']):
         """Visits metric initialization."""
-        super().__init__(provider=DummyProvider())
-        self.visits = visits
-        self.visits_unique = visits_unique
+        super().__init__(name, provider, fields)
+        self.visits = -1
+        self.visits_unique = -1
 
     def collect_done(self, data):
         """Process collected data."""

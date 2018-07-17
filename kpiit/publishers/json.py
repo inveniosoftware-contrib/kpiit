@@ -34,7 +34,7 @@ class JSONFilePublisher(CERNPublisher):
         """Publish metrics to JSON file."""
         super().publish(metrics)
 
-        self.filename = '{type}_{name}_{now}.json'.format(
+        self.filename = 'logs/{type}_{name}_{now}.json'.format(
             type=self.data['type'],
             name=self.name,
             now=self.get_timestamp()
@@ -42,4 +42,4 @@ class JSONFilePublisher(CERNPublisher):
 
         with open(self.filename, 'w+') as f:
             f.write(json.dumps(self.data))
-            logger.debug('Saved output JSON to: {}'.format(self.filename))
+            logger.info('saved output JSON to: {}'.format(self.filename))

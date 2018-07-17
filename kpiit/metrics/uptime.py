@@ -13,9 +13,9 @@ from ..models import Metric
 class UptimeMetric(Metric):
     """Metric for uptime and response time."""
 
-    def __init__(self, name, provider):
+    def __init__(self, name, provider, fields=None):
         """Uptime metric initialization."""
-        super().__init__(name, provider, [
+        super().__init__(name, provider, fields or [
             'uptime_{}'.format(name),
             'response_time_{}'.format(name)
         ])
