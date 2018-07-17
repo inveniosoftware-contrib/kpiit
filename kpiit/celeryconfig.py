@@ -28,11 +28,9 @@ register(
     content_encoding='utf-8'
 )
 
-# Some default schedule crontabs
-SCHEDULES = dict(
-    doi_every_month=crontab(day_of_month=4),
-    repo_every_day=crontab(hour=0, minute=20)
-)
+# Default schedule crontabs
+SCHEDULE_DOI_MONTHLY = crontab(day_of_month=4)
+SCHEDULE_REPO_DAILY = crontab(hour=0, minute=20)
 
 #: URL of message broker for Celery (default is Redis).
 broker_url = _env('BROKER_URL', 'redis://localhost:6379/0')
@@ -44,7 +42,7 @@ imports = ['kpiit.tasks']
 beat_schedule = {
     'collect-zenodo-doi-kpis-every-month': {
         'task': 'kpiit.tasks.collect_and_publish_metrics',
-        'schedule': SCHEDULES['doi_every_month'],
+        'schedule': SCHEDULE_DOI_MONTHLY,
         'kwargs': {
             'metrics': ['kpiit.metrics.zenodo_doi_metric'],
             'publisher': 'kpiit.publishers.zenodo_doi'
@@ -52,7 +50,7 @@ beat_schedule = {
     },
     'collect-cds-videos-doi-kpis-every-month': {
         'task': 'kpiit.tasks.collect_and_publish_metrics',
-        'schedule': SCHEDULES['doi_every_month'],
+        'schedule': SCHEDULE_DOI_MONTHLY,
         'kwargs': {
             'metrics': ['kpiit.metrics.cds_videos_doi_metric'],
             'publisher': 'kpiit.publishers.cds_videos_doi'
@@ -60,7 +58,7 @@ beat_schedule = {
     },
     'collect-cod-doi-kpis-every-month': {
         'task': 'kpiit.tasks.collect_and_publish_metrics',
-        'schedule': SCHEDULES['doi_every_month'],
+        'schedule': SCHEDULE_DOI_MONTHLY,
         'kwargs': {
             'metrics': ['kpiit.metrics.cod_doi_metric'],
             'publisher': 'kpiit.publishers.cod_doi'
@@ -68,7 +66,7 @@ beat_schedule = {
     },
     'collect-zenodo-repo-kpis-every-day': {
         'task': 'kpiit.tasks.collect_and_publish_metrics',
-        'schedule': SCHEDULES['repo_every_day'],
+        'schedule': SCHEDULE_REPO_DAILY,
         'kwargs': {
             'metrics': [
                 'kpiit.metrics.zenodo_records_metric',
@@ -78,6 +76,34 @@ beat_schedule = {
                 'kpiit.metrics.dummy_visits_metric',
             ],
             'publisher': 'kpiit.publishers.zenodo_repo'
+        }
+    },
+    'collect-cds-videos-repo-kpis-every-day': {
+        'task': 'kpiit.tasks.collect_and_publish_metrics',
+        'schedule': SCHEDULE_REPO_DAILY,
+        'kwargs': {
+            'metrics': [
+                'kpiit.metrics.cds_videos_records_metric',
+                'kpiit.metrics.website_uptime_metric',
+                'kpiit.metrics.search_uptime_metric',
+                'kpiit.metrics.files_uptime_metric',
+                'kpiit.metrics.dummy_visits_metric',
+            ],
+            'publisher': 'kpiit.publishers.cds_videos_repo'
+        }
+    },
+    'collect-cod-repo-kpis-every-day': {
+        'task': 'kpiit.tasks.collect_and_publish_metrics',
+        'schedule': SCHEDULE_REPO_DAILY,
+        'kwargs': {
+            'metrics': [
+                'kpiit.metrics.cod_records_metric',
+                'kpiit.metrics.website_uptime_metric',
+                'kpiit.metrics.search_uptime_metric',
+                'kpiit.metrics.files_uptime_metric',
+                'kpiit.metrics.dummy_visits_metric',
+            ],
+            'publisher': 'kpiit.publishers.cod_repo'
         }
     },
 }

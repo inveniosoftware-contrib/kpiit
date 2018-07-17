@@ -8,4 +8,4 @@
 
 set -e
 
-celery worker -A kpiit.app -B --loglevel=DEBUG
+celery worker -A kpiit.app -B --loglevel=INFO

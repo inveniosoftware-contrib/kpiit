@@ -212,8 +212,7 @@ def zenodo_doi_metric(mocker, zenodo_doi_index_html, zenodo_doi_june_html):
 @pytest.fixture
 def json_publisher(tmpdir):
     """Fixture for JSON publisher."""
-    filename = '{}/output.json'.format(tmpdir.dirname)
-    return JSONFilePublisher(filename, 'doikpi', doi_prefix='10.5281')
+    return JSONFilePublisher.create_doi('10.5281')
 
 
 @pytest.fixture(scope='module')

@@ -44,7 +44,7 @@ class JSONURLProvider(Provider):
 
     def collect(self):
         """Get URL request."""
-        self.data = requests.get(self.url)
+        self.data = requests.get(self.url, verify=False)
         self.json = self.data.json()
         return self.json
 

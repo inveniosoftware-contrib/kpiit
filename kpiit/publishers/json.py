@@ -23,6 +23,7 @@ class JSONFilePublisher(CERNPublisher):
         """JSON file provider initialization."""
         super().__init__(type, **tags)
 
+        self.filename = None
         if 'doi_prefix' in tags:
             self.name = tags['doi_prefix']
         elif 'service' in tags:
