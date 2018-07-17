@@ -85,10 +85,17 @@ class CERNPublisher(Publisher):
     @classmethod
     def create_repo(cls, service, env, skip_fields=False):
         """Create a repo publisher."""
-        return cls('repokpi', service=service, env=env, skip_fields=skip_fields)
+        return cls(
+            'repokpi',
+            service=service,
+            env=env,
+            skip_fields=skip_fields
+        )
 
 
 class CERNMonitPublisher(CERNPublisher):
+    """Publish JSON data to CERN's monit service."""
+
     def publish(self, metrics):
         """Publish KPIs to the grafana instance."""
         super().publish(metrics)
