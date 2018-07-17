@@ -41,7 +41,7 @@ def test_cern_doi_publisher_message(zenodo_doi_metric):
     publisher.build_message([zenodo_doi_metric])
 
     a = {
-        "producer": "invenio",
+        "producer": "digitalrepos",
         "type": "doikpi",
         "type_prefix": "raw",
         "timestamp": 1483696735836,
@@ -89,7 +89,7 @@ def test_cern_repo_publisher_message(zenodo_records, website_uptime_metric,
     publisher.build_message(metrics)
 
     a = {
-        "producer": "invenio",
+        "producer": "digitalrepos",
         "type": "repokpi",
         "type_prefix": "raw",
         "timestamp": 1483696735836,

@@ -12,6 +12,7 @@ from datetime import datetime
 
 from ..metrics.doi import DOIMetric
 from ..models import Publisher
+from ..send_check import send
 
 
 class CERNPublisher(Publisher):
@@ -20,7 +21,7 @@ class CERNPublisher(Publisher):
     def __init__(self, type, **tags):
         """CERN publisher initialize."""
         self.data = dict(
-            producer='invenio',
+            producer='digitalrepos',
             type=type,
             type_prefix='raw',
             timestamp=None,
@@ -68,7 +69,7 @@ class CERNPublisher(Publisher):
         super().publish(metrics)
         self.data['timestamp'] = self.get_timestamp()
 
-        # TODO: Send data to CERN
+        send([self.data], production=False)
 
     @staticmethod
     def get_timestamp():

@@ -7,11 +7,12 @@
 
 """Publisher instances."""
 
+from .cern import CERNPublisher
 from .json import JSONFilePublisher
 
 
 #: Zenodo DOI publisher
-zenodo_doi = JSONFilePublisher.create_doi('10.5281')
+zenodo_doi = CERNPublisher.create_doi('10.5281')
 
 #: CDS videos DOI publisher
 cds_videos_doi = JSONFilePublisher.create_doi('10.17181')
@@ -21,7 +22,7 @@ cod_doi = JSONFilePublisher.create_doi('10.7483')
 
 
 #: Zenodo repo publisher
-zenodo_repo = JSONFilePublisher.create_repo('zenodo', 'prod')
+zenodo_repo = CERNPublisher.create_repo('zenodo', 'prod')
 
 #: CDS videos repo publisher
 cds_videos_repo = JSONFilePublisher.create_repo('cds_videos', 'prod')
