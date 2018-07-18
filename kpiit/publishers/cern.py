@@ -135,4 +135,5 @@ class CERNMonitPublisher(CERNPublisher):
         """Publish KPIs to the grafana instance."""
         super().publish(metrics)
 
-        send([self.data], production=False)
+        resp = send([self.data], production=True)
+        logger.debug('Response: %s' % resp)

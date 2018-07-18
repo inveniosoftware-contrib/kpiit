@@ -40,7 +40,7 @@ Display the following:
 
 # # of support tickets
 
-* See how # of tickets have increased over time
+    * See how # of tickets have increased over time
 * Could be displayed as a line graph with exra details about when the support
 tickets were created etc
 
@@ -92,3 +92,29 @@ WHERE (
     ('$src' = 'All' AND ("path" =~ /.*media.*(cds|zenodo)/ OR "path" =~ /.*eos.*opendata.*/))
 )
 AND $timeFilter GROUP BY time($__interval) path
+
+
+
+
+
+
+
+
+############## DOI Resolutions ###################
+SELECT mean(*)
+FROM "raw"."doikpi"
+WHERE (
+    ('$service' = 'zenodo' AND "doi_prefix" = '10.5281')
+    OR
+    ('$service' = 'cod' AND "doi_prefix" = '10.7483')
+    OR
+    ('$service' = 'cds' AND "doi_prefix" = '10.17181')
+) AND $timeFilter
+GROUP BY time(1h) fill(none)
+
+
+SELECT difference(mean("records"))
+FROM "raw"."repokpi"
+WHERE ("env" =~ /^$env$/ AND "service" =~ /^$service$/)
+AND $timeFilter
+GROUP BY time($__interval) fill(none)

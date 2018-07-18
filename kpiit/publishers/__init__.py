@@ -15,17 +15,17 @@ from .json import JSONFilePublisher
 zenodo_doi = CERNMonitPublisher.create_doi('10.5281')
 
 #: CDS videos DOI publisher
-cds_videos_doi = JSONFilePublisher.create_doi('10.17181')
+cds_videos_doi = CERNMonitPublisher.create_doi('10.17181')
 
 #: COD DOI publisher
-cod_doi = JSONFilePublisher.create_doi('10.7483')
+cod_doi = CERNMonitPublisher.create_doi('10.7483')
 
 
 #: Zenodo repo publisher
-zenodo_repo = CERNMonitPublisher.create_repo('zenodo', 'prod')
+zenodo_repo = CERNMonitPublisher.create_repo('zenodo', 'qa')
 
 #: CDS videos repo publisher
-cds_videos_repo = JSONFilePublisher.create_repo('cds_videos', 'prod')
+cds_videos_repo = CERNMonitPublisher.create_repo('cds_videos', 'qa')
 
 #: COD repo publisher
-cod_repo = JSONFilePublisher.create_repo('cod', 'prod')
+cod_repo = CERNMonitPublisher.create_repo('cod', 'qa')
