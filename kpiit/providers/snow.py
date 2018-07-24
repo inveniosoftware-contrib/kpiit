@@ -18,6 +18,13 @@ class ServiceNowQuery(object):
         self.api_version = 2
         self.params = {}
 
+    @property
+    def url(self):
+        return '{instance}{path}'.format(
+            instance=self.instance,
+            path=str(self)
+        )
+
     def where(self, **kwargs):
         self.params['sysparm_query'] = self._build_query([], **kwargs)
         return self

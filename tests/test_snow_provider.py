@@ -35,6 +35,9 @@ def test_limits():
     q1.limit(10)
     assert str(q1) == base + 'test=hello&sysparm_limit=10'
 
+    assert q1.url == ServiceNowQuery.CERN_TRAINING_INSTANCE + base + \
+        'test=hello&sysparm_limit=10'
+
 
 def test_count():
     base_old = '/api/now/v2/table/incident?sysparm_query='
@@ -45,6 +48,9 @@ def test_count():
 
     q1.limit(20)
     assert str(q1) == base + 'test=hello&sysparm_count=true&sysparm_limit=20'
+
+    assert q1.url == ServiceNowQuery.CERN_TRAINING_INSTANCE + base + \
+        'test=hello&sysparm_count=true&sysparm_limit=20'
 
 
 def test_orderby():
@@ -59,4 +65,7 @@ def test_orderby():
 
     q1.orderby('field2', desc=True)
     assert str(q1) == base + \
+        'test=hello&sysparm_limit=12&sysparm_orderby=field2^DESC'
+
+    assert q1.url == ServiceNowQuery.CERN_TRAINING_INSTANCE + base + \
         'test=hello&sysparm_limit=12&sysparm_orderby=field2^DESC'
