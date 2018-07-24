@@ -15,22 +15,37 @@ class ServiceNow(object):
         self.table_name = table_name
         self.instance = instance
         self.source_type = 'table'
-        self.version = 2
+        self.api_version = 2
         self.params = {}
 
     def where(self, **kwargs):
-        self.and_(**kwargs)
+        self.params['sysparm_query'] = self.build_kwargs_query([], **kwargs)
         return self
 
     def and_(self, **kwargs):
-        for key, value in kwargs.items():
-            self.add_query_param('sysparm_query', key, value)
-            self.add_query_param('sysparm_query', '^')
+        query = self.params['sysparm_query']
+        self.build_kwargs_query(query, **kwargs)
         return self
 
-    def or_(self, **kwargs):
-        self.add_query_param('sysparm_query', '^OR')
-        return self
+    def build_kwargs_query(self, query, use_and=True, **kwargs):
+        empty_query = len(query) == 0
+
+        for key, value in kwargs.items():
+            if not empty_query:
+                query.append('^' if use_and else '^OR')
+            query.append(self.clean_param(key, value))
+        return query
+
+    def clean_param(self, key, value):
+        if isinstance(value, bool):
+            value = str(value).lower()
+        else:
+            value = str(value)
+
+        return '{key}={value}'.format(
+            key=key,
+            value=value
+        )
 
     def limit(self, limit_count=None):
         if limit_count is not None:
@@ -38,7 +53,7 @@ class ServiceNow(object):
 
     def count(self):
         self.source_type = 'stats'
-        self.version = 1
+        self.api_version = 1
         return self
 
     def orderby(self, *fields, asc=None, desc=None):
@@ -72,10 +87,13 @@ class ServiceNow(object):
 
     def build_query(self):
         query = ['/api/now/v{version}/{type}/{table}/'.format(
-            version=self.version,
+            version=self.api_version,
             type=self.source_type,
             table=self.table_name
         )]
+
+        for key, value_list in self.params.items():
+            print(key, value_list)
         return ''.join(query)
 
     def __str__(self):
@@ -91,8 +109,7 @@ class ServiceNow(object):
         return cls(table_name, instance)
 
 
-result = ServiceNow.query('incident').where(
-    active=False, test='asdf').and_(hey=1).or_(asdf=1)
+result = ServiceNow.query('incident').where(active=False, test='asdf', a=False)
 
 print(result)
 print(repr(result))
