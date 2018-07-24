@@ -19,8 +19,11 @@ from celery.utils.log import get_task_logger
 from ..app import app
 from ..models import Provider
 from ..util import load_target
+from .snow import ServiceNowProvider
 
 logger = get_task_logger(__name__)
+
+zenodo_snow_provider = ServiceNowProvider('zenodo')
 
 
 class DummyProvider(Provider):

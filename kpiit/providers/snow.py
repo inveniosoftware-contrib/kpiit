@@ -7,13 +7,29 @@
 
 """Service Now provider."""
 
+from celery.utils.log import get_task_logger
+
+from ..models import Provider
+
+logger = get_task_logger(__name__)
+
+INSTANCE_URLS = dict(
+    prod=None,
+    test='https://cerntraining.service-now.com'
+)
+
+# Functional element IDs
+FUNC_ELEMENT_IDS = dict(
+    cds='ea56e9860a0a8c0a0186aeaa533e811a',
+    cds_videos='e993ff170a0a8c0a01e036015c55c628',
+    zenodo='e93478690a0a8c0a009abf9422a74c71'
+)
+
 
 class ServiceNowQuery(object):
     """Service Now query builder."""
 
-    CERN_TRAINING_INSTANCE = 'https://cerntraining.service-now.com'
-
-    def __init__(self, table_name, instance=CERN_TRAINING_INSTANCE):
+    def __init__(self, table_name, instance=INSTANCE_URLS['test']):
         """Initiate the Service Now query."""
         self.table_name = table_name
         self.instance = instance
@@ -108,3 +124,30 @@ class ServiceNowQuery(object):
             self.table_name,
             str(self)
         )
+
+
+class ServiceNowProvider(Provider):
+    """Service Now provider."""
+
+    def __init__(self, functional_element, instance=INSTANCE_URLS['test']):
+        """Initiate the Service Now provider."""
+        self.functional_element = functional_element
+        self.instance = instance
+        self.query = None
+
+    def _collect_support_requests(self):
+        """Collect support request count from Serivce Now."""
+        func_element_id = FUNC_ELEMENT_IDS[self.functional_element]
+        self.query = ServiceNowQuery('incident', self.instance).where(
+            u_functional_element=func_element_id,
+            active=True
+        ).count()
+        return 0
+
+    def collect(self):
+        """Collect support stats from Service Now."""
+        support_requests = self._collect_support_requests()
+
+        return {
+            'support_requests': support_requests
+        }
