@@ -8,10 +8,10 @@
 """Service Now provider."""
 
 
-class ServiceNow(object):
+class ServiceNowQuery(object):
     CERN_TRAINING_INSTANCE = 'https://cerntraining.service-now.com'
 
-    def __init__(self, table_name, instance):
+    def __init__(self, table_name, instance=CERN_TRAINING_INSTANCE):
         self.table_name = table_name
         self.instance = instance
         self.source_type = 'table'
@@ -27,10 +27,15 @@ class ServiceNow(object):
         self._build_query(query, **kwargs)
         return self
 
-    def _build_query(self, query, use_and=True, **kwargs):
+    def or_(self, **kwargs):
+        query = self.params['sysparm_query']
+        self._build_query(query, use_or=True, **kwargs)
+        return self
+
+    def _build_query(self, query, use_or=False, **kwargs):
         for key, value in kwargs.items():
             if query:
-                query.append('^' if use_and else '^OR')
+                query.append('^OR' if use_or else '^')
             query.append(self._clean_param(key, value))
         return query
 
@@ -106,14 +111,3 @@ class ServiceNow(object):
     @classmethod
     def _get_param_str(self, key, values):
         return '{}={}'.format(key, ''.join(values))
-
-    @classmethod
-    def query(cls, table_name, instance=CERN_TRAINING_INSTANCE):
-        return cls(table_name, instance)
-
-
-result = ServiceNow.query('incident').where(
-    active=False, hey='world').and_(test='asdf')
-
-print(result)
-# print(repr(result))
