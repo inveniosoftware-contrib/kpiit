@@ -43,3 +43,4 @@ include .env.example
 include *.yaml
 recursive-include scripts *.py
 recursive-include scripts *.sh
+include *.json
