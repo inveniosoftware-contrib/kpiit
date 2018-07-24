@@ -32,6 +32,23 @@ class ServiceNowQuery(object):
         self._build_query(query, use_or=True, **kwargs)
         return self
 
+    def limit(self, limit_count):
+        self.params['sysparm_limit'] = str(limit_count)
+        return self
+
+    def count(self):
+        self.source_type = 'stats'
+        self.api_version = 1
+        self.params['sysparm_count'] = 'true'
+        return self
+
+    def orderby(self, *fields, desc=False):
+        value = '^'.join(fields)
+        if desc:
+            value = value + '^DESC'
+        self.params['sysparm_orderby'] = value
+        return self
+
     def _build_query(self, query, use_or=False, **kwargs):
         for key, value in kwargs.items():
             if query:
@@ -49,44 +66,6 @@ class ServiceNowQuery(object):
             key=key,
             value=value
         )
-
-    def limit(self, limit_count=None):
-        if limit_count is not None:
-            self.add_param('sysparm_limit', limit_count)
-
-    def count(self):
-        self.source_type = 'stats'
-        self.api_version = 1
-        return self
-
-    def orderby(self, *fields, asc=None, desc=None):
-        value = '^'.join(fields)
-        if asc == False or desc == True:
-            value = value + '^DESC'
-        self.add_param('sysparm_orderby', value)
-
-    def add_param(self, key, value):
-        if key not in self.params:
-            self.params[key] = []
-        self.params[key].append(value)
-
-    def add_query_param(self, param, key, value=None):
-        if param not in self.params:
-            self.params[param] = []
-        query = self.params[param]
-
-        if value is None:
-            query.append(key)
-        else:
-            if isinstance(value, bool):
-                value = str(value).lower()
-            else:
-                value = str(value)
-
-            query.append('{key}={value}'.format(
-                key=key,
-                value=value
-            ))
 
     def __str__(self):
         query = ['/api/now/v{version}/{type}/{table}'.format(
