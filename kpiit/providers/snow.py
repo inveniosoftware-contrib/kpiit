@@ -19,24 +19,22 @@ class ServiceNow(object):
         self.params = {}
 
     def where(self, **kwargs):
-        self.params['sysparm_query'] = self.build_kwargs_query([], **kwargs)
+        self.params['sysparm_query'] = self._build_query([], **kwargs)
         return self
 
     def and_(self, **kwargs):
         query = self.params['sysparm_query']
-        self.build_kwargs_query(query, **kwargs)
+        self._build_query(query, **kwargs)
         return self
 
-    def build_kwargs_query(self, query, use_and=True, **kwargs):
-        empty_query = len(query) == 0
-
+    def _build_query(self, query, use_and=True, **kwargs):
         for key, value in kwargs.items():
-            if not empty_query:
+            if query:
                 query.append('^' if use_and else '^OR')
-            query.append(self.clean_param(key, value))
+            query.append(self._clean_param(key, value))
         return query
 
-    def clean_param(self, key, value):
+    def _clean_param(self, key, value):
         if isinstance(value, bool):
             value = str(value).lower()
         else:
@@ -85,31 +83,37 @@ class ServiceNow(object):
                 value=value
             ))
 
-    def build_query(self):
-        query = ['/api/now/v{version}/{type}/{table}/'.format(
+    def __str__(self):
+        query = ['/api/now/v{version}/{type}/{table}'.format(
             version=self.api_version,
             type=self.source_type,
             table=self.table_name
         )]
-
-        for key, value_list in self.params.items():
-            print(key, value_list)
-        return ''.join(query)
-
-    def __str__(self):
-        return self.build_query()
+        params = []
+        for index, (key, value_list) in enumerate(self.params.items()):
+            if index == 0:
+                query.append('?')
+            params.append(self._get_param_str(key, value_list))
+        return ''.join(query) + '&'.join(params)
 
     def __repr__(self):
-        return 'ServiceNow(instance={inst}, table={tbl}, query={q})'.format(
-            inst=self.instance, tbl=self.table_name, q=str(self)
+        return 'ServiceNow(instance="{}", table={}, query="{}")'.format(
+            self.instance,
+            self.table_name,
+            str(self)
         )
+
+    @classmethod
+    def _get_param_str(self, key, values):
+        return '{}={}'.format(key, ''.join(values))
 
     @classmethod
     def query(cls, table_name, instance=CERN_TRAINING_INSTANCE):
         return cls(table_name, instance)
 
 
-result = ServiceNow.query('incident').where(active=False, test='asdf', a=False)
+result = ServiceNow.query('incident').where(
+    active=False, hey='world').and_(test='asdf')
 
 print(result)
-print(repr(result))
+# print(repr(result))
