@@ -11,7 +11,11 @@ import os
 
 import pytest
 
-from kpiit.providers.snow import ServiceNowQuery
+from kpiit.providers.snow import *
+
+
+def test_basic_snow_provider():
+    p = ServiceNowProvider(FUNC_ELEMENT_IDS['zenodo'])
 
 
 def test_simple_queries():
@@ -35,7 +39,7 @@ def test_limits():
     q1.limit(10)
     assert str(q1) == base + 'test=hello&sysparm_limit=10'
 
-    assert q1.url == ServiceNowQuery.CERN_TRAINING_INSTANCE + base + \
+    assert q1.url == INSTANCE_URLS['test'] + base + \
         'test=hello&sysparm_limit=10'
 
 
@@ -49,7 +53,7 @@ def test_count():
     q1.limit(20)
     assert str(q1) == base + 'test=hello&sysparm_count=true&sysparm_limit=20'
 
-    assert q1.url == ServiceNowQuery.CERN_TRAINING_INSTANCE + base + \
+    assert q1.url == INSTANCE_URLS['test'] + base + \
         'test=hello&sysparm_count=true&sysparm_limit=20'
 
 
@@ -67,5 +71,5 @@ def test_orderby():
     assert str(q1) == base + \
         'test=hello&sysparm_limit=12&sysparm_orderby=field2^DESC'
 
-    assert q1.url == ServiceNowQuery.CERN_TRAINING_INSTANCE + base + \
+    assert q1.url == INSTANCE_URLS['test'] + base + \
         'test=hello&sysparm_limit=12&sysparm_orderby=field2^DESC'
