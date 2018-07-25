@@ -170,7 +170,7 @@ class ServiceNowProvider(Provider):
         res = self.auth_get(query.url)
         res_json = res.json()
 
-        return int(res_json['result']['stats']['count'])
+        return res_json['result']['stats']['count']
 
     def collect(self):
         """Collect support stats from Service Now."""

@@ -10,6 +10,8 @@
 
 import json
 
+from kpiit import Service
+
 from .models import Metric
 from .util import load_target
 
@@ -20,7 +22,8 @@ class MetricEncoder(json.JSONEncoder):
     def default(self, o):  # pylint: disable=E0202
         """JSON encode a metric instance."""
         if not isinstance(o, Metric):
-            return json.JSONEncoder.default(self, o)
+            # return json.JSONEncoder.default(self, o)
+            raise TypeError('object is not a Metric type: %s' % o)
 
         _type = '{}.{}'.format(o.__module__, o.__class__.__name__)
         return {

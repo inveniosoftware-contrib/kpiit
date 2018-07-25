@@ -30,7 +30,8 @@ register(
 
 # Default schedule crontabs
 SCHEDULE_DOI_MONTHLY = crontab(hour=0, minute=20)
-SCHEDULE_REPO_DAILY = crontab(hour=0, minute=50)
+#SCHEDULE_REPO_DAILY = crontab(hour=0, minute=50)
+SCHEDULE_REPO_DAILY = crontab(minute=25)
 
 #: URL of message broker for Celery (default is Redis).
 broker_url = _env('BROKER_URL', 'redis://localhost:6379/0')
@@ -74,6 +75,7 @@ beat_schedule = {
                 'kpiit.metrics.search_uptime_metric',
                 'kpiit.metrics.files_uptime_metric',
                 'kpiit.metrics.dummy_visits_metric',
+                'kpiit.metrics.zenodo_support_metric',
             ],
             'publisher': 'kpiit.publishers.zenodo_repo'
         }
@@ -88,6 +90,7 @@ beat_schedule = {
                 'kpiit.metrics.search_uptime_metric',
                 'kpiit.metrics.files_uptime_metric',
                 'kpiit.metrics.dummy_visits_metric',
+                'kpiit.metrics.cds_videos_support_metric',
             ],
             'publisher': 'kpiit.publishers.cds_videos_repo'
         }
@@ -102,6 +105,7 @@ beat_schedule = {
                 'kpiit.metrics.search_uptime_metric',
                 'kpiit.metrics.files_uptime_metric',
                 'kpiit.metrics.dummy_visits_metric',
+                'kpiit.metrics.dummy_support_metric',
             ],
             'publisher': 'kpiit.publishers.cod_repo'
         }
