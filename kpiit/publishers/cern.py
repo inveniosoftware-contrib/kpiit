@@ -122,8 +122,8 @@ class CERNPublisher(Publisher):
         """Create a repo publisher."""
         return cls(
             'repokpi',
-            service=service,
-            env=env,
+            service=service.value,
+            env=env.value,
             skip_fields=skip_fields
         )
 

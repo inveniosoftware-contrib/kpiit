@@ -11,8 +11,6 @@ import json
 
 import requests
 
-PRODUCTION = False
-
 PROD_URL = 'http://monit-metrics.cern.ch:10012'
 DEV_URL = 'http://monit-metrics-dev:10012/'
 
