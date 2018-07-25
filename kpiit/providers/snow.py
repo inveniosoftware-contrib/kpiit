@@ -7,12 +7,19 @@
 
 """Service Now provider."""
 
+import os
+
+import requests
 from celery.utils.log import get_task_logger
 
 from kpiit import Service
+
 from ..models import Provider
 
 logger = get_task_logger(__name__)
+
+SNOW_USER = os.getenv('SNOW_USER')
+SNOW_PASS = os.getenv('SNOW_PASS')
 
 INC_TABLE = 'incident'
 REQ_TABLE = 'u_request_fulfillment'
@@ -141,28 +148,41 @@ class ServiceNowProvider(Provider):
         """Initiate the Service Now provider."""
         self.functional_element = functional_element
         self.instance = instance
-        self.query = None
 
     def _collect_support_requests(self):
         """Collect support request count from Serivce Now."""
+        return self._get_record_count(REQ_TABLE)
+
+    def _collect_support_incidents(self):
+        """Collect support incident count from Serivce Now."""
+        return self._get_record_count(INC_TABLE)
+
+    def _get_record_count(self, table):
+        """Extract record count from JSON object."""
         func_element_id = FUNC_ELEMENT_IDS[self.functional_element]
 
-        query_inc = ServiceNowQuery(INC_TABLE, self.instance).where(
+        query = ServiceNowQuery(table, self.instance).where(
             u_functional_element=func_element_id,
             active=True
         ).count()
 
-        query_req = ServiceNowQuery(REQ_TABLE, self.instance).where(
-            u_functional_element=func_element_id,
-            active=True
-        ).count()
+        # TODO: Perform error checking on return response
+        res = self.auth_get(query.url)
+        res_json = res.json()
 
-        return query_inc, query_req
+        return int(res_json['result']['stats']['count'])
 
     def collect(self):
         """Collect support stats from Service Now."""
         support_requests = self._collect_support_requests()
+        support_incidents = self._collect_support_incidents()
 
         return {
-            'support_requests': support_requests
+            'support_requests': support_requests,
+            'support_incidents': support_incidents
         }
+
+    @classmethod
+    def auth_get(cls, url, user=SNOW_USER, password=SNOW_PASS):
+        """Perform an authenticated GET request."""
+        return requests.get(url, auth=(user, password))
