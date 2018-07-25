@@ -9,9 +9,13 @@
 
 from celery.utils.log import get_task_logger
 
+from kpiit import Service
 from ..models import Provider
 
 logger = get_task_logger(__name__)
+
+INC_TABLE = 'incident'
+REQ_TABLE = 'u_request_fulfillment'
 
 INSTANCE_URLS = dict(
     prod=None,
@@ -19,11 +23,11 @@ INSTANCE_URLS = dict(
 )
 
 # Functional element IDs
-FUNC_ELEMENT_IDS = dict(
-    cds='ea56e9860a0a8c0a0186aeaa533e811a',
-    cds_videos='e993ff170a0a8c0a01e036015c55c628',
-    zenodo='e93478690a0a8c0a009abf9422a74c71'
-)
+FUNC_ELEMENT_IDS = {
+    Service.CDS: 'ea56e9860a0a8c0a0186aeaa533e811a',
+    Service.CDS_VIDEOS: 'e993ff170a0a8c0a01e036015c55c628',
+    Service.ZENODO: 'e93478690a0a8c0a009abf9422a74c71'
+}
 
 
 class ServiceNowQuery(object):
@@ -33,9 +37,7 @@ class ServiceNowQuery(object):
         """Initiate the Service Now query."""
         self.table_name = table_name
         self.instance = instance
-        self.source_type = 'table'
-        self.api_version = 2
-        self.params = {}
+        self.init()
 
     @property
     def url(self):
@@ -44,6 +46,12 @@ class ServiceNowQuery(object):
             instance=self.instance,
             path=str(self)
         )
+
+    def init(self):
+        """Reset the query to the starting values."""
+        self.source_type = 'table'
+        self.api_version = 2
+        self.params = {}
 
     def where(self, **kwargs):
         """
@@ -138,11 +146,18 @@ class ServiceNowProvider(Provider):
     def _collect_support_requests(self):
         """Collect support request count from Serivce Now."""
         func_element_id = FUNC_ELEMENT_IDS[self.functional_element]
-        self.query = ServiceNowQuery('incident', self.instance).where(
+
+        query_inc = ServiceNowQuery(INC_TABLE, self.instance).where(
             u_functional_element=func_element_id,
             active=True
         ).count()
-        return 0
+
+        query_req = ServiceNowQuery(REQ_TABLE, self.instance).where(
+            u_functional_element=func_element_id,
+            active=True
+        ).count()
+
+        return query_inc, query_req
 
     def collect(self):
         """Collect support stats from Service Now."""

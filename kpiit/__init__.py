@@ -7,6 +7,22 @@
 
 """KPIit."""
 
+from enum import Enum
+
 from .version import __version__
+
+
+class Service(Enum):
+    """Available service types."""
+    CDS = 'cds'
+    CDS_VIDEOS = 'cds_videos'
+    COD = 'cod'
+    ZENODO = 'zenodo'
+
+
+class Env(Enum):
+    PROD = 'prod'
+    QA = 'qa'
+
 
 __all__ = ('__version__', )

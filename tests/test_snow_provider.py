@@ -11,11 +11,8 @@ import os
 
 import pytest
 
+from kpiit import Service
 from kpiit.providers.snow import *
-
-
-def test_basic_snow_provider():
-    p = ServiceNowProvider(FUNC_ELEMENT_IDS['zenodo'])
 
 
 def test_simple_queries():

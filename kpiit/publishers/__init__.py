@@ -7,6 +7,7 @@
 
 """Publisher instances."""
 
+from kpiit import Env, Service
 from .cern import CERNMonitPublisher
 from .json import JSONFilePublisher
 
@@ -22,10 +23,10 @@ cod_doi = CERNMonitPublisher.create_doi('10.7483')
 
 
 #: Zenodo repo publisher
-zenodo_repo = CERNMonitPublisher.create_repo('zenodo', 'qa')
+zenodo_repo = CERNMonitPublisher.create_repo(Service.ZENODO, Env.QA)
 
 #: CDS videos repo publisher
-cds_videos_repo = CERNMonitPublisher.create_repo('cds_videos', 'qa')
+cds_videos_repo = CERNMonitPublisher.create_repo(Service.CDS_VIDEOS, Env.QA)
 
 #: COD repo publisher
-cod_repo = CERNMonitPublisher.create_repo('cod', 'qa')
+cod_repo = CERNMonitPublisher.create_repo(Service.COD, Env.QA)

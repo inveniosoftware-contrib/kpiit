@@ -11,6 +11,7 @@ import os
 
 import pytest
 
+from kpiit import Env, Service
 from kpiit.models import Publisher
 from kpiit.publishers.cern import CERNPublisher
 
@@ -78,7 +79,7 @@ def test_cern_repo_publisher_message(zenodo_records, website_uptime_metric,
 
     # TODO: Use normal visits metric once it's implemented
 
-    publisher = CERNPublisher.create_repo(service='zenodo', env='prod')
+    publisher = CERNPublisher.create_repo(service=Service.ZENODO, env=Env.PROD)
 
     metrics = [
         zenodo_records, website_uptime_metric,

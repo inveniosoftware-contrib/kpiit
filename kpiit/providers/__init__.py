@@ -23,8 +23,6 @@ from .snow import ServiceNowProvider
 
 logger = get_task_logger(__name__)
 
-zenodo_snow_provider = ServiceNowProvider('zenodo')
-
 
 class DummyProvider(Provider):
     """Dummy provider."""
