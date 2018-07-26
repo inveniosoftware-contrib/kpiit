@@ -10,6 +10,7 @@
 import os
 
 import requests
+import requests.exceptions
 from celery.utils.log import get_task_logger
 
 from kpiit import Service
@@ -170,6 +171,8 @@ class ServiceNowProvider(Provider):
         res = self.auth_get(query.url)
         res_json = res.json()
 
+        logger.debug('JSON: %s' % res_json)
+
         return res_json['result']['stats']['count']
 
     def collect(self):
@@ -185,4 +188,7 @@ class ServiceNowProvider(Provider):
     @classmethod
     def auth_get(cls, url, user=SNOW_USER, password=SNOW_PASS):
         """Perform an authenticated GET request."""
-        return requests.get(url, auth=(user, password))
+        response = requests.get(url, auth=(user, password))
+        if response.status_code != 200:
+            raise requests.exceptions.HTTPError(response=response)
+        return response
