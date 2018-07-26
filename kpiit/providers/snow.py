@@ -61,25 +61,25 @@ class ServiceNowQuery(object):
         self.api_version = 2
         self.params = {}
 
-    def where(self, **kwargs):
+    def where(self, *args, **kwargs):
         """
         Start a new query filter adding each keyword argument as a filter.
 
         Each keyword argument will be connected with an AND.
         """
-        self.params['sysparm_query'] = self._append_params([], **kwargs)
+        self.params['sysparm_query'] = self._append_params([], *args, **kwargs)
         return self
 
-    def and_(self, **kwargs):
+    def and_(self, *args, **kwargs):
         """Add additional filters connected with an AND."""
         query = self.params['sysparm_query']
-        self._append_params(query, **kwargs)
+        self._append_params(query, *args, **kwargs)
         return self
 
-    def or_(self, **kwargs):
+    def or_(self, *args, **kwargs):
         """Add additional filters connected with an OR."""
         query = self.params['sysparm_query']
-        self._append_params(query, use_or=True, **kwargs)
+        self._append_params(query, use_or=True, *args, **kwargs)
         return self
 
     def limit(self, limit_count):
@@ -102,8 +102,37 @@ class ServiceNowQuery(object):
         self.params['sysparm_orderby'] = value
         return self
 
-    def _append_params(self, query, use_or=False, **kwargs):
+    def avg(self, *fields):
+        """Aggregate fields by taking the average of the values."""
+        self.aggregate('avg', fields)
+        return self
+
+    def sum(self, *fields):
+        """Aggregate fields by taking the sum of the values."""
+        self.aggregate('sum', fields)
+        return self
+
+    def min(self, *fields):
+        """Aggregate fields by taking the minimum of the values."""
+        self.aggregate('min', fields)
+        return self
+
+    def max(self, *fields):
+        """Aggregate fields by taking the maximum of the values."""
+        self.aggregate('max', fields)
+        return self
+
+    def aggregate(self, op, fields):
+        """Add aggregate operation for the given fields."""
+        self.source_type = 'stats'
+        self.api_version = 1
+        self.params['sysparm_{}_fields'.format(op)] = ','.join(fields)
+        return self
+
+    def _append_params(self, query, *args, use_or=False, **kwargs):
         """Append more parameters to the query."""
+        for arg in args:
+            query.append(arg)
         for key, value in kwargs.items():
             if query:
                 query.append('^OR' if use_or else '^')
@@ -150,15 +179,7 @@ class ServiceNowProvider(Provider):
         self.functional_element = functional_element
         self.instance = instance
 
-    def _collect_support_requests(self):
-        """Collect support request count from Serivce Now."""
-        return self._get_record_count(REQ_TABLE)
-
-    def _collect_support_incidents(self):
-        """Collect support incident count from Serivce Now."""
-        return self._get_record_count(INC_TABLE)
-
-    def _get_record_count(self, table):
+    def _collect_record_count(self, table):
         """Extract record count from JSON object."""
         func_element_id = FUNC_ELEMENT_IDS[self.functional_element]
 
@@ -168,21 +189,29 @@ class ServiceNowProvider(Provider):
         ).count()
 
         # TODO: Perform error checking on return response
-        res = self.auth_get(query.url)
-        res_json = res.json()
-
-        logger.debug('JSON: %s' % res_json)
+        res_json = self.auth_get(query.url)
 
         return res_json['result']['stats']['count']
 
+    def _collect_stc(self, table):
+        """Collect waiting time from Service Now."""
+        func_element_id = FUNC_ELEMENT_IDS[self.functional_element]
+
+        query = ServiceNowQuery(table, self.instance).where(
+            u_functional_element=func_element_id
+        ).avg('calendar_stc')
+
+        res_json = self.auth_get(query.url)
+        print(res_json)
+
+        return res_json['result']['stats']['avg']['calendar_stc']
+
     def collect(self):
         """Collect support stats from Service Now."""
-        support_requests = self._collect_support_requests()
-        support_incidents = self._collect_support_incidents()
-
         return {
-            'support_requests': support_requests,
-            'support_incidents': support_incidents
+            'support_requests': self._collect_record_count(REQ_TABLE),
+            'support_incidents': self._collect_record_count(INC_TABLE),
+            'incident_stc': self._collect_stc(INC_TABLE)
         }
 
     @classmethod
@@ -191,4 +220,4 @@ class ServiceNowProvider(Provider):
         response = requests.get(url, auth=(user, password))
         if response.status_code != 200:
             raise requests.exceptions.HTTPError(response=response)
-        return response
+        return response.json()
