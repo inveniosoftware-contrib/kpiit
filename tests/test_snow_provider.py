@@ -28,6 +28,18 @@ def test_simple_queries():
         'test=hello^bool_test=true^ORhello=world^ORor_this=false'
 
 
+def test_restart_where_clause_queries():
+    base = '/api/now/v2/table/incident?sysparm_query='
+    q1 = ServiceNowQuery('incident').where(test='hello').and_(a='b')
+    assert str(q1) == base + 'test=hello^a=b'
+
+    q1.where(hello='world')
+    assert str(q1) == base + 'hello=world'
+
+    q1.and_(a='b')
+    assert str(q1) == base + 'hello=world^a=b'
+
+
 def test_limits():
     base = '/api/now/v2/table/incident?sysparm_query='
     q1 = ServiceNowQuery('incident').where(test='hello').limit(5)
