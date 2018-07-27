@@ -14,6 +14,7 @@ from .version import __version__
 
 class Service(Enum):
     """Available service types."""
+
     CDS = 'cds'
     CDS_VIDEOS = 'cds_videos'
     COD = 'cod'
@@ -21,6 +22,8 @@ class Service(Enum):
 
 
 class Env(Enum):
+    """OpenShift environments."""
+
     PROD = 'prod'
     QA = 'qa'
 

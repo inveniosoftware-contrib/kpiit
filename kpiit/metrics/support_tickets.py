@@ -13,6 +13,7 @@ from ..providers import DummyProvider
 
 class SupportTicketsMetric(Metric):
     """Metric for support tickets."""
+
     FIELDS = ('support_requests', 'support_incidents', 'incident_stc')
 
     def __init__(self, provider, name='support_tickets', fields=FIELDS):
