@@ -32,9 +32,10 @@ INSTANCE_URLS = dict(
 
 # Functional element IDs
 FUNC_ELEMENT_IDS = {
-    Service.CDS: 'ea56e9860a0a8c0a0186aeaa533e811a',
-    Service.CDS_VIDEOS: 'e993ff170a0a8c0a01e036015c55c628',
-    Service.ZENODO: 'e93478690a0a8c0a009abf9422a74c71'
+    Service.CDS: 'CERN Document Server',
+    Service.CDS_VIDEOS: 'MultiMedia Archive',
+    Service.COD: 'Open Data Repository',
+    Service.ZENODO: 'Zenodo Repository'
 }
 
 
@@ -183,11 +184,10 @@ class ServiceNowProvider(Provider):
 
     def _collect_record_count(self, table):
         """Extract record count from JSON object."""
-        func_element_id = FUNC_ELEMENT_IDS[self.functional_element]
+        functional_element = FUNC_ELEMENT_IDS[self.functional_element]
 
         query = ServiceNowQuery(table, self.instance).where(
-            u_functional_element=func_element_id,
-        ).and_(
+            'assignment_groupSTARTSWITH{}'.format(functional_element),
             'stateNOT IN4,3,7,6,8'  # only select tickets that are not closed
         ).count()
 
@@ -199,10 +199,10 @@ class ServiceNowProvider(Provider):
 
     def _collect_stc(self, table):
         """Collect waiting time from Service Now."""
-        func_element_id = FUNC_ELEMENT_IDS[self.functional_element]
+        functional_element = FUNC_ELEMENT_IDS[self.functional_element]
 
         query = ServiceNowQuery(table, self.instance).where(
-            u_functional_element=func_element_id
+            'assignment_groupSTARTSWITH{}'.format(functional_element),
         ).avg('calendar_stc')
 
         res_json = self.auth_get(query.url)

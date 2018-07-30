@@ -30,7 +30,7 @@ register(
 
 # Default schedule crontabs
 SCHEDULE_DOI_MONTHLY = crontab(day_of_month=1, hour=2)
-SCHEDULE_REPO_DAILY = crontab(hour=14, minute=36)
+SCHEDULE_REPO_DAILY = crontab(hour=15, minute=36)
 
 #: URL of message broker for Celery (default is Redis).
 broker_url = _env('BROKER_URL', 'redis://localhost:6379/0')

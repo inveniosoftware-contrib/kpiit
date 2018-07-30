@@ -23,6 +23,7 @@ class SupportTicketsMetric(Metric):
     def collect_done(self, data):
         """Process collected data."""
         for key, value in data.items():
+            print(key, value)
             if key == 'incident_stc':
                 setattr(self, key, float(value))
             else:
