@@ -65,6 +65,23 @@ class Metric(object):
             value_pairs=''.join(sorted(pairs))
         )
 
+    @classmethod
+    def clean_value(cls, value):
+        """Clean string value and convert to appropriate type."""
+        if value is None:
+            return 'null'
+
+        cleaned = None
+        try:
+            cleaned = float(value)
+            cleaned = int(value)
+        except ValueError:
+            return cleaned
+        finally:
+            if cleaned is None:
+                raise ValueError('failed to convert value: {}'.format(value))
+            return cleaned
+
 
 class Provider(object):
     """Abstract class for collecting data."""

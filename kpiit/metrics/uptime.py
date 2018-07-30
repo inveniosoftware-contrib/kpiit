@@ -22,9 +22,5 @@ class UptimeMetric(Metric):
 
     def collect_done(self, data):
         """Process collected data."""
-        up = data['uptime_ratio']
-        resp = data['response_time']
-        uptime = float(up) if up is not None else None
-        response_time = float(resp) if resp is not None else None
-        setattr(self, self.fields[0], uptime)
-        setattr(self, self.fields[1], response_time)
+        setattr(self, self.fields[0], self.clean_value(data['uptime_ratio']))
+        setattr(self, self.fields[1], self.clean_value(data['response_time']))

@@ -58,29 +58,83 @@ cod_doi_metric = DOIMetric(provider=DataCiteProvider('10.7483'))
 
 # Uptime metrics
 
-website_uptime_metric = UptimeMetric(
+zenodo_website_uptime_metric = UptimeMetric(
     name='web',
     provider=UptimeRobotProvider(
         'https://api.uptimerobot.com/v2/',
-        os.getenv('UPTIME_WEBSITE_API_KEY'),
+        os.getenv('ZENODO_UPTIME_WEBSITE_API_KEY'),
         'Website'
     )
 )
 
-search_uptime_metric = UptimeMetric(
+zenodo_search_uptime_metric = UptimeMetric(
     name='search',
     provider=UptimeRobotProvider(
         'https://api.uptimerobot.com/v2/',
-        os.getenv('UPTIME_SEARCH_API_KEY'),
+        os.getenv('ZENODO_UPTIME_SEARCH_API_KEY'),
         'Search'
     )
 )
 
-files_uptime_metric = UptimeMetric(
+zenodo_files_uptime_metric = UptimeMetric(
     name='files',
     provider=UptimeRobotProvider(
         'https://api.uptimerobot.com/v2/',
-        os.getenv('UPTIME_FILES_API_KEY'),
+        os.getenv('ZENODO_UPTIME_FILES_API_KEY'),
+        'Files upload/download'
+    )
+)
+
+cds_videos_website_uptime_metric = UptimeMetric(
+    name='web',
+    provider=UptimeRobotProvider(
+        'https://api.uptimerobot.com/v2/',
+        os.getenv('CDS_VIDEOS_UPTIME_WEBSITE_API_KEY'),
+        'Website'
+    )
+)
+
+cds_videos_search_uptime_metric = UptimeMetric(
+    name='search',
+    provider=UptimeRobotProvider(
+        'https://api.uptimerobot.com/v2/',
+        os.getenv('CDS_VIDEOS_UPTIME_SEARCH_API_KEY'),
+        'Search'
+    )
+)
+
+cds_videos_files_uptime_metric = UptimeMetric(
+    name='files',
+    provider=UptimeRobotProvider(
+        'https://api.uptimerobot.com/v2/',
+        os.getenv('CDS_VIDEOS_UPTIME_FILES_API_KEY'),
+        'Files upload/download'
+    )
+)
+
+cod_website_uptime_metric = UptimeMetric(
+    name='web',
+    provider=UptimeRobotProvider(
+        'https://api.uptimerobot.com/v2/',
+        os.getenv('COD_UPTIME_WEBSITE_API_KEY'),
+        'Website'
+    )
+)
+
+cod_search_uptime_metric = UptimeMetric(
+    name='search',
+    provider=UptimeRobotProvider(
+        'https://api.uptimerobot.com/v2/',
+        os.getenv('COD_UPTIME_SEARCH_API_KEY'),
+        'Search'
+    )
+)
+
+cod_files_uptime_metric = UptimeMetric(
+    name='files',
+    provider=UptimeRobotProvider(
+        'https://api.uptimerobot.com/v2/',
+        os.getenv('COD_UPTIME_FILES_API_KEY'),
         'Files upload/download'
     )
 )

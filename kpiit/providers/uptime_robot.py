@@ -24,8 +24,6 @@ class UptimeRobotProvider(Provider):
         """Uptime Robot provider initialization."""
         if not url:
             raise ValueError("url can't be empty")
-        if not api_key:
-            raise ValueError("api_key can't be empty")
         if not monitor_name:
             raise ValueError("monitor_name can't be empty")
 
@@ -37,6 +35,17 @@ class UptimeRobotProvider(Provider):
 
     def collect(self):
         """Get data from Uptime Robot."""
+        if not self.api_key:
+            # Send dummy values if no API key is specified
+            print('no api key!!!')
+            logger.warn('no API key specified for Uptime provider: {}'.format(
+                self.monitor_name
+            ))
+            return {
+                'response_time': None,
+                'uptime_ratio': None
+            }
+
         params = dict(
             all_time_uptime_ratio=1,
             response_times=1

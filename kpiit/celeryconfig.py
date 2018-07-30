@@ -70,9 +70,9 @@ beat_schedule = {
         'kwargs': {
             'metrics': [
                 'kpiit.metrics.zenodo_records_metric',
-                'kpiit.metrics.website_uptime_metric',
-                'kpiit.metrics.search_uptime_metric',
-                'kpiit.metrics.files_uptime_metric',
+                'kpiit.metrics.zenodo_website_uptime_metric',
+                'kpiit.metrics.zenodo_search_uptime_metric',
+                'kpiit.metrics.zenodo_files_uptime_metric',
                 'kpiit.metrics.dummy_visits_metric',
                 'kpiit.metrics.zenodo_support_metric',
             ],
@@ -85,9 +85,9 @@ beat_schedule = {
         'kwargs': {
             'metrics': [
                 'kpiit.metrics.cds_videos_records_metric',
-                'kpiit.metrics.website_uptime_metric',
-                'kpiit.metrics.search_uptime_metric',
-                'kpiit.metrics.files_uptime_metric',
+                'kpiit.metrics.cds_videos_website_uptime_metric',
+                'kpiit.metrics.cds_videos_search_uptime_metric',
+                'kpiit.metrics.cds_videos_files_uptime_metric',
                 'kpiit.metrics.dummy_visits_metric',
                 'kpiit.metrics.cds_videos_support_metric',
             ],
@@ -100,9 +100,9 @@ beat_schedule = {
         'kwargs': {
             'metrics': [
                 'kpiit.metrics.cod_records_metric',
-                'kpiit.metrics.website_uptime_metric',
-                'kpiit.metrics.search_uptime_metric',
-                'kpiit.metrics.files_uptime_metric',
+                'kpiit.metrics.cod_website_uptime_metric',
+                'kpiit.metrics.cod_search_uptime_metric',
+                'kpiit.metrics.cod_files_uptime_metric',
                 'kpiit.metrics.dummy_visits_metric',
                 'kpiit.metrics.dummy_support_metric',
             ],
