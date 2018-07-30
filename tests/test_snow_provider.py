@@ -82,3 +82,15 @@ def test_orderby():
 
     assert q1.url == INSTANCE_URLS['test'] + base + \
         'test=hello&sysparm_limit=12&sysparm_orderby=field2^DESC'
+
+
+def test_and_with_strings():
+    base = '/api/now/v2/table/incident?sysparm_query='
+
+    q1 = ServiceNowQuery('incident').where(test='hello').and_(
+        'abcNOT IN1,2,3'
+    )
+    assert str(q1) == base + 'test=hello^abcNOT IN1,2,3'
+
+    q1.or_('stateIN5,6,7')
+    assert str(q1) == base + 'test=hello^abcNOT IN1,2,3^ORstateIN5,6,7'

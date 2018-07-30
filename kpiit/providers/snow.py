@@ -132,6 +132,8 @@ class ServiceNowQuery(object):
     def _append_params(self, query, *args, use_or=False, **kwargs):
         """Append more parameters to the query."""
         for arg in args:
+            if query:
+                query.append('^OR' if use_or else '^')
             query.append(arg)
         for key, value in kwargs.items():
             if query:
@@ -185,11 +187,13 @@ class ServiceNowProvider(Provider):
 
         query = ServiceNowQuery(table, self.instance).where(
             u_functional_element=func_element_id,
-            active=True
+        ).and_(
+            'stateNOT IN4,3,7,6,8'  # only select tickets that are not closed
         ).count()
 
         # TODO: Perform error checking on return response
         res_json = self.auth_get(query.url)
+        print(res_json)
 
         return res_json['result']['stats']['count']
 
