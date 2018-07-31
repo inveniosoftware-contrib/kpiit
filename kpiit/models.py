@@ -70,6 +70,8 @@ class Metric(object):
         """Clean string value and convert to appropriate type."""
         if value is None:
             return 'null'
+        elif isinstance(value, float) or isinstance(value, int):
+            return value
 
         try:
             return float(value)

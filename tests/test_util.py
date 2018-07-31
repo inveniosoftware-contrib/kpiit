@@ -23,3 +23,13 @@ def test_load_class():
     with pytest.raises(ImportError):
         assert load_target('kpiit.models2.Provider') == Provider
         assert load_target('kpiit.models.NonExisting') == Provider
+
+
+def test_metric_clean_value():
+    assert Metric.clean_value('hello') == 'hello'
+    assert Metric.clean_value('') == ''
+    assert Metric.clean_value('5123123') == 5123123
+    assert Metric.clean_value('3.1415926') == 3.1415926
+    assert Metric.clean_value(5123123) == 5123123
+    assert Metric.clean_value(3.1415926) == 3.1415926
+    assert Metric.clean_value(None) == 'null'

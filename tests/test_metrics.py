@@ -34,6 +34,8 @@ def test_fail_metric(zenodo_records, test_provider):
         Metric(name='test', provider=None, fields=None)
     with pytest.raises(ValueError):
         Metric(name=None, provider=None, fields=['abc'])
+    with pytest.raises(TypeError):
+        Metric(name=['abc'], provider=None, fields=['abc'])
     with pytest.raises(AttributeError):
         zenodo_records.update(non_existant='test')
     metric = Metric('test', test_provider, ('test'))
