@@ -94,3 +94,22 @@ def test_and_with_strings():
 
     q1.or_('stateIN5,6,7')
     assert str(q1) == base + 'test=hello^abcNOT IN1,2,3^ORstateIN5,6,7'
+
+
+def test_agg_sum():
+    base = '/api/now/v1/stats/incident?sysparm_query='
+
+    q = ServiceNowQuery('incident').where(a='b').sum('field1')
+    assert str(q) == base + 'a=b&sysparm_sum_fields=field1'
+
+    q = ServiceNowQuery('incident').where(a='b').avg('field1', 'field2')
+    assert str(q) == base + 'a=b&sysparm_avg_fields=field1,field2'
+
+    q = ServiceNowQuery('incident').where(a='b').min('a', 'b')
+    assert str(q) == base + 'a=b&sysparm_min_fields=a,b'
+
+    q = ServiceNowQuery('incident').where(a='b').max('x', 'y', 'z', 'w')
+    assert str(q) == base + 'a=b&sysparm_max_fields=x,y,z,w'
+
+    with pytest.raises(TypeError):
+        q = ServiceNowQuery('incident').where(a='b').max()

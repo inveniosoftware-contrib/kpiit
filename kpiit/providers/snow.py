@@ -125,6 +125,10 @@ class ServiceNowQuery(object):
 
     def aggregate(self, op, fields):
         """Add aggregate operation for the given fields."""
+        if len(fields) < 1:
+            raise TypeError('agg. function {} needs at least one field'.format(
+                op
+            ))
         self.source_type = 'stats'
         self.api_version = 1
         self.params['sysparm_{}_fields'.format(op)] = ','.join(fields)
