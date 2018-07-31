@@ -81,24 +81,40 @@ def test_doi_metric(zenodo_doi_metric):
 
 
 def test_website_uptime_metric(website_uptime_metric):
-    website_uptime_metric.uptime_web is None
-    website_uptime_metric.response_time_web is None
+    assert website_uptime_metric.uptime_web is None
+    assert website_uptime_metric.response_time_web is None
     website_uptime_metric.collect()
-    website_uptime_metric.uptime_web is None
-    website_uptime_metric.response_time_web is not None
+    assert website_uptime_metric.uptime_web is not None
+    assert website_uptime_metric.response_time_web is not None
 
 
 def test_search_uptime_metric(search_uptime_metric):
-    search_uptime_metric.uptime_search is None
-    search_uptime_metric.response_time_search is None
+    assert search_uptime_metric.uptime_search is None
+    assert search_uptime_metric.response_time_search is None
     search_uptime_metric.collect()
-    search_uptime_metric.uptime_search is not None
-    search_uptime_metric.response_time_search is not None
+    assert search_uptime_metric.uptime_search is not None
+    assert search_uptime_metric.response_time_search is not None
 
 
 def test_files_uptime_metric(files_uptime_metric):
-    files_uptime_metric.uptime_files is None
-    files_uptime_metric.response_time_files is None
+    assert files_uptime_metric.uptime_files is None
+    assert files_uptime_metric.response_time_files is None
     files_uptime_metric.collect()
-    files_uptime_metric.uptime_files is not None
-    files_uptime_metric.response_time_files is not None
+    assert files_uptime_metric.uptime_files is not None
+    assert files_uptime_metric.response_time_files is not None
+
+
+def test_support_tickets_metric(zenodo_support_ticket_metric):
+    assert zenodo_support_ticket_metric is not None
+    zenodo_support_ticket_metric.collect()
+    assert zenodo_support_ticket_metric.support_requests == 100
+    assert zenodo_support_ticket_metric.support_incidents == 100
+    assert zenodo_support_ticket_metric.incident_stc == 10
+
+
+def test_dummy_support_tickets_metric(dummy_support_ticket_metric):
+    assert dummy_support_ticket_metric is not None
+    dummy_support_ticket_metric.collect()
+    assert dummy_support_ticket_metric.support_requests == -1
+    assert dummy_support_ticket_metric.support_incidents == -1
+    assert dummy_support_ticket_metric.incident_stc == -1.0

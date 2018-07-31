@@ -20,6 +20,7 @@ from kpiit.metrics.records import RecordsMetric
 from kpiit.metrics.uptime import UptimeMetric
 from kpiit.models import Provider, Publisher
 from kpiit.providers import DataCiteProvider, JSONURLProvider
+from kpiit.providers.snow import ServiceNowProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
 from kpiit.publishers.json import JSONFilePublisher
 
@@ -219,3 +220,23 @@ def json_publisher(tmpdir):
 def celery_app(request):
     """Fixture returning the Celery app instance."""
     return app
+
+
+@pytest.fixture
+def zenodo_support_ticket_metric(mocker):
+    """Fixture for Zenodo support tickets metric."""
+    def auth_get(cls, url, user='user', password='pass'):
+        if '_avg_' in url and 'incident' in url:
+            return dict(result=dict(stats=dict(avg=dict(calendar_stc='10'))))
+        else:
+            return dict(result=dict(stats=dict(count='100')))
+
+    mocker.patch.object(ServiceNowProvider, 'auth_get', new=auth_get)
+
+    return metrics.zenodo_support_metric
+
+
+@pytest.fixture
+def dummy_support_ticket_metric(mocker):
+    """Fixture for dummy support ticket metric."""
+    return metrics.dummy_support_metric
