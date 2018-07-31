@@ -22,6 +22,7 @@ from kpiit.models import Provider, Publisher
 from kpiit.providers import DataCiteProvider, JSONURLProvider
 from kpiit.providers.snow import ServiceNowProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
+from kpiit.publishers.cern import CERNMonitPublisher
 from kpiit.publishers.json import JSONFilePublisher
 
 
@@ -240,3 +241,13 @@ def zenodo_support_ticket_metric(mocker):
 def dummy_support_ticket_metric(mocker):
     """Fixture for dummy support ticket metric."""
     return metrics.dummy_support_metric
+
+
+@pytest.fixture
+def cern_monit_publisher(mocker):
+    """Fixture for the CERN monit publisher."""
+    def new_send(document, production):
+        print('doc', document)
+
+    mocker.patch('kpiit.send_check.send', new=new_send)
+    return CERNMonitPublisher('testkpi')

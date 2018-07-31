@@ -13,7 +13,7 @@ import pytest
 
 from kpiit import Env, Service
 from kpiit.models import Publisher
-from kpiit.publishers.cern import CERNPublisher
+from kpiit.publishers.cern import CERNMonitPublisher, CERNPublisher
 
 
 def test_provider_base(zenodo_records):
@@ -129,3 +129,9 @@ def test_cern_repo_publisher_message(zenodo_records, website_uptime_metric,
     del b['timestamp']
 
     assert a == b
+
+
+def test_cern_monit_publisher(cern_monit_publisher, zenodo_records):
+    """Test CERN monit publisher."""
+    assert cern_monit_publisher is not None
+    cern_monit_publisher.publish([zenodo_records])
