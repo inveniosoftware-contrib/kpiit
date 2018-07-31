@@ -71,16 +71,17 @@ class Metric(object):
         if value is None:
             return 'null'
 
-        cleaned = None
         try:
-            cleaned = float(value)
-            cleaned = int(value)
+            return float(value)
         except ValueError:
-            return cleaned
-        finally:
-            if cleaned is None:
-                raise ValueError('failed to convert value: {}'.format(value))
-            return cleaned
+            pass
+
+        try:
+            return int(value)
+        except ValueError:
+            pass
+
+        return str(value)
 
 
 class Provider(object):

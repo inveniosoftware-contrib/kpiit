@@ -104,7 +104,7 @@ def website_uptime_metric(mocker):
     """Fixture for website uptime metric."""
     mocker.patch.object(UptimeRobotProvider, 'collect', new=uptime_collect)
 
-    return metrics.website_uptime_metric
+    return metrics.zenodo_website_uptime_metric
 
 
 @pytest.fixture
@@ -112,7 +112,7 @@ def search_uptime_metric(mocker):
     """Fixture for search uptime metric."""
     mocker.patch.object(UptimeRobotProvider, 'collect', new=uptime_collect)
 
-    return metrics.search_uptime_metric
+    return metrics.zenodo_search_uptime_metric
 
 
 @pytest.fixture
@@ -120,7 +120,7 @@ def files_uptime_metric(mocker):
     """Fixture for files uptime metric."""
     mocker.patch.object(UptimeRobotProvider, 'collect', new=uptime_collect)
 
-    return metrics.files_uptime_metric
+    return metrics.zenodo_files_uptime_metric
 
 
 @pytest.fixture

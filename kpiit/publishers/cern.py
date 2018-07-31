@@ -8,6 +8,7 @@
 """Publisher for CERN's Grafana instance."""
 
 import json
+import os
 from datetime import datetime
 
 from celery.utils.log import get_task_logger
@@ -135,5 +136,7 @@ class CERNMonitPublisher(CERNPublisher):
         """Publish KPIs to the grafana instance."""
         super().publish(metrics)
 
-        resp = send([self.data], production=True)
+        is_production = os.getenv('KPIIT_DEV') != '1'
+
+        resp = send([self.data], production=is_production)
         logger.debug('Response: %s' % resp)
