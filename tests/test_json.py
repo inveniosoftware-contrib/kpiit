@@ -14,6 +14,7 @@ import pytest
 from kpiit.json import MetricDecoder, MetricEncoder, metric_dumps, metric_loads
 from kpiit.metrics.records import RecordsMetric
 from kpiit.models import Provider, Publisher
+from kpiit.publishers.json import *
 
 
 def test_metric_json_encode(zenodo_records):
@@ -35,3 +36,12 @@ def test_fail_metric_json_encode(zenodo_records):
     with pytest.raises(TypeError):
         metric_dumps(a)
         metric_dumps(b)
+
+
+def test_json_publisher():
+    publisher = JSONFilePublisher('type', doi_prefix='test')
+    assert publisher.name == 'test'
+    publisher = JSONFilePublisher('type', service='test')
+    assert publisher.name == 'test'
+    publisher = JSONFilePublisher('type', asdf='test')
+    assert publisher.name == 'type'
