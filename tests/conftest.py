@@ -19,7 +19,7 @@ from kpiit.metrics.doi import DOIMetric
 from kpiit.metrics.records import RecordsMetric
 from kpiit.metrics.uptime import UptimeMetric
 from kpiit.models import Provider, Publisher
-from kpiit.providers import DataCiteProvider, JSONURLProvider
+from kpiit.providers import DataCiteProvider, DummyProvider, JSONURLProvider
 from kpiit.providers.snow import ServiceNowProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
 from kpiit.publishers.cern import CERNMonitPublisher
@@ -251,3 +251,9 @@ def cern_monit_publisher(mocker):
 
     mocker.patch('kpiit.send_check.send', new=new_send)
     return CERNMonitPublisher('testkpi')
+
+
+@pytest.fixture
+def dummy_provider(mocker):
+    """Fixture for the dummy provider."""
+    return DummyProvider()

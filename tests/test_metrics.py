@@ -12,6 +12,7 @@ import os
 import pytest
 
 from kpiit.metrics.records import RecordsMetric
+from kpiit.metrics.visits import VisitsMetric
 from kpiit.models import Metric
 
 
@@ -120,3 +121,9 @@ def test_dummy_support_tickets_metric(dummy_support_ticket_metric):
     assert dummy_support_ticket_metric.support_requests is None
     assert dummy_support_ticket_metric.support_incidents is None
     assert dummy_support_ticket_metric.incident_stc is None
+
+
+def test_base_visits_metric(dummy_provider):
+    metric = VisitsMetric(provider=dummy_provider)
+    with pytest.raises(NotImplementedError):
+        metric.collect()
