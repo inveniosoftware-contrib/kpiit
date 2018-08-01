@@ -69,6 +69,14 @@ def test_fail_uptime_provider(mocker, uptime_provider):
         assert UptimeRobotProvider(url='a', api_key='a', monitor_name=None)
 
 
+def test_uptime_no_api_key():
+    """Test uptime provider without API key."""
+    p = UptimeRobotProvider('http://www.example.com/', None, 'test_monitor')
+    res = p.collect()
+    assert res['response_time'] is None
+    assert res['uptime_ratio'] is None
+
+
 def test_failed_api_uptime_provider(mocker, uptime_provider):
     """Test failing API call for Uptime Robot provider."""
     # API call failed
