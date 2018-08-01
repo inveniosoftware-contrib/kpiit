@@ -131,3 +131,35 @@ def test_cern_monit_publisher(cern_monit_publisher, zenodo_records):
     """Test CERN monit publisher."""
     assert cern_monit_publisher is not None
     cern_monit_publisher.publish([zenodo_records])
+
+
+def test_cern_publisher_tags():
+    p = CERNPublisher('test', skip_fields=True)
+    assert 'idb_fields' not in p.data
+    p = CERNPublisher('test', skip_fields=False)
+    assert 'idb_fields' in p.data
+
+    tag1 = 'testtag1'
+    assert len(p.data['idb_tags']) == 0
+
+    p.add_tag(tag1, 'value')
+    assert tag1 in p.data['idb_tags']
+    assert tag1 in p.data and p.data[tag1] == 'value'
+
+    p.delete_tag(tag1)
+    assert len(p.data['idb_tags']) == 0
+
+
+def test_cern_publisher_fields():
+    p = CERNPublisher('test', skip_fields=False)
+    assert 'idb_fields' in p.data
+
+    field1 = 'testfield1'
+    assert len(p.data['idb_fields']) == 0
+
+    p.add_field(field1, 'value')
+    assert field1 in p.data['idb_fields']
+    assert field1 in p.data and p.data[field1] == 'value'
+
+    p.delete_field(field1)
+    assert len(p.data['idb_fields']) == 0
