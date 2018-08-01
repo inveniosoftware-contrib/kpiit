@@ -117,6 +117,6 @@ def test_support_tickets_metric(zenodo_support_ticket_metric):
 def test_dummy_support_tickets_metric(dummy_support_ticket_metric):
     assert dummy_support_ticket_metric is not None
     dummy_support_ticket_metric.collect()
-    assert dummy_support_ticket_metric.support_requests == -1
-    assert dummy_support_ticket_metric.support_incidents == -1
-    assert dummy_support_ticket_metric.incident_stc == -1.0
+    assert dummy_support_ticket_metric.support_requests is None
+    assert dummy_support_ticket_metric.support_incidents is None
+    assert dummy_support_ticket_metric.incident_stc is None

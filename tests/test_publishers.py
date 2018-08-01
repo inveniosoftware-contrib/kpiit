@@ -97,8 +97,6 @@ def test_cern_repo_publisher_message(zenodo_records, website_uptime_metric,
         "service": "zenodo",
         "env": "prod",
         "records": 406804,
-        "visits": -1,
-        "visits_unique": -1,
         "uptime_web": 99.96,
         "uptime_search": 99.96,
         "uptime_files": 99.96,
@@ -117,8 +115,6 @@ def test_cern_repo_publisher_message(zenodo_records, website_uptime_metric,
             "response_time_search",
             "uptime_files",
             "response_time_files",
-            "visits",
-            "visits_unique"
         ]
     }
     b = publisher.data

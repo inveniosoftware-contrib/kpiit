@@ -32,4 +32,4 @@ def test_metric_clean_value():
     assert Metric.clean_value('3.1415926') == 3.1415926
     assert Metric.clean_value(5123123) == 5123123
     assert Metric.clean_value(3.1415926) == 3.1415926
-    assert Metric.clean_value(None) == 'null'
+    assert Metric.clean_value(None) is None
