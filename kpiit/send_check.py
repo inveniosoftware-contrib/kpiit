@@ -19,6 +19,7 @@ def send(document, production):
     """Send JSON document to CERN monit."""
     host = PROD_URL if production else DEV_URL
     print('sending document to: ', host)
+    print('DOC', json.dumps(document))
     return requests.post(
         host,
         data=json.dumps(document),

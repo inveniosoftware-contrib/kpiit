@@ -69,7 +69,7 @@ class Metric(object):
     def clean_value(cls, value):
         """Clean string value and convert to appropriate type."""
         if value is None:
-            return 'null'
+            return None
         elif isinstance(value, float) or isinstance(value, int):
             return value
 

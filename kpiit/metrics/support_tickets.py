@@ -35,6 +35,6 @@ class DummySupportTicketsMetric(SupportTicketsMetric):
 
     def collect_done(self, data):
         """Process collected data."""
-        self.support_requests = -1
-        self.support_incidents = -1
-        self.incident_stc = -1.0
+        self.support_requests = None
+        self.support_incidents = None
+        self.incident_stc = None

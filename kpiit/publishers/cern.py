@@ -98,7 +98,8 @@ class CERNPublisher(Publisher):
         for metric in metrics:
             for name, values in metric.values.items():
                 for key, value in values.items():
-                    self.add_field(key, value)
+                    if value is not None:
+                        self.add_field(key, value)
 
     def publish(self, metrics):
         """Publish KPIs to the grafana instance."""

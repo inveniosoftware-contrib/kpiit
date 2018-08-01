@@ -31,8 +31,8 @@ class DummyVisitsMetric(Metric):
                  fields=['visits', 'visits_unique']):
         """Visits metric initialization."""
         super().__init__(name, provider, fields)
-        self.visits = -1
-        self.visits_unique = -1
+        self.visits = None
+        self.visits_unique = None
 
     def collect_done(self, data):
         """Process collected data."""
