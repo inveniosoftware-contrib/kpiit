@@ -113,3 +113,21 @@ def test_agg_sum():
 
     with pytest.raises(TypeError):
         q = ServiceNowQuery('incident').where(a='b').max()
+
+
+def test_auth_get(mocker):
+    class AuthGetResponse():
+        def __init__(self, status_code):
+            self.status_code = status_code
+
+        def json(self):
+            return dict(hello='world')
+
+    mocker.patch('requests.get', new=lambda url, auth: AuthGetResponse(400))
+
+    with pytest.raises(requests.exceptions.HTTPError):
+        ServiceNowProvider.auth_get(
+            url='http://www.google.com/',
+            user='user',
+            password='pass'
+        )
