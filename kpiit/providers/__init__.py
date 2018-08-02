@@ -99,4 +99,3 @@ class DataCiteProvider(Provider):
                     # unique_doi_failed=tds[7].get_text()
                 )
                 return self.data
-        return None
