@@ -16,4 +16,8 @@ Response time:
 2. For each ticket:
   1. Get the history and sort by date ASC (e.g. https://cerntraining.service-now.com/api/now/table/sys_history_line?sysparm_query=set.id=<ticket sys_id>)
   2. For each entry, query the user and see which department they belong to
-  3. When a user from the selected group is found, do a time diff of when the ticket was assigned to the group and the opening date time
+  3. When a user belongs to the selected department, do a time diff of when the ticket was assigned to the group and the opening date time
+
+* Cache each ticket that has been calculated
+* Calculate all the new tickets each time the script is executed
+* Average response time = (response time of all cached tickets + response time of all new tickets) / (cached ticket count + new ticket count)

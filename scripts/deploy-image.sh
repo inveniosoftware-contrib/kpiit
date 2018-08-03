@@ -21,11 +21,11 @@ if [ "$docker_login_ret" != "Login Succeeded" ]; then
     exit 1
 fi
 
-BUILD="docker build --no-cache --network=host -t kpiit-image:${VERSION} ."
+BUILD="docker build --no-cache=true --network=host -t kpiit-image:$VERSION ."
 echo "Building image: $BUILD"
 $BUILD
 
-TAG="docker tag kpiit-image:${VERSION} openshift-registry.web.cern.ch/it-cda-dr-kpis/kpiit-image:${VERSION}"
+TAG="docker tag kpiit-image:$VERSION openshift-registry.web.cern.ch/it-cda-dr-kpis/kpiit-image"
 echo "Tagging image: $TAG"
 $TAG
 
