@@ -105,30 +105,27 @@ class ServiceNowQuery(object):
 
     def avg(self, *fields):
         """Aggregate fields by taking the average of the values."""
-        self.aggregate('avg', fields)
+        self.aggregate('avg', *fields)
         return self
 
     def sum(self, *fields):
         """Aggregate fields by taking the sum of the values."""
-        self.aggregate('sum', fields)
+        self.aggregate('sum', *fields)
         return self
 
     def min(self, *fields):
         """Aggregate fields by taking the minimum of the values."""
-        self.aggregate('min', fields)
+        self.aggregate('min', *fields)
         return self
 
     def max(self, *fields):
         """Aggregate fields by taking the maximum of the values."""
-        self.aggregate('max', fields)
+        self.aggregate('max', *fields)
         return self
 
-    def aggregate(self, op, fields):
+    def aggregate(self, op, field, *fields):
         """Add aggregate operation for the given fields."""
-        if len(fields) < 1:
-            raise TypeError('agg. function {} needs at least one field'.format(
-                op
-            ))
+        fields = [field, *fields]
         self.source_type = 'stats'
         self.api_version = 1
         self.params['sysparm_{}_fields'.format(op)] = ','.join(fields)

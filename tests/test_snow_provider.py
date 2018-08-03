@@ -96,7 +96,7 @@ def test_and_with_strings():
     assert str(q1) == base + 'test=hello^abcNOT IN1,2,3^ORstateIN5,6,7'
 
 
-def test_agg_sum():
+def test_aggregate():
     base = '/api/now/v1/stats/incident?sysparm_query='
 
     q = ServiceNowQuery('incident').where(a='b').sum('field1')
