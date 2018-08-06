@@ -24,3 +24,9 @@ Response time:
 * Cache each ticket that has been calculated
 * Calculate all the new tickets each time the script is executed
 * Average response time = (response time of all cached tickets + response time of all new tickets) / (cached ticket count + new ticket count)
+
+## Update 1
+
+* SLA = Service Level Agreement = Time when ticket should be assigned
+* Reaction time is not available through the REST API
+* Doesn't make sense to aggregate reassignment count. Which time interval? Which tickets to aggregate? We don't show stats for single tickets
