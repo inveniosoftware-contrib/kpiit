@@ -46,7 +46,7 @@ class ServiceNowQuery(object):
         """Initiate the Service Now query."""
         self.table_name = table_name
         self.instance = instance
-        self.init()
+        self.reset()
 
     @property
     def url(self):
@@ -56,7 +56,7 @@ class ServiceNowQuery(object):
             path=str(self)
         )
 
-    def init(self):
+    def reset(self):
         """Reset the query to the starting values."""
         self.source_type = 'table'
         self.api_version = 2
@@ -190,13 +190,11 @@ class ServiceNowProvider(Provider):
         query = ServiceNowQuery(table, self.instance).where(
             'assignment_groupSTARTSWITH{}'.format(functional_element),
             'stateNOT IN4,3,7,6,8'  # only select tickets that are not closed
-        ).count()
+        ).max('u_reassignment_counter_fe').count()
 
-        # TODO: Perform error checking on return response
         res_json = self.auth_get(query.url)
-        print(res_json)
 
-        return res_json['result']['stats']['count']
+        return res_json['result']['stats']
 
     def _collect_stc(self, table):
         """Collect waiting time from Service Now."""
@@ -207,15 +205,28 @@ class ServiceNowProvider(Provider):
         ).avg('calendar_stc')
 
         res_json = self.auth_get(query.url)
-        print(res_json)
 
         return res_json['result']['stats']['avg']['calendar_stc']
 
     def collect(self):
         """Collect support stats from Service Now."""
+        req_res = self._collect_record_count(REQ_TABLE)
+        inc_res = self._collect_record_count(INC_TABLE)
+
+        try:
+            req_fe_count = int(req_res['max']['u_reassignment_counter_fe'])
+        except ValueError:
+            req_fe_count = 0
+
+        try:
+            inc_fe_count = int(inc_res['max']['u_reassignment_counter_fe'])
+        except ValueError:
+            inc_fe_count = 0
+
         return {
-            'support_requests': self._collect_record_count(REQ_TABLE),
-            'support_incidents': self._collect_record_count(INC_TABLE),
+            'support_requests': req_res['count'],
+            'support_incidents': inc_res['count'],
+            'reassignment_count': req_fe_count + inc_fe_count,
             'incident_stc': self._collect_stc(INC_TABLE)
         }
 

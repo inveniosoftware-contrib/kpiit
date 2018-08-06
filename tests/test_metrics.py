@@ -113,6 +113,7 @@ def test_support_tickets_metric(zenodo_support_ticket_metric):
     assert zenodo_support_ticket_metric.support_requests == 100
     assert zenodo_support_ticket_metric.support_incidents == 100
     assert zenodo_support_ticket_metric.incident_stc == 10
+    assert zenodo_support_ticket_metric.reassignment_count == 40
 
 
 def test_dummy_support_tickets_metric(dummy_support_ticket_metric):

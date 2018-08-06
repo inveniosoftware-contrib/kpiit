@@ -230,7 +230,14 @@ def zenodo_support_ticket_metric(mocker):
         if '_avg_' in url and 'incident' in url:
             return dict(result=dict(stats=dict(avg=dict(calendar_stc='10'))))
         else:
-            return dict(result=dict(stats=dict(count='100')))
+            return dict(
+                result=dict(
+                    stats=dict(
+                        count='100',
+                        max=dict(u_reassignment_counter_fe='20')
+                    )
+                )
+            )
 
     mocker.patch.object(ServiceNowProvider, 'auth_get', new=auth_get)
 

@@ -14,7 +14,12 @@ from ..providers import DummyProvider
 class SupportTicketsMetric(Metric):
     """Metric for support tickets."""
 
-    FIELDS = ('support_requests', 'support_incidents', 'incident_stc')
+    FIELDS = (
+        'support_requests',
+        'support_incidents',
+        'incident_stc',
+        'reassignment_count'
+    )
 
     def __init__(self, provider, name='support_tickets', fields=FIELDS):
         """Support tickets metric initialization."""
@@ -38,3 +43,4 @@ class DummySupportTicketsMetric(SupportTicketsMetric):
         self.support_requests = None
         self.support_incidents = None
         self.incident_stc = None
+        self.reassignment_count = None
