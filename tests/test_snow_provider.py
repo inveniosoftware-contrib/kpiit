@@ -18,12 +18,13 @@ from kpiit.providers.snow import *
 def test_simple_queries():
     base = '/api/now/v2/table/incident?sysparm_query='
     q1 = ServiceNowQuery('incident').where(test='hello')
+    assert isinstance(q1, ServiceNowQuery)
     assert str(q1) == base + 'test=hello'
 
-    q1.and_(bool_test=True)
+    assert isinstance(q1.and_(bool_test=True), ServiceNowQuery)
     assert str(q1) == base + 'test=hello^bool_test=true'
 
-    q1.or_(hello='world', or_this=False)
+    assert isinstance(q1.or_(hello='world', or_this=False), ServiceNowQuery)
     assert str(q1) == base + \
         'test=hello^bool_test=true^ORhello=world^ORor_this=false'
 
@@ -33,10 +34,10 @@ def test_restart_where_clause_queries():
     q1 = ServiceNowQuery('incident').where(test='hello').and_(a='b')
     assert str(q1) == base + 'test=hello^a=b'
 
-    q1.where(hello='world')
+    assert isinstance(q1.where(hello='world'), ServiceNowQuery)
     assert str(q1) == base + 'hello=world'
 
-    q1.and_(a='b')
+    assert isinstance(q1.and_(a='b'), ServiceNowQuery)
     assert str(q1) == base + 'hello=world^a=b'
 
 
@@ -45,7 +46,7 @@ def test_limits():
     q1 = ServiceNowQuery('incident').where(test='hello').limit(5)
     assert str(q1) == base + 'test=hello&sysparm_limit=5'
 
-    q1.limit(10)
+    assert isinstance(q1.limit(10), ServiceNowQuery)
     assert str(q1) == base + 'test=hello&sysparm_limit=10'
 
     assert q1.url == INSTANCE_URLS['test'] + base + \
@@ -59,7 +60,7 @@ def test_count():
     q1 = ServiceNowQuery('incident').where(test='hello').count()
     assert str(q1) == base + 'test=hello&sysparm_count=true'
 
-    q1.limit(20)
+    assert isinstance(q1.limit(20), ServiceNowQuery)
     assert str(q1) == base + 'test=hello&sysparm_count=true&sysparm_limit=20'
 
     assert q1.url == INSTANCE_URLS['test'] + base + \
@@ -72,11 +73,11 @@ def test_orderby():
     q1 = ServiceNowQuery('incident').where(test='hello').limit(12)
     assert str(q1) == base + 'test=hello&sysparm_limit=12'
 
-    q1.orderby('field1')
+    assert isinstance(q1.orderby('field1'), ServiceNowQuery)
     assert str(q1) == base + \
         'test=hello&sysparm_limit=12&sysparm_orderby=field1'
 
-    q1.orderby('field2', desc=True)
+    assert isinstance(q1.orderby('field2', desc=True), ServiceNowQuery)
     assert str(q1) == base + \
         'test=hello&sysparm_limit=12&sysparm_orderby=field2^DESC'
 
@@ -92,7 +93,7 @@ def test_and_with_strings():
     )
     assert str(q1) == base + 'test=hello^abcNOT IN1,2,3'
 
-    q1.or_('stateIN5,6,7')
+    assert isinstance(q1.or_('stateIN5,6,7'), ServiceNowQuery)
     assert str(q1) == base + 'test=hello^abcNOT IN1,2,3^ORstateIN5,6,7'
 
 
@@ -100,15 +101,19 @@ def test_aggregate():
     base = '/api/now/v1/stats/incident?sysparm_query='
 
     q = ServiceNowQuery('incident').where(a='b').sum('field1')
+    assert isinstance(q, ServiceNowQuery)
     assert str(q) == base + 'a=b&sysparm_sum_fields=field1'
 
     q = ServiceNowQuery('incident').where(a='b').avg('field1', 'field2')
+    assert isinstance(q, ServiceNowQuery)
     assert str(q) == base + 'a=b&sysparm_avg_fields=field1,field2'
 
     q = ServiceNowQuery('incident').where(a='b').min('a', 'b')
+    assert isinstance(q, ServiceNowQuery)
     assert str(q) == base + 'a=b&sysparm_min_fields=a,b'
 
     q = ServiceNowQuery('incident').where(a='b').max('x', 'y', 'z', 'w')
+    assert isinstance(q, ServiceNowQuery)
     assert str(q) == base + 'a=b&sysparm_max_fields=x,y,z,w'
 
     with pytest.raises(TypeError):
