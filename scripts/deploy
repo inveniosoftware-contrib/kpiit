@@ -44,26 +44,87 @@ def check_docker_auth():
                               result.stdout.decode('utf-8'))
 
 
-def build_docker_image(args):
+def run_command(cmd, args):
     output = subprocess.PIPE if args.verbose else subprocess.DEVNULL
+
     cmd_kwargs = dict(stdout=output, stderr=output)
-    cmd = 'docker build --no-cache=true --network=host -t kpiit-image:latest .'
-    logger.debug('Build command: %s' % cmd)
-    logger.info('Building docker image...')
+
     if args.verbose:
         result = subprocess.run(cmd, shell=True)
     else:
         result = subprocess.run(cmd, shell=True, **cmd_kwargs)
-    logger.debug('...image build successful!')
+
+    if result.returncode != 0:
+        raise DeploymentError('Command Failed', cmd)
+
+
+def build_docker_image(args):
+    cmd = 'docker build --no-cache=true --network=host -t {image} .'.format(
+        image=args.image
+    )
+    logger.debug('Build command: %s' % cmd)
+    logger.info('Building docker image...')
+
+    run_command(cmd, args)
+
+    logger.debug('Docker image build was successful.')
+
+
+def tag_docker_image(args):
+    cmd = 'docker tag {image_tag} {registry}/{image}'.format(
+        image_tag=args.image,
+        registry=args.registry,
+        image=args.image.split(':')[0]
+    )
+    logger.debug('Tag command: %s' % cmd)
+    logger.info('Tagging docker image...')
+
+    run_command(cmd, args)
+
+    logger.debug('Docker tag was successful.')
+
+
+def push_docker_image(args):
+    cmd = 'docker push {registry}/{image}'.format(
+        registry=args.registry,
+        image=args.image.split(':')[0]
+    )
+    logger.debug('Push command: %s' % cmd)
+    logger.info('Pushing docker image to OpenShift...')
+
+    run_command(cmd, args)
+
+    logger.debug('Docker image was successfully pushed to OpenShift.')
 
 
 def setup():
     check_openshift_auth()
     check_docker_auth()
 
+    default_image = 'kpiit-image:latest'
+    default_registry = 'openshift-registry.web.cern.ch/it-cda-dr-kpis'
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('--verbose', '-v', action='store_true',
-                        help='verbose output messages')
+    parser.add_argument(
+        '--image', '-i',
+        default=default_image,
+        help='docker image name (default: {})'.format(default_image)
+    )
+    parser.add_argument(
+        '--registry', '-r',
+        default=default_registry,
+        help='OpenShift docker registry (default: {})'.format(default_registry)
+    )
+    parser.add_argument(
+        '--build-only', '-b',
+        action='store_true',
+        help='build the Docker image without pushing it to OpenShift'
+    )
+    parser.add_argument(
+        '--verbose', '-v',
+        action='store_true',
+        help='verbose output messages'
+    )
 
     return parser.parse_args()
 
@@ -73,6 +134,11 @@ if __name__ == '__main__':
         args = setup()
 
         build_docker_image(args)
+        tag_docker_image(args)
+
+        if not args.build_only:
+            push_docker_image(args)
+
     except DeploymentError as de:
         print('[{title}] {msg}'.format(title=de.title, msg=de.message))
     except KeyboardInterrupt:
