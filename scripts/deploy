@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 import argparse
+import json
 import logging
+import re
 import subprocess
+
+
+RE_LOG_FILE = re.compile(r'\/dev\/termination-log(\d+)')
 
 
 logger = logging.getLogger('openshift_deploy')
@@ -9,6 +14,43 @@ logger.setLevel(logging.DEBUG)
 
 ch = logging.StreamHandler()
 logger.addHandler(ch)
+
+
+def setup():
+    check_openshift_auth()
+    check_docker_auth()
+
+    default_image = 'kpiit-image:latest'
+    default_registry = 'openshift-registry.web.cern.ch/it-cda-dr-kpis'
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--image', '-i',
+        default=default_image,
+        help='docker image name (default: {})'.format(default_image)
+    )
+    parser.add_argument(
+        '--registry', '-r',
+        default=default_registry,
+        help='OpenShift docker registry (default: {})'.format(default_registry)
+    )
+    parser.add_argument(
+        '--build-only', '-b',
+        action='store_true',
+        help='build the Docker image without pushing it to OpenShift'
+    )
+    parser.add_argument(
+        '--redeploy-only',
+        action='store_true',
+        help='redeploy the OpenShift deployment without building and pushing the Docker image'
+    )
+    parser.add_argument(
+        '--verbose', '-v',
+        action='store_true',
+        help='verbose output messages'
+    )
+
+    return parser.parse_args()
 
 
 class DeploymentError(Exception):
@@ -55,7 +97,8 @@ def run_command(cmd, args):
         result = subprocess.run(cmd, shell=True, **cmd_kwargs)
 
     if result.returncode != 0:
-        raise DeploymentError('Command Failed', cmd)
+        msg = '{cmd}: {obj}'.format(cmd=cmd, obj=result)
+        raise DeploymentError('Command Failed', msg)
 
 
 def build_docker_image(args):
@@ -97,49 +140,52 @@ def push_docker_image(args):
     logger.debug('Docker image was successfully pushed to OpenShift.')
 
 
-def setup():
-    check_openshift_auth()
-    check_docker_auth()
+def redeploy(args):
+    """Re-deploy the OpenShift deployment using the latest pushed tag."""
+    cmd = 'oc get --export deployment.apps/worker -o json'
+    result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
+    config = json.loads(result.stdout.decode('utf-8'))
 
-    default_image = 'kpiit-image:latest'
-    default_registry = 'openshift-registry.web.cern.ch/it-cda-dr-kpis'
+    # Change the termination log filename to force re-deployment
+    # TODO: Find a cleaner approach
+    containers = config['spec']['template']['spec']['containers']
+    log_file = containers[0]['terminationMessagePath']
+    m = RE_LOG_FILE.match(log_file)
+    if m:
+        num = int(m.group(1))
+        log_file = log_file.replace(m.group(1), str(num + 1))
+        containers[0]['terminationMessagePath'] = log_file
+    else:
+        raise DeploymentError('Failed Parsing Filename', log_file)
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--image', '-i',
-        default=default_image,
-        help='docker image name (default: {})'.format(default_image)
-    )
-    parser.add_argument(
-        '--registry', '-r',
-        default=default_registry,
-        help='OpenShift docker registry (default: {})'.format(default_registry)
-    )
-    parser.add_argument(
-        '--build-only', '-b',
-        action='store_true',
-        help='build the Docker image without pushing it to OpenShift'
-    )
-    parser.add_argument(
-        '--verbose', '-v',
-        action='store_true',
-        help='verbose output messages'
-    )
+    data = dict(spec=dict(template=dict(spec=dict(
+        containers=containers
+    ))))
 
-    return parser.parse_args()
+    cmd = "oc patch deployment.apps/worker -p '{}'".format(json.dumps(data))
+
+    logger.debug('Re-deploy command: %s' % cmd)
+    logger.info('Re-deploying OpenShift deployment...')
+
+    run_command(cmd, args)
+
+    logger.debug('OpenShift deployment restarted successfully.')
 
 
 if __name__ == '__main__':
     try:
         args = setup()
 
-        build_docker_image(args)
-        tag_docker_image(args)
+        if not args.redeploy_only:
+            build_docker_image(args)
+            tag_docker_image(args)
 
-        if not args.build_only:
-            push_docker_image(args)
+            if not args.build_only:
+                push_docker_image(args)
+
+        redeploy(args)
 
     except DeploymentError as de:
-        print('[{title}] {msg}'.format(title=de.title, msg=de.message))
+        logger.error('[{title}] {msg}'.format(title=de.title, msg=de.message))
     except KeyboardInterrupt:
         logger.info('Exiting...')
