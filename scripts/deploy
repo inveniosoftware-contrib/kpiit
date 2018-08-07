@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 import argparse
+import logging
 import subprocess
+
+
+logger = logging.getLogger('openshift_deploy')
+logger.setLevel(logging.DEBUG)
+
+ch = logging.StreamHandler()
+logger.addHandler(ch)
 
 
 class DeploymentError(Exception):
@@ -16,6 +24,7 @@ def check_openshift_auth():
         stdout=subprocess.DEVNULL
     )
     if result.returncode != 0:
+        logger.error('Not authenticated with OpenShift')
         raise DeploymentError('OpenShift Auth Failed',
                               result.stderr.decode('utf-8'))
 
@@ -30,28 +39,41 @@ def check_docker_auth():
     )
     msg = result.stdout.decode('utf-8')
     if msg != 'Login Succeeded\n':
+        logger.error('Not authenticated with Docker')
         raise DeploymentError('Docker Auth Failed',
                               result.stdout.decode('utf-8'))
 
 
-def build_docker_image():
-    pass
+def build_docker_image(args):
+    output = subprocess.PIPE if args.verbose else subprocess.DEVNULL
+    cmd_kwargs = dict(stdout=output, stderr=output)
+    cmd = 'docker build --no-cache=true --network=host -t kpiit-image:latest .'
+    logger.debug('Build command: %s' % cmd)
+    logger.info('Building docker image...')
+    if args.verbose:
+        result = subprocess.run(cmd, shell=True)
+    else:
+        result = subprocess.run(cmd, shell=True, **cmd_kwargs)
+    logger.debug('...image build successful!')
 
 
 def setup():
+    check_openshift_auth()
+    check_docker_auth()
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('--verbose', '-v', help='verbose output messages')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                        help='verbose output messages')
 
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     try:
-        check_openshift_auth()
-        check_docker_auth()
-
         args = setup()
 
-        build_docker_image()
+        build_docker_image(args)
     except DeploymentError as de:
         print('[{title}] {msg}'.format(title=de.title, msg=de.message))
+    except KeyboardInterrupt:
+        logger.info('Exiting...')
