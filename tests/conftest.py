@@ -205,10 +205,7 @@ def zenodo_doi_metric(mocker, zenodo_doi_index_html, zenodo_doi_june_html):
                         new=load_index_data)
     mocker.patch.object(DataCiteProvider, 'load_stats_data',
                         new=load_stats_data)
-    return DOIMetric(
-        name='zenodo_doi',
-        provider=DataCiteProvider('10.5281')
-    )
+    return DOIMetric(provider=DataCiteProvider('10.5281'))
 
 
 @pytest.fixture

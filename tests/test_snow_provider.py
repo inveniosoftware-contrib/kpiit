@@ -54,7 +54,6 @@ def test_limits():
 
 
 def test_count():
-    base_old = '/api/now/v2/table/incident?sysparm_query='
     base = '/api/now/v1/stats/incident?sysparm_query='
 
     q1 = ServiceNowQuery('incident').where(test='hello').count()

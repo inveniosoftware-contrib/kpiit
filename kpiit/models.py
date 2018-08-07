@@ -25,6 +25,7 @@ class Metric(object):
 
         self.fields = fields
         for field in fields:
+            setattr(self, field, None)
             self.__dict__[field] = None
 
     def collect(self):
@@ -56,8 +57,7 @@ class Metric(object):
 
     def __repr__(self):
         """Metric representation."""
-        pairs = [', {}={}'.format(key, self.value(key))
-                 for key in self.fields]
+        pairs = [', {}={}'.format(key, self.value(key)) for key in self.fields]
 
         return '{clsname}("{name}"{value_pairs})'.format(
             clsname=self.__class__.__name__,

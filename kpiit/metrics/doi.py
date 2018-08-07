@@ -13,11 +13,9 @@ from ..models import Metric
 class DOIMetric(Metric):
     """Metric for DOI."""
 
-    FIELDS = ['doi_success', 'doi_failed']
-
-    def __init__(self, provider, name='doi', fields=FIELDS):
+    def __init__(self, provider):
         """DOI metric initialization."""
-        super().__init__(name, provider, fields)
+        super().__init__('doi', provider, fields=['doi_success', 'doi_failed'])
 
     def collect_done(self, data):
         """Process collected data."""

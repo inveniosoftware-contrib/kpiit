@@ -13,9 +13,9 @@ from ..models import Metric
 class RecordsMetric(Metric):
     """Metric for number of records."""
 
-    def __init__(self, provider, name='records', fields=['records']):
+    def __init__(self, name, provider):
         """Records metric initialization."""
-        super().__init__(name, provider, fields)
+        super().__init__(name, provider, ['records'])
 
     def collect_done(self, data):
         """Process collected data."""

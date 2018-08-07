@@ -14,16 +14,14 @@ from ..providers import DummyProvider
 class SupportTicketsMetric(Metric):
     """Metric for support tickets."""
 
-    FIELDS = (
-        'support_requests',
-        'support_incidents',
-        'incident_stc',
-        'reassignment_count'
-    )
-
-    def __init__(self, provider, name='support_tickets', fields=FIELDS):
+    def __init__(self, name, provider):
         """Support tickets metric initialization."""
-        super().__init__(name, provider, fields)
+        super().__init__(name, provider, fields=[
+            'support_requests',
+            'support_incidents',
+            'incident_stc',
+            'reassignment_count'
+        ])
 
     def collect_done(self, data):
         """Process collected data."""
@@ -40,7 +38,4 @@ class DummySupportTicketsMetric(SupportTicketsMetric):
 
     def collect_done(self, data):
         """Process collected data."""
-        self.support_requests = None
-        self.support_incidents = None
-        self.incident_stc = None
-        self.reassignment_count = None
+        pass

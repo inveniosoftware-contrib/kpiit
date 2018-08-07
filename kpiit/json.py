@@ -54,8 +54,7 @@ class MetricDecoder(json.JSONDecoder):
         MetricClass = load_target(obj['_type'])
         metric = MetricClass(
             name=obj['name'],
-            provider=obj['provider'],
-            fields=obj['values'].keys()
+            provider=obj['provider']
         )
         metric.update(**obj['values'])
         return metric
