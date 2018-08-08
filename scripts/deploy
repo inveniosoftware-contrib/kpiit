@@ -143,7 +143,9 @@ def run_command(cmd, verbose):
     else:
         result = subprocess.run(cmd, shell=True, **cmd_kwargs)
 
-    if result.returncode != 0:
+    try:
+        result.check_returncode()
+    except subprocess.CalledProcessError:
         msg = '{cmd}: {obj}'.format(cmd=cmd, obj=result)
         raise DeploymentError('Command Failed', msg)
 
@@ -202,7 +204,7 @@ def push_docker_image(image, registry, verbose):
     logger.debug('Push command: %s' % cmd)
     logger.info('Pushing docker image to OpenShift...')
 
-    run_command(cmd, args)
+    run_command(cmd, verbose)
 
     logger.debug('Docker image was successfully pushed to OpenShift.')
 
