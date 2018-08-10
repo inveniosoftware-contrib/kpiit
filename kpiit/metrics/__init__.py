@@ -14,16 +14,12 @@ from kpiit import Service
 from .doi import DOIMetric
 from .records import RecordsMetric
 from .support_tickets import DummySupportTicketsMetric, SupportTicketsMetric
-from .visits import DummyVisitsMetric
+from .visits import DummyVisitsMetric, VisitsMetric
 from .uptime import UptimeMetric
 from ..providers import DataCiteProvider, JSONURLProvider, DummyProvider
+from ..providers.piwik import PiwikProvider
 from ..providers.snow import ServiceNowProvider
 from ..providers.uptime_robot import UptimeRobotProvider
-
-
-# Dummy metric
-
-dummy_visits_metric = DummyVisitsMetric()
 
 # Record metrics
 
@@ -159,4 +155,21 @@ cds_videos_support_metric = SupportTicketsMetric(
 zenodo_support_metric = SupportTicketsMetric(
     name='zenodo_support',
     provider=ServiceNowProvider(Service.ZENODO)
+)
+
+# Dummy metric
+
+dummy_visits_metric = DummyVisitsMetric(name='visits')
+
+zenodo_visits_metric = VisitsMetric(
+    name='zenodo_visits',
+    provider=PiwikProvider(site_id=57)
+)
+
+cds_videos_visits_metric = DummyVisitsMetric(
+    name='cds_videos_visits'
+)
+
+cod_visits_metric = DummyVisitsMetric(
+    name='cod_visits'
 )

@@ -14,14 +14,14 @@ from ..providers import DummyProvider
 class VisitsMetric(Metric):
     """Metric for number of visits."""
 
-    def __init__(self, provider, name='visits',
-                 fields=['visits', 'visits_unique']):
+    def __init__(self, name, provider, fields=['visits', 'visits_unique']):
         """Visits metric initialization."""
         super().__init__(name, provider, fields)
 
     def collect_done(self, data):
         """Process collected data."""
-        raise NotImplementedError()
+        for key, value in data.items():
+            setattr(self, key, self.clean_value(value))
 
 
 class DummyVisitsMetric(Metric):
@@ -31,8 +31,6 @@ class DummyVisitsMetric(Metric):
                  fields=['visits', 'visits_unique']):
         """Visits metric initialization."""
         super().__init__(name, provider, fields)
-        self.visits = None
-        self.visits_unique = None
 
     def collect_done(self, data):
         """Process collected data."""
