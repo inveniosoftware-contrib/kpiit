@@ -75,3 +75,4 @@ celerybeat-schedule
 
 output.json
 logs
+*.keytab

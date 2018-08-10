@@ -12,6 +12,7 @@ import os
 import cern_sso
 import requests
 import requests.exceptions
+import subprocess
 from celery.utils.log import get_task_logger
 
 from kpiit import Service
@@ -27,6 +28,15 @@ class Piwik(object):
     BASE_URL = 'https://piwikui.web.cern.ch/piwikui/'
     NAME = None
     COOKIE = None
+
+    @classmethod
+    def krb_ticket(cls, principal, keytab_file):
+        """Retrieve the Kerberos ticket for `principal`."""
+        try:
+            ret = subprocess.run(['kinit', principal, '-k', '-t', keytab_file])
+            ret.check_returncode()
+        except subprocess.CalledProcessError:
+            logger.error('Failed to retrieve Kerberos ticket')
 
     @classmethod
     def krb_cookie(cls):
@@ -46,6 +56,7 @@ class Piwik(object):
         :param str url: API url
         """
         if cls.COOKIE is None:
+            cls.krb_ticket('n.persson@CERN.CH', 'n.persson.keytab')
             cls.COOKIE = cls.krb_cookie()
         response = requests.get(url, cookies=cls.COOKIE)
         return response.json()
