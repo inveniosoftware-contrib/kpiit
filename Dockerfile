@@ -8,7 +8,7 @@
 FROM python:3.6
 
 RUN apt-get update -y && apt-get upgrade -y
-RUN apt-get install -y git curl vim
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y git curl vim krb5-user
 RUN pip install --upgrade setuptools wheel pip
 
 # Install KPIit
