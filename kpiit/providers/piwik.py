@@ -8,11 +8,11 @@
 """Piwik provider."""
 
 import os
+import subprocess
 
 import cern_sso
 import requests
 import requests.exceptions
-import subprocess
 from celery.utils.log import get_task_logger
 
 from kpiit import Service
