@@ -8,13 +8,14 @@
 """Visits metric."""
 
 from ..models import Metric
-from ..providers import DummyProvider
 
 
 class VisitsMetric(Metric):
     """Metric for number of visits."""
 
-    def __init__(self, name, provider, fields=['visits', 'visits_unique']):
+    FIELDS = ['visits', 'visits_unique']
+
+    def __init__(self, name, provider, fields=FIELDS):
         """Visits metric initialization."""
         super().__init__(name, provider, fields)
 
@@ -22,16 +23,3 @@ class VisitsMetric(Metric):
         """Process collected data."""
         for key, value in data.items():
             setattr(self, key, self.clean_value(value))
-
-
-class DummyVisitsMetric(Metric):
-    """Dummy metric with fixed data."""
-
-    def __init__(self, provider=DummyProvider(), name='visits',
-                 fields=['visits', 'visits_unique']):
-        """Visits metric initialization."""
-        super().__init__(name, provider, fields)
-
-    def collect_done(self, data):
-        """Process collected data."""
-        pass

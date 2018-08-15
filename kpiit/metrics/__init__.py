@@ -13,13 +13,28 @@ from kpiit import Service
 
 from .doi import DOIMetric
 from .records import RecordsMetric
-from .support_tickets import DummySupportTicketsMetric, SupportTicketsMetric
-from .visits import DummyVisitsMetric, VisitsMetric
+from .support_tickets import SupportTicketsMetric
+from .visits import VisitsMetric
 from .uptime import UptimeMetric
+from ..models import Metric
 from ..providers import DataCiteProvider, JSONURLProvider, DummyProvider
 from ..providers.piwik import PiwikProvider
 from ..providers.snow import ServiceNowProvider
 from ..providers.uptime_robot import UptimeRobotProvider
+
+
+class DummyMetric(Metric):
+    """Dummy metric class."""
+
+    def __init__(self, name, provider, fields):
+        """Dummy metric initializer."""
+        super().__init__(name, provider, fields=fields)
+
+    def collect_done(self, data):
+        """Process collected data."""
+        for key, value in data.items():
+            setattr(self, key, self.clean_value(value))
+
 
 # Record metrics
 
@@ -137,9 +152,12 @@ cod_files_uptime_metric = UptimeMetric(
 
 # Support tickets metrics
 
-dummy_support_metric = DummySupportTicketsMetric(
+support_fields = SupportTicketsMetric.FIELDS
+
+dummy_support_metric = DummyMetric(
     name='dummy_support',
-    provider=DummyProvider()
+    provider=DummyProvider(support_fields),
+    fields=support_fields
 )
 
 cds_support_metric = SupportTicketsMetric(
@@ -159,17 +177,27 @@ zenodo_support_metric = SupportTicketsMetric(
 
 # Dummy metric
 
-dummy_visits_metric = DummyVisitsMetric(name='visits')
+visits_fields = VisitsMetric.FIELDS
+
+dummy_visits_metric = DummyMetric(
+    name='visits',
+    provider=DummyProvider(visits_fields),
+    fields=visits_fields
+)
 
 zenodo_visits_metric = VisitsMetric(
     name='zenodo_visits',
     provider=PiwikProvider(site_id=57)
 )
 
-cds_videos_visits_metric = DummyVisitsMetric(
-    name='cds_videos_visits'
+cds_videos_visits_metric = DummyMetric(
+    name='cds_videos_visits',
+    provider=DummyProvider(visits_fields),
+    fields=visits_fields
 )
 
-cod_visits_metric = DummyVisitsMetric(
-    name='cod_visits'
+cod_visits_metric = DummyMetric(
+    name='cod_visits',
+    provider=DummyProvider(visits_fields),
+    fields=visits_fields
 )

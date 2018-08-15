@@ -27,9 +27,13 @@ logger = get_task_logger(__name__)
 class DummyProvider(Provider):
     """Dummy provider."""
 
+    def __init__(self, fields):
+        """Dummy provider initialization."""
+        self.fields = fields
+
     def collect(self):
         """Get dummy data."""
-        pass
+        return {field: None for field in self.fields}
 
 
 class JSONURLProvider(Provider):

@@ -12,7 +12,6 @@ import os
 import pytest
 
 from kpiit.metrics.records import RecordsMetric
-from kpiit.metrics.visits import DummyVisitsMetric
 from kpiit.models import Metric
 
 
