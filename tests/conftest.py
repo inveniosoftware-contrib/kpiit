@@ -20,6 +20,7 @@ from kpiit.metrics.records import RecordsMetric
 from kpiit.metrics.uptime import UptimeMetric
 from kpiit.models import Provider, Publisher
 from kpiit.providers import DataCiteProvider, DummyProvider, JSONURLProvider
+from kpiit.providers.piwik import Piwik
 from kpiit.providers.snow import ServiceNowProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
 from kpiit.publishers.cern import CERNMonitPublisher
@@ -255,3 +256,8 @@ def cern_monit_publisher(mocker):
 
     mocker.patch('kpiit.send_check.send', new=new_send)
     return CERNMonitPublisher('testkpi')
+
+
+def piwik_url(query):
+    """Get the full URL for the Piwik query."""
+    return Piwik.BASE_URL + 'index.php' + query

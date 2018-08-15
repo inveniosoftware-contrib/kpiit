@@ -76,8 +76,9 @@ class Piwik(object):
         kwargs['format'] = format
         if filter_limit != -1:
             kwargs['filter_limit'] = filter_limit
-        query = ['{}={}'.format(key, value) for key, value in kwargs.items(
-        ) if value is not None and value]
+        query = ['{}={}'.format(key, value)
+                 for key, value in kwargs.items()
+                 if value is not None and value]
         return cls.BASE_URL + 'index.php?module=API&' + '&'.join(query)
 
 

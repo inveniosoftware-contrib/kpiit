@@ -14,7 +14,6 @@ from kpiit import Service
 from .doi import DOIMetric
 from .records import RecordsMetric
 from .support_tickets import SupportTicketsMetric
-from .visits import VisitsMetric
 from .uptime import UptimeMetric
 from ..models import Metric
 from ..providers import DataCiteProvider, JSONURLProvider, DummyProvider
@@ -23,11 +22,11 @@ from ..providers.snow import ServiceNowProvider
 from ..providers.uptime_robot import UptimeRobotProvider
 
 
-class DummyMetric(Metric):
-    """Dummy metric class."""
+class GenericMetric(Metric):
+    """Generic metric class."""
 
     def __init__(self, name, provider, fields):
-        """Dummy metric initializer."""
+        """Generic metric initializer."""
         super().__init__(name, provider, fields=fields)
 
     def collect_done(self, data):
@@ -154,7 +153,7 @@ cod_files_uptime_metric = UptimeMetric(
 
 support_fields = SupportTicketsMetric.FIELDS
 
-dummy_support_metric = DummyMetric(
+dummy_support_metric = GenericMetric(
     name='dummy_support',
     provider=DummyProvider(support_fields),
     fields=support_fields
@@ -177,26 +176,27 @@ zenodo_support_metric = SupportTicketsMetric(
 
 # Dummy metric
 
-visits_fields = VisitsMetric.FIELDS
+visits_fields = ['visits', 'visits_unique']
 
-dummy_visits_metric = DummyMetric(
+dummy_visits_metric = GenericMetric(
     name='visits',
     provider=DummyProvider(visits_fields),
     fields=visits_fields
 )
 
-zenodo_visits_metric = VisitsMetric(
+zenodo_visits_metric = GenericMetric(
     name='zenodo_visits',
-    provider=PiwikProvider(site_id=57)
+    provider=PiwikProvider(site_id=57),
+    fields=visits_fields
 )
 
-cds_videos_visits_metric = DummyMetric(
+cds_videos_visits_metric = GenericMetric(
     name='cds_videos_visits',
     provider=DummyProvider(visits_fields),
     fields=visits_fields
 )
 
-cod_visits_metric = DummyMetric(
+cod_visits_metric = GenericMetric(
     name='cod_visits',
     provider=DummyProvider(visits_fields),
     fields=visits_fields
