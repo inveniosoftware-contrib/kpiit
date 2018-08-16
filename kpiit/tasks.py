@@ -22,32 +22,36 @@ logger = get_task_logger(__name__)
 @app.task
 def collect_and_publish_metrics(*args, **kwargs):
     """Collect metrics then publish."""
-    metrics_paths = kwargs['metrics']
+    metrics = kwargs['metrics']
 
     # Skip publishing if no publisher is given
     if 'publisher' not in kwargs or not isinstance(kwargs['publisher'], str):
-        return collect_metrics.s(metrics_paths)
+        return collect_metrics.s(metrics)
 
     # Publish when collecting metrics is completed
     return chain(
-        collect_metrics.s(metrics_paths),
+        collect_metrics.s(metrics),
         publish_metrics.s(kwargs['publisher'])
     )()
 
 
 @app.task
-def collect_metrics(metrics_paths):
+def collect_metrics(metrics):
     """Collect metrics."""
-    metric_instances = [load_target(path) for path in metrics_paths]
+    metric_instances = [load_target(obj)(*args['args'], **args['kwargs'])
+                        for obj, args in metrics.items()]
 
-    for inst in metric_instances:
-        inst.collect()
+    for metric in metric_instances:
+        metric.collect()
 
     return metric_instances
 
 
 @app.task
-def publish_metrics(metrics, publisher_path):
+def publish_metrics(metrics, publishers):
     """Publish metrics."""
-    publisher = load_target(publisher_path)
-    publisher.publish(metrics)
+    publisher_instances = [load_target(obj)(*args['args'], **args['kwargs'])
+                           for obj, args in publishers.items()]
+
+    for publisher in publisher_instances:
+        publisher.publish(metrics)

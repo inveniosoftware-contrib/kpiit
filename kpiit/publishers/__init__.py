@@ -12,6 +12,11 @@ from .cern import CERNMonitPublisher
 from .json import JSONFilePublisher
 
 
+doi = CERNMonitPublisher.create_doi
+
+repo = CERNMonitPublisher.create_repo
+
+
 #: Zenodo DOI publisher
 zenodo_doi = CERNMonitPublisher.create_doi('10.5281')
 

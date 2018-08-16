@@ -28,6 +28,12 @@ register(
     content_encoding='utf-8'
 )
 
+
+def args(*args, **kwargs):
+    """Get function arguments as a dictionary."""
+    return dict(args=args, kwargs=kwargs)
+
+
 # Default schedule crontabs
 SCHEDULE_DOI_MONTHLY = crontab(day_of_month=1, hour=2)
 SCHEDULE_REPO_DAILY = crontab(hour=8, minute=39)
@@ -44,71 +50,83 @@ beat_schedule = {
         'task': 'kpiit.tasks.collect_and_publish_metrics',
         'schedule': SCHEDULE_DOI_MONTHLY,
         'kwargs': {
-            'metrics': ['kpiit.metrics.zenodo_doi_metric'],
-            'publisher': 'kpiit.publishers.zenodo_doi'
+            'metrics': {
+                'kpiit.metrics.doi': args('10.5281')
+            },
+            'publisher': {
+                'kpiit.publishers.doi': args('10.5281')
+            }
         }
     },
     'collect-cds-videos-doi-kpis-every-month': {
         'task': 'kpiit.tasks.collect_and_publish_metrics',
         'schedule': SCHEDULE_DOI_MONTHLY,
         'kwargs': {
-            'metrics': ['kpiit.metrics.cds_videos_doi_metric'],
-            'publisher': 'kpiit.publishers.cds_videos_doi'
+            'metrics': {
+                'kpiit.metrics.doi': args('10.17181')
+            },
+            'publisher': {
+                'kpiit.publishers.doi': args('10.17181')
+            }
         }
     },
     'collect-cod-doi-kpis-every-month': {
         'task': 'kpiit.tasks.collect_and_publish_metrics',
         'schedule': SCHEDULE_DOI_MONTHLY,
         'kwargs': {
-            'metrics': ['kpiit.metrics.cod_doi_metric'],
-            'publisher': 'kpiit.publishers.cod_doi'
+            'metrics': {
+                'kpiit.metrics.doi': args('10.7483')
+            },
+            'publisher': {
+                'kpiit.publishers.doi': args('10.7483')
+            }
         }
     },
-    'collect-zenodo-repo-kpis-every-day': {
-        'task': 'kpiit.tasks.collect_and_publish_metrics',
-        'schedule': SCHEDULE_REPO_DAILY,
-        'kwargs': {
-            'metrics': [
-                'kpiit.metrics.zenodo_records_metric',
-                'kpiit.metrics.zenodo_website_uptime_metric',
-                'kpiit.metrics.zenodo_search_uptime_metric',
-                'kpiit.metrics.zenodo_files_uptime_metric',
-                'kpiit.metrics.zenodo_visits_metric',
-                'kpiit.metrics.zenodo_support_metric',
-            ],
-            'publisher': 'kpiit.publishers.zenodo_repo'
-        }
-    },
-    'collect-cds-videos-repo-kpis-every-day': {
-        'task': 'kpiit.tasks.collect_and_publish_metrics',
-        'schedule': SCHEDULE_REPO_DAILY,
-        'kwargs': {
-            'metrics': [
-                'kpiit.metrics.cds_videos_records_metric',
-                'kpiit.metrics.cds_videos_website_uptime_metric',
-                'kpiit.metrics.cds_videos_search_uptime_metric',
-                'kpiit.metrics.cds_videos_files_uptime_metric',
-                'kpiit.metrics.cds_videos_visits_metric',
-                'kpiit.metrics.cds_videos_support_metric',
-            ],
-            'publisher': 'kpiit.publishers.cds_videos_repo'
-        }
-    },
-    'collect-cod-repo-kpis-every-day': {
-        'task': 'kpiit.tasks.collect_and_publish_metrics',
-        'schedule': SCHEDULE_REPO_DAILY,
-        'kwargs': {
-            'metrics': [
-                'kpiit.metrics.cod_records_metric',
-                'kpiit.metrics.cod_website_uptime_metric',
-                'kpiit.metrics.cod_search_uptime_metric',
-                'kpiit.metrics.cod_files_uptime_metric',
-                'kpiit.metrics.cod_visits_metric',
-                'kpiit.metrics.dummy_support_metric',
-            ],
-            'publisher': 'kpiit.publishers.cod_repo'
-        }
-    },
+    # 'collect-zenodo-repo-kpis-every-day': {
+    #     'task': 'kpiit.tasks.collect_and_publish_metrics',
+    #     'schedule': SCHEDULE_REPO_DAILY,
+    #     'kwargs': {
+    #         'metrics': [
+    #             'kpiit.metrics.zenodo_records_metric',
+    #             'kpiit.metrics.zenodo_website_uptime_metric',
+    #             'kpiit.metrics.zenodo_search_uptime_metric',
+    #             'kpiit.metrics.zenodo_files_uptime_metric',
+    #             'kpiit.metrics.zenodo_visits_metric',
+    #             'kpiit.metrics.zenodo_support_metric',
+    #         ],
+    #         'publisher': 'kpiit.publishers.zenodo_repo'
+    #     }
+    # },
+    # 'collect-cds-videos-repo-kpis-every-day': {
+    #     'task': 'kpiit.tasks.collect_and_publish_metrics',
+    #     'schedule': SCHEDULE_REPO_DAILY,
+    #     'kwargs': {
+    #         'metrics': [
+    #             'kpiit.metrics.cds_videos_records_metric',
+    #             'kpiit.metrics.cds_videos_website_uptime_metric',
+    #             'kpiit.metrics.cds_videos_search_uptime_metric',
+    #             'kpiit.metrics.cds_videos_files_uptime_metric',
+    #             'kpiit.metrics.cds_videos_visits_metric',
+    #             'kpiit.metrics.cds_videos_support_metric',
+    #         ],
+    #         'publisher': 'kpiit.publishers.cds_videos_repo'
+    #     }
+    # },
+    # 'collect-cod-repo-kpis-every-day': {
+    #     'task': 'kpiit.tasks.collect_and_publish_metrics',
+    #     'schedule': SCHEDULE_REPO_DAILY,
+    #     'kwargs': {
+    #         'metrics': [
+    #             'kpiit.metrics.cod_records_metric',
+    #             'kpiit.metrics.cod_website_uptime_metric',
+    #             'kpiit.metrics.cod_search_uptime_metric',
+    #             'kpiit.metrics.cod_files_uptime_metric',
+    #             'kpiit.metrics.cod_visits_metric',
+    #             'kpiit.metrics.dummy_support_metric',
+    #         ],
+    #         'publisher': 'kpiit.publishers.cod_repo'
+    #     }
+    # },
 }
 #: Accept the new serializer
 accept_content = ['metricjson']

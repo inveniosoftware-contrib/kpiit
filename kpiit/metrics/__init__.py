@@ -60,13 +60,13 @@ cod_records_metric = RecordsMetric(
 
 # DOI metrics
 
-zenodo_doi_metric = DOIMetric(provider=DataCiteProvider('10.5281'))
 
-cds_videos_doi_metric = DOIMetric(provider=DataCiteProvider('10.17181'))
-
-cod_doi_metric = DOIMetric(provider=DataCiteProvider('10.7483'))
+def doi(prefix):
+    """Return DOI metric instance."""
+    return DOIMetric(provider=DataCiteProvider(prefix))
 
 # Uptime metrics
+
 
 zenodo_website_uptime_metric = UptimeMetric(
     name='web',
