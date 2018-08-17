@@ -9,7 +9,7 @@
 
 from enum import Enum
 
-from .version import __version__
+from kpiit.version import __version__
 
 
 class Service(Enum):

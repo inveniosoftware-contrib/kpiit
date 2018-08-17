@@ -13,8 +13,7 @@ from celery.schedules import crontab
 from kombu.serialization import register
 
 from kpiit import Env, Service
-
-from .json import metric_dumps, metric_loads
+from kpiit.json import metric_dumps, metric_loads
 
 
 def _env(key, default):
