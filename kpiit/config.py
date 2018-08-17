@@ -24,8 +24,8 @@ class Config(configobj.ConfigObj):
         super().__init__(filename, interpolation='Template', file_error=True)
 
     @property
-    def tasks(self):
-        """Get the tasks in celeryconfig format."""
+    def beat_schedule(self):
+        """Get the tasks in celeryconfig beat schedule format."""
         tasks = {}
 
         for task_name, values in self['tasks'].items():
