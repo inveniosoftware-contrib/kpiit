@@ -13,14 +13,13 @@ from datetime import datetime
 
 from celery.utils.log import get_task_logger
 
-from ..metrics.doi import DOIMetric
-from ..models import Publisher
-from ..send_check import send
+from kpiit.publishers.base import BasePublisher
+from kpiit.send_check import send
 
 logger = get_task_logger(__name__)
 
 
-class CERNPublisher(Publisher):
+class CERNPublisher(BasePublisher):
     """Publish metrics to CERN's Grafana instance."""
 
     def __init__(self, type, skip_fields=False, save_json=True, **tags):

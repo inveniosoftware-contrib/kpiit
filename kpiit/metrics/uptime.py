@@ -7,10 +7,10 @@
 
 """Records metric."""
 
-from ..models import Metric
+from kpiit.metrics.base import BaseMetric
 
 
-class UptimeMetric(Metric):
+class UptimeMetric(BaseMetric):
     """Metric for uptime and response time."""
 
     def __init__(self, name, provider):

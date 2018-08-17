@@ -7,22 +7,16 @@
 
 """Metrics module."""
 
-import os
-
-from kpiit import Service
-
-from .doi import DOIMetric
-from .records import RecordsMetric
-from .support_tickets import SupportTicketsMetric
-from .uptime import UptimeMetric
-from ..models import Metric
-from ..providers import DataCiteProvider, JSONURLProvider, DummyProvider
-from ..providers.piwik import PiwikProvider
-from ..providers.snow import ServiceNowProvider
-from ..providers.uptime_robot import UptimeRobotProvider
+from kpiit.metrics.base import BaseMetric
+from kpiit.metrics.records import RecordsMetric
+from kpiit.metrics.uptime import UptimeMetric
+from kpiit.providers import DataCiteProvider, JSONURLProvider, DummyProvider
+from kpiit.providers.piwik import PiwikProvider
+from kpiit.providers.snow import ServiceNowProvider
+from kpiit.providers.uptime_robot import UptimeRobotProvider
 
 
-class GenericMetric(Metric):
+class Metric(BaseMetric):
     """Generic metric class."""
 
     def __init__(self, name, provider, fields):
@@ -42,7 +36,11 @@ def records(name, url):
 
 def doi(prefix):
     """Get a DOI metric instance."""
-    return DOIMetric(provider=DataCiteProvider(prefix))
+    return Metric(
+        name='doi',
+        provider=DataCiteProvider(prefix),
+        fields=['doi_success', 'doi_failed']
+    )
 
 
 def uptime(name, url, api_key, monitor):
@@ -55,12 +53,19 @@ def uptime(name, url, api_key, monitor):
 
 def support(name, service=None, dummy=False):
     """Get support ticket metric instance."""
+    fields = [
+        'support_requests',
+        'support_incidents',
+        'incident_stc',
+        'reassignment_count'
+    ]
+
     if dummy:
-        provider = DummyProvider(SupportTicketsMetric.FIELDS)
+        provider = DummyProvider(fields)
     else:
         provider = ServiceNowProvider(service)
 
-    return SupportTicketsMetric(name=name, provider=provider)
+    return Metric(name=name, provider=provider, fields=fields)
 
 
 def visits(name, site_id=None, dummy=False):
@@ -74,8 +79,5 @@ def visits(name, site_id=None, dummy=False):
         provider = DummyProvider(fields)
     else:
         provider = PiwikProvider(site_id=site_id)
-    return GenericMetric(
-        name=name,
-        provider=DummyProvider(fields),
-        fields=fields
-    )
+
+    return Metric(name=name, provider=provider, fields=fields)

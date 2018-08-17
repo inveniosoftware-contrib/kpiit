@@ -7,7 +7,6 @@
 
 """Piwik provider."""
 
-import os
 import subprocess
 
 import cern_sso
@@ -15,9 +14,7 @@ import requests
 import requests.exceptions
 from celery.utils.log import get_task_logger
 
-from kpiit import Service
-
-from ..models import Provider
+from kpiit.providers.base import BaseProvider
 
 logger = get_task_logger(__name__)
 
@@ -133,7 +130,7 @@ class PiwikVisitsSummary(Piwik):
         return data['value']
 
 
-class PiwikProvider(Provider):
+class PiwikProvider(BaseProvider):
     """Piwik provider."""
 
     def __init__(self, site_id, period='day', date='yesterday'):

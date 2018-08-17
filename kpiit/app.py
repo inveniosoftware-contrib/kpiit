@@ -7,11 +7,7 @@
 
 """Celery application."""
 
-import os
-
-from celery import Celery
-
-from .factory import create_app
+from kpiit.factory import create_app
 
 #: Celery application instance.
 app = create_app(config_module='kpiit.celeryconfig')

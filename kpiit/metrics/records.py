@@ -7,10 +7,10 @@
 
 """Records metric."""
 
-from ..models import Metric
+from kpiit.metrics.base import BaseMetric
 
 
-class RecordsMetric(Metric):
+class RecordsMetric(BaseMetric):
     """Metric for number of records."""
 
     def __init__(self, name, provider):

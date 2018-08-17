@@ -7,14 +7,11 @@
 
 """Celery tasks."""
 
-import os
-import time
-
 from celery import chain
 from celery.utils.log import get_task_logger
 
-from .app import app
-from .util import load_target
+from kpiit.app import app
+from kpiit.util import load_target
 
 logger = get_task_logger(__name__)
 

@@ -5,13 +5,12 @@
 # KPIit is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
-"""Publisher instances."""
-
-from kpiit.publishers.cern import CERNMonitPublisher
+"""Base provider."""
 
 
-#: DOI publisher
-doi = CERNMonitPublisher.create_doi
+class BaseProvider(object):
+    """Abstract class for collecting data."""
 
-#: Repo publisher
-repo = CERNMonitPublisher.create_repo
+    def collect(self):
+        """Collect metrics data."""
+        raise NotImplementedError()

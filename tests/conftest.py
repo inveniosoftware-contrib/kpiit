@@ -8,22 +8,19 @@
 """Common pytest fixtures and plugins."""
 
 import json
-import sys
-from collections import namedtuple
 
 import pytest
 
 import kpiit.metrics as metrics
 from kpiit import Service
 from kpiit.app import app
-from kpiit.metrics.doi import DOIMetric
 from kpiit.metrics.records import RecordsMetric
-from kpiit.metrics.uptime import UptimeMetric
-from kpiit.models import Provider, Publisher
-from kpiit.providers import DataCiteProvider, DummyProvider, JSONURLProvider
+from kpiit.providers import DataCiteProvider, JSONURLProvider
+from kpiit.providers.base import BaseProvider
 from kpiit.providers.piwik import Piwik
 from kpiit.providers.snow import ServiceNowProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
+from kpiit.publishers.base import BasePublisher
 from kpiit.publishers.cern import CERNMonitPublisher
 from kpiit.publishers.json import JSONFilePublisher
 
@@ -37,7 +34,7 @@ def json_url_provider():
 @pytest.fixture
 def test_provider():
     """Fixture for the test provider."""
-    class TestProvider(Provider):
+    class TestProvider(BaseProvider):
         def __init__(self):
             super().__init__()
             self.data = None
@@ -83,7 +80,7 @@ def uptime_provider(mocker):
 @pytest.fixture
 def test_publisher():
     """Fixture for the test publisher."""
-    class TestPublisher(Publisher):
+    class TestPublisher(BasePublisher):
         def publish(self, metrics):
             pass
     return TestPublisher()
@@ -197,8 +194,6 @@ def cod_records(mocker, cod_records_json):
 @pytest.fixture
 def zenodo_doi_metric(mocker, zenodo_doi_index_html, zenodo_doi_june_html):
     """Fixture for COD records metric instance."""
-    data = None
-
     def load_index_data(self, url):
         return zenodo_doi_index_html
 

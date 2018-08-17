@@ -11,7 +11,7 @@ import json
 
 from celery.utils.log import get_task_logger
 
-from ..publishers.cern import CERNPublisher
+from kpiit.publishers.cern import CERNPublisher
 
 logger = get_task_logger(__name__)
 

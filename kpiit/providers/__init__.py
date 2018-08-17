@@ -7,24 +7,18 @@
 
 """Generic providers."""
 
-import re
-
-import json
 import requests
-import urllib
 
 from bs4 import BeautifulSoup
 from celery.utils.log import get_task_logger
 
-from ..app import app
-from ..models import Provider
-from ..util import load_target
-from .snow import ServiceNowProvider
+from kpiit.providers.base import BaseProvider
+
 
 logger = get_task_logger(__name__)
 
 
-class DummyProvider(Provider):
+class DummyProvider(BaseProvider):
     """Dummy provider."""
 
     def __init__(self, fields):
@@ -36,7 +30,7 @@ class DummyProvider(Provider):
         return {field: None for field in self.fields}
 
 
-class JSONURLProvider(Provider):
+class JSONURLProvider(BaseProvider):
     """Basic URL-based provider."""
 
     def __init__(self, url):
@@ -54,7 +48,7 @@ class JSONURLProvider(Provider):
         return self.json
 
 
-class DataCiteProvider(Provider):
+class DataCiteProvider(BaseProvider):
     """Retrieve DOI statistics from DataCite."""
 
     INDEX_URL = 'https://stats.datacite.org/stats/resolution-report/index.html'
@@ -95,11 +89,7 @@ class DataCiteProvider(Provider):
             if a and a.get_text() == self.prefix:
                 tds = tr.find_all('td')
                 self.data = dict(
-                    # total_attempts=tds[2].get_text(),
                     doi_success=tds[3].get_text(),
                     doi_failed=tds[4].get_text(),
-                    # unique_doi_total=tds[5].get_text(),
-                    # unique_doi_successful=tds[6].get_text(),
-                    # unique_doi_failed=tds[7].get_text()
                 )
                 return self.data

@@ -14,8 +14,7 @@ import requests.exceptions
 from celery.utils.log import get_task_logger
 
 from kpiit import Service
-
-from ..models import Provider
+from kpiit.providers.base import BaseProvider
 
 logger = get_task_logger(__name__)
 
@@ -175,7 +174,7 @@ class ServiceNowQuery(object):
         )
 
 
-class ServiceNowProvider(Provider):
+class ServiceNowProvider(BaseProvider):
     """Service Now provider."""
 
     def __init__(self, functional_element, instance=INSTANCE_URLS['test']):

@@ -5,11 +5,11 @@
 # KPIit is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
-"""KPI models."""
+"""Base metric."""
 
 
-class Metric(object):
-    """Abstract KPI metric class."""
+class BaseMetric(object):
+    """Abstract base metric class."""
 
     def __init__(self, name, provider, fields):
         """Metric initialization."""
@@ -66,23 +66,18 @@ class Metric(object):
         )
 
     @classmethod
-    def clean_value(cls, value, force_type=None):
+    def clean_value(cls, value):
         """Clean string value and convert to appropriate type."""
         if value is None:
             return None
         elif isinstance(value, float) or isinstance(value, int):
             return value
 
-        if force_type:
+        if '.' in value:
             try:
-                return force_type(value)
+                return float(value)
             except ValueError:
-                return None
-
-        try:
-            return float(value)
-        except ValueError:
-            pass
+                pass
 
         try:
             return int(value)
@@ -90,23 +85,3 @@ class Metric(object):
             pass
 
         return str(value)
-
-
-class Provider(object):
-    """Abstract class for collecting data."""
-
-    def collect(self):
-        """Collect metrics data."""
-        raise NotImplementedError()
-
-
-class Publisher(object):
-    """Abstract class for publishing metrics."""
-
-    def build_message(self, metrics):
-        """Build message to be published."""
-        raise NotImplementedError()
-
-    def publish(self, metrics):
-        """Publish metrics."""
-        self.build_message(metrics)
