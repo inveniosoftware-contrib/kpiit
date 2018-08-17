@@ -7,18 +7,16 @@
 
 """Metric tests."""
 
-import os
-
 import pytest
 
-from kpiit.models import Provider
 from kpiit.providers import DataCiteProvider, JSONURLProvider
+from kpiit.providers.base import BaseProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
 
 
 def test_provider_base():
     """Test provider base class."""
-    provider = Provider()
+    provider = BaseProvider()
 
     with pytest.raises(NotImplementedError):
         provider.collect()

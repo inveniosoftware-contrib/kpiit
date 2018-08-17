@@ -9,7 +9,8 @@
 
 import pytest
 
-from kpiit.models import Metric, Provider
+from kpiit.metrics.base import BaseMetric
+from kpiit.providers.base import BaseProvider
 from kpiit.util import load_target
 
 
@@ -17,19 +18,20 @@ def test_load_class():
     """Tests for load_class utility function."""
     assert hasattr(load_target('kpiit.util.load_target'), '__call__')
 
-    assert load_target('kpiit.models.Metric') == Metric
-    assert load_target('kpiit.models.Provider') == Provider
+    assert load_target('kpiit.metrics.base.BaseMetric') == BaseMetric
+    assert load_target('kpiit.providers.base.BaseProvider') == BaseProvider
 
     with pytest.raises(ImportError):
-        assert load_target('kpiit.models2.Provider') == Provider
-        assert load_target('kpiit.models.NonExisting') == Provider
+        assert load_target('kpiit.models2.Provider') == BaseProvider
+    with pytest.raises(AttributeError):
+        assert load_target('kpiit.metrics.base.NonExisting') == BaseProvider
 
 
 def test_metric_clean_value():
-    assert Metric.clean_value('hello') == 'hello'
-    assert Metric.clean_value('') == ''
-    assert Metric.clean_value('5123123') == 5123123
-    assert Metric.clean_value('3.1415926') == 3.1415926
-    assert Metric.clean_value(5123123) == 5123123
-    assert Metric.clean_value(3.1415926) == 3.1415926
-    assert Metric.clean_value(None) is None
+    assert BaseMetric.clean_value('hello') == 'hello'
+    assert BaseMetric.clean_value('') == ''
+    assert BaseMetric.clean_value('5123123') == 5123123
+    assert BaseMetric.clean_value('3.1415926') == 3.1415926
+    assert BaseMetric.clean_value(5123123) == 5123123
+    assert BaseMetric.clean_value(3.1415926) == 3.1415926
+    assert BaseMetric.clean_value(None) is None

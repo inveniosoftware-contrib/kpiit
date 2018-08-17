@@ -7,12 +7,10 @@
 
 """Metric tests."""
 
-import os
-
 import pytest
 
+from kpiit.metrics.base import BaseMetric
 from kpiit.metrics.records import RecordsMetric
-from kpiit.models import Metric
 
 
 def test_metric_base(zenodo_records):
@@ -29,16 +27,16 @@ def test_metric_base(zenodo_records):
 
 def test_fail_metric(zenodo_records, test_provider):
     with pytest.raises(ValueError):
-        Metric(name=None, provider=None, fields=None)
+        BaseMetric(name=None, provider=None, fields=None)
     with pytest.raises(ValueError):
-        Metric(name='test', provider=None, fields=None)
+        BaseMetric(name='test', provider=None, fields=None)
     with pytest.raises(ValueError):
-        Metric(name=None, provider=None, fields=['abc'])
+        BaseMetric(name=None, provider=None, fields=['abc'])
     with pytest.raises(TypeError):
-        Metric(name=['abc'], provider=None, fields=['abc'])
+        BaseMetric(name=['abc'], provider=None, fields=['abc'])
     with pytest.raises(AttributeError):
         zenodo_records.update(non_existant='test')
-    metric = Metric('test', test_provider, ('test'))
+    metric = BaseMetric('test', test_provider, ('test'))
     with pytest.raises(NotImplementedError):
         metric.collect()
 

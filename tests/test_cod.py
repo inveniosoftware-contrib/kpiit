@@ -7,10 +7,6 @@
 
 """COD tests."""
 
-import os
-
-import pytest
-
 
 def test_cod_records(cod_records):
     cod_records.collect()

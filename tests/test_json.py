@@ -7,14 +7,13 @@
 
 """Utility function tests."""
 
-import json
-
 import pytest
 
-from kpiit.json import MetricDecoder, MetricEncoder, metric_dumps, metric_loads
+from kpiit.json import metric_dumps, metric_loads
 from kpiit.metrics.records import RecordsMetric
-from kpiit.models import Provider, Publisher
-from kpiit.publishers.json import *
+from kpiit.providers.base import BaseProvider
+from kpiit.publishers.base import BasePublisher
+from kpiit.publishers.json import JSONFilePublisher
 
 
 def test_metric_json_encode(zenodo_records):
@@ -30,8 +29,8 @@ def test_metric_json_encode(zenodo_records):
 def test_fail_metric_json_encode(zenodo_records):
     zenodo_records.records = 4
 
-    a = Provider()
-    b = Publisher()
+    a = BaseProvider()
+    b = BasePublisher()
 
     with pytest.raises(TypeError):
         metric_dumps(a)

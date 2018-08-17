@@ -12,13 +12,13 @@ import os
 import pytest
 
 from kpiit import Env, Service
-from kpiit.models import Publisher
-from kpiit.publishers.cern import CERNMonitPublisher, CERNPublisher
+from kpiit.publishers.base import BasePublisher
+from kpiit.publishers.cern import CERNPublisher
 
 
 def test_provider_base(zenodo_records):
     """Test publisher base class."""
-    publisher = Publisher()
+    publisher = BasePublisher()
 
     with pytest.raises(NotImplementedError):
         publisher.publish([])

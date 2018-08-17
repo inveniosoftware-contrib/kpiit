@@ -7,10 +7,6 @@
 
 """Simple test of version import."""
 
-import os
-
-import pytest
-
 from kpiit.app import create_app
 
 
