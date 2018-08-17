@@ -12,6 +12,8 @@ import os
 from celery.schedules import crontab
 from kombu.serialization import register
 
+from kpiit import Env, Service
+
 from .json import metric_dumps, metric_loads
 
 
@@ -35,8 +37,9 @@ def args(*args, **kwargs):
 
 
 # Default schedule crontabs
-SCHEDULE_DOI_MONTHLY = crontab(day_of_month=1, hour=2)
-SCHEDULE_REPO_DAILY = crontab(hour=8, minute=39)
+# SCHEDULE_DOI_MONTHLY = crontab(day_of_month=1, hour=2)
+SCHEDULE_DOI_MONTHLY = crontab(hour=11, minute=24)
+SCHEDULE_REPO_DAILY = crontab(hour=11, minute=24)
 
 #: URL of message broker for Celery (default is Redis).
 broker_url = _env('BROKER_URL', 'redis://localhost:6379/0')
@@ -51,10 +54,10 @@ beat_schedule = {
         'schedule': SCHEDULE_DOI_MONTHLY,
         'kwargs': {
             'metrics': {
-                'kpiit.metrics.doi': args('10.5281')
+                'kpiit.metrics.doi': args(prefix='10.5281')
             },
             'publisher': {
-                'kpiit.publishers.doi': args('10.5281')
+                'kpiit.publishers.doi': args(prefix='10.5281')
             }
         }
     },
@@ -63,10 +66,10 @@ beat_schedule = {
         'schedule': SCHEDULE_DOI_MONTHLY,
         'kwargs': {
             'metrics': {
-                'kpiit.metrics.doi': args('10.17181')
+                'kpiit.metrics.doi': args(prefix='10.17181')
             },
             'publisher': {
-                'kpiit.publishers.doi': args('10.17181')
+                'kpiit.publishers.doi': args(prefix='10.17181')
             }
         }
     },
@@ -75,58 +78,134 @@ beat_schedule = {
         'schedule': SCHEDULE_DOI_MONTHLY,
         'kwargs': {
             'metrics': {
-                'kpiit.metrics.doi': args('10.7483')
+                'kpiit.metrics.doi': args(prefix='10.7483')
             },
             'publisher': {
-                'kpiit.publishers.doi': args('10.7483')
+                'kpiit.publishers.doi': args(prefix='10.7483')
             }
         }
     },
-    # 'collect-zenodo-repo-kpis-every-day': {
-    #     'task': 'kpiit.tasks.collect_and_publish_metrics',
-    #     'schedule': SCHEDULE_REPO_DAILY,
-    #     'kwargs': {
-    #         'metrics': [
-    #             'kpiit.metrics.zenodo_records_metric',
-    #             'kpiit.metrics.zenodo_website_uptime_metric',
-    #             'kpiit.metrics.zenodo_search_uptime_metric',
-    #             'kpiit.metrics.zenodo_files_uptime_metric',
-    #             'kpiit.metrics.zenodo_visits_metric',
-    #             'kpiit.metrics.zenodo_support_metric',
-    #         ],
-    #         'publisher': 'kpiit.publishers.zenodo_repo'
-    #     }
-    # },
-    # 'collect-cds-videos-repo-kpis-every-day': {
-    #     'task': 'kpiit.tasks.collect_and_publish_metrics',
-    #     'schedule': SCHEDULE_REPO_DAILY,
-    #     'kwargs': {
-    #         'metrics': [
-    #             'kpiit.metrics.cds_videos_records_metric',
-    #             'kpiit.metrics.cds_videos_website_uptime_metric',
-    #             'kpiit.metrics.cds_videos_search_uptime_metric',
-    #             'kpiit.metrics.cds_videos_files_uptime_metric',
-    #             'kpiit.metrics.cds_videos_visits_metric',
-    #             'kpiit.metrics.cds_videos_support_metric',
-    #         ],
-    #         'publisher': 'kpiit.publishers.cds_videos_repo'
-    #     }
-    # },
-    # 'collect-cod-repo-kpis-every-day': {
-    #     'task': 'kpiit.tasks.collect_and_publish_metrics',
-    #     'schedule': SCHEDULE_REPO_DAILY,
-    #     'kwargs': {
-    #         'metrics': [
-    #             'kpiit.metrics.cod_records_metric',
-    #             'kpiit.metrics.cod_website_uptime_metric',
-    #             'kpiit.metrics.cod_search_uptime_metric',
-    #             'kpiit.metrics.cod_files_uptime_metric',
-    #             'kpiit.metrics.cod_visits_metric',
-    #             'kpiit.metrics.dummy_support_metric',
-    #         ],
-    #         'publisher': 'kpiit.publishers.cod_repo'
-    #     }
-    # },
+    'collect-zenodo-repo-kpis-every-day': {
+        'task': 'kpiit.tasks.collect_and_publish_metrics',
+        'schedule': SCHEDULE_REPO_DAILY,
+        'kwargs': {
+            'metrics': {
+                'kpiit.metrics.records': args(
+                    name='zenodo_records',
+                    url='https://zenodo.org/api/records/?all_versions'
+                ),
+                'kpiit.metrics.uptime': args(
+                    name='web',
+                    url='https://api.uptimerobot.com/v2/',
+                    api_key=os.getenv('ZENODO_UPTIME_WEBSITE_API_KEY'),
+                    monitor='Website',
+                ),
+                'kpiit.metrics.uptime': args(
+                    name='search',
+                    url='https://api.uptimerobot.com/v2/',
+                    api_key=os.getenv('ZENODO_UPTIME_SEARCH_API_KEY'),
+                    monitor='Search',
+                ),
+                'kpiit.metrics.uptime': args(
+                    name='files',
+                    url='https://api.uptimerobot.com/v2/',
+                    api_key=os.getenv('ZENODO_UPTIME_FILES_API_KEY'),
+                    monitor='Files upload/download',
+                ),
+                'kpiit.metrics.visits': args(
+                    name='zenodo_support',
+                    site_id=57
+                ),
+                'kpiit.metrics.support': args(
+                    name='zenodo_support',
+                    service=Service.ZENODO
+                ),
+            },
+            'publisher': {
+                'kpiit.publishers.repo': args(Service.ZENODO, Env.QA)
+            }
+        }
+    },
+    'collect-cds-videos-repo-kpis-every-day': {
+        'task': 'kpiit.tasks.collect_and_publish_metrics',
+        'schedule': SCHEDULE_REPO_DAILY,
+        'kwargs': {
+            'metrics': {
+                'kpiit.metrics.records': args(
+                    name='cds_videos_records',
+                    url='https://videos.cern.ch/api/records/'
+                ),
+                'kpiit.metrics.uptime': args(
+                    name='web',
+                    url='https://api.uptimerobot.com/v2/',
+                    api_key=os.getenv('CDS_VIDEOS_UPTIME_WEBSITE_API_KEY'),
+                    monitor='Website',
+                ),
+                'kpiit.metrics.uptime': args(
+                    name='search',
+                    url='https://api.uptimerobot.com/v2/',
+                    api_key=os.getenv('CDS_VIDEOS_UPTIME_SEARCH_API_KEY'),
+                    monitor='Search',
+                ),
+                'kpiit.metrics.uptime': args(
+                    name='files',
+                    url='https://api.uptimerobot.com/v2/',
+                    api_key=os.getenv('CDS_VIDEOS_UPTIME_FILES_API_KEY'),
+                    monitor='Files upload/download',
+                ),
+                'kpiit.metrics.visits': args(
+                    name='cds_videos_support'
+                ),
+                'kpiit.metrics.support': args(
+                    name='cds_videos_support',
+                    service=Service.ZENODO
+                ),
+            },
+            'publisher': {
+                'kpiit.publishers.repo': args(Service.CDS_VIDEOS, Env.QA)
+            }
+        }
+    },
+    'collect-cod-repo-kpis-every-day': {
+        'task': 'kpiit.tasks.collect_and_publish_metrics',
+        'schedule': SCHEDULE_REPO_DAILY,
+        'kwargs': {
+            'metrics': {
+                'kpiit.metrics.records': args(
+                    name='cod_records',
+                    url='http://opendata.cern.ch/api/records/'
+                ),
+                'kpiit.metrics.uptime': args(
+                    name='web',
+                    url='https://api.uptimerobot.com/v2/',
+                    api_key=os.getenv('COD_UPTIME_WEBSITE_API_KEY'),
+                    monitor='Website',
+                ),
+                'kpiit.metrics.uptime': args(
+                    name='search',
+                    url='https://api.uptimerobot.com/v2/',
+                    api_key=os.getenv('COD_UPTIME_SEARCH_API_KEY'),
+                    monitor='Search',
+                ),
+                'kpiit.metrics.uptime': args(
+                    name='files',
+                    url='https://api.uptimerobot.com/v2/',
+                    api_key=os.getenv('COD_UPTIME_FILES_API_KEY'),
+                    monitor='Files upload/download',
+                ),
+                'kpiit.metrics.visits': args(
+                    name='cod_support'
+                ),
+                'kpiit.metrics.support': args(
+                    name='cod_support',
+                    service=Service.ZENODO
+                ),
+            },
+            'publisher': {
+                'kpiit.publishers.repo': args(Service.COD, Env.QA)
+            }
+        }
+    },
 }
 #: Accept the new serializer
 accept_content = ['metricjson']

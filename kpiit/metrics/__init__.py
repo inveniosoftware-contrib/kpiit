@@ -35,169 +35,47 @@ class GenericMetric(Metric):
             setattr(self, key, self.clean_value(value))
 
 
-# Record metrics
-
-zenodo_records_metric = RecordsMetric(
-    name='zenodo_records',
-    provider=JSONURLProvider(
-        'https://zenodo.org/api/records/?all_versions'
-    )
-)
-
-cds_videos_records_metric = RecordsMetric(
-    name='cds_videos_records',
-    provider=JSONURLProvider(
-        'https://videos.cern.ch/api/records/'
-    )
-)
-
-cod_records_metric = RecordsMetric(
-    name='cod_records',
-    provider=JSONURLProvider(
-        'http://opendata.cern.ch/api/records/'
-    )
-)
-
-# DOI metrics
+def records(name, url):
+    """Get a records metric instance."""
+    return RecordsMetric(name=name, provider=JSONURLProvider(url))
 
 
 def doi(prefix):
-    """Return DOI metric instance."""
+    """Get a DOI metric instance."""
     return DOIMetric(provider=DataCiteProvider(prefix))
 
-# Uptime metrics
 
-
-zenodo_website_uptime_metric = UptimeMetric(
-    name='web',
-    provider=UptimeRobotProvider(
-        'https://api.uptimerobot.com/v2/',
-        os.getenv('ZENODO_UPTIME_WEBSITE_API_KEY'),
-        'Website'
+def uptime(name, url, api_key, monitor):
+    """Get uptime metric instance."""
+    return UptimeMetric(
+        name=name,
+        provider=UptimeRobotProvider(url, api_key, monitor)
     )
-)
 
-zenodo_search_uptime_metric = UptimeMetric(
-    name='search',
-    provider=UptimeRobotProvider(
-        'https://api.uptimerobot.com/v2/',
-        os.getenv('ZENODO_UPTIME_SEARCH_API_KEY'),
-        'Search'
+
+def support(name, service=None, dummy=False):
+    """Get support ticket metric instance."""
+    if dummy:
+        provider = DummyProvider(SupportTicketsMetric.FIELDS)
+    else:
+        provider = ServiceNowProvider(service)
+
+    return SupportTicketsMetric(name=name, provider=provider)
+
+
+def visits(name, site_id=None, dummy=False):
+    """Get visits metric instance.
+
+    Create a dummy instance if site_id is None.
+    """
+    fields = ['visits', 'visits_unique']
+
+    if dummy:
+        provider = DummyProvider(fields)
+    else:
+        provider = PiwikProvider(site_id=site_id)
+    return GenericMetric(
+        name=name,
+        provider=DummyProvider(fields),
+        fields=fields
     )
-)
-
-zenodo_files_uptime_metric = UptimeMetric(
-    name='files',
-    provider=UptimeRobotProvider(
-        'https://api.uptimerobot.com/v2/',
-        os.getenv('ZENODO_UPTIME_FILES_API_KEY'),
-        'Files upload/download'
-    )
-)
-
-cds_videos_website_uptime_metric = UptimeMetric(
-    name='web',
-    provider=UptimeRobotProvider(
-        'https://api.uptimerobot.com/v2/',
-        os.getenv('CDS_VIDEOS_UPTIME_WEBSITE_API_KEY'),
-        'Website'
-    )
-)
-
-cds_videos_search_uptime_metric = UptimeMetric(
-    name='search',
-    provider=UptimeRobotProvider(
-        'https://api.uptimerobot.com/v2/',
-        os.getenv('CDS_VIDEOS_UPTIME_SEARCH_API_KEY'),
-        'Search'
-    )
-)
-
-cds_videos_files_uptime_metric = UptimeMetric(
-    name='files',
-    provider=UptimeRobotProvider(
-        'https://api.uptimerobot.com/v2/',
-        os.getenv('CDS_VIDEOS_UPTIME_FILES_API_KEY'),
-        'Files upload/download'
-    )
-)
-
-cod_website_uptime_metric = UptimeMetric(
-    name='web',
-    provider=UptimeRobotProvider(
-        'https://api.uptimerobot.com/v2/',
-        os.getenv('COD_UPTIME_WEBSITE_API_KEY'),
-        'Website'
-    )
-)
-
-cod_search_uptime_metric = UptimeMetric(
-    name='search',
-    provider=UptimeRobotProvider(
-        'https://api.uptimerobot.com/v2/',
-        os.getenv('COD_UPTIME_SEARCH_API_KEY'),
-        'Search'
-    )
-)
-
-cod_files_uptime_metric = UptimeMetric(
-    name='files',
-    provider=UptimeRobotProvider(
-        'https://api.uptimerobot.com/v2/',
-        os.getenv('COD_UPTIME_FILES_API_KEY'),
-        'Files upload/download'
-    )
-)
-
-# Support tickets metrics
-
-support_fields = SupportTicketsMetric.FIELDS
-
-dummy_support_metric = GenericMetric(
-    name='dummy_support',
-    provider=DummyProvider(support_fields),
-    fields=support_fields
-)
-
-cds_support_metric = SupportTicketsMetric(
-    name='cds_support',
-    provider=ServiceNowProvider(Service.CDS)
-)
-
-cds_videos_support_metric = SupportTicketsMetric(
-    name='cds_videos_support',
-    provider=ServiceNowProvider(Service.CDS_VIDEOS)
-)
-
-zenodo_support_metric = SupportTicketsMetric(
-    name='zenodo_support',
-    provider=ServiceNowProvider(Service.ZENODO)
-)
-
-# Dummy metric
-
-visits_fields = ['visits', 'visits_unique']
-
-dummy_visits_metric = GenericMetric(
-    name='visits',
-    provider=DummyProvider(visits_fields),
-    fields=visits_fields
-)
-
-zenodo_visits_metric = GenericMetric(
-    name='zenodo_visits',
-    provider=PiwikProvider(site_id=57),
-    fields=visits_fields
-)
-
-cds_videos_visits_metric = GenericMetric(
-    name='cds_videos_visits',
-    provider=DummyProvider(visits_fields),
-    fields=visits_fields
-)
-
-cod_visits_metric = GenericMetric(
-    name='cod_visits',
-    provider=DummyProvider(visits_fields),
-    fields=visits_fields
-)

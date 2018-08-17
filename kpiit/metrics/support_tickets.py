@@ -30,6 +30,6 @@ class SupportTicketsMetric(Metric):
         for key, value in data.items():
             print(key, value)
             if key == 'incident_stc':
-                setattr(self, key, float(value))
+                setattr(self, key, self.clean_value(value))
             else:
-                setattr(self, key, int(value))
+                setattr(self, key, self.clean_value(value))

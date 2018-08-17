@@ -14,6 +14,7 @@ from collections import namedtuple
 import pytest
 
 import kpiit.metrics as metrics
+from kpiit import Service
 from kpiit.app import app
 from kpiit.metrics.doi import DOIMetric
 from kpiit.metrics.records import RecordsMetric
@@ -99,7 +100,7 @@ def uptime_collect(self):
 @pytest.fixture
 def dummy_visits_metric():
     """Fixture for dummy visits metric."""
-    return metrics.dummy_visits_metric
+    return metrics.visits('dummy_visits', dummy=True)
 
 
 @pytest.fixture
@@ -107,7 +108,7 @@ def website_uptime_metric(mocker):
     """Fixture for website uptime metric."""
     mocker.patch.object(UptimeRobotProvider, 'collect', new=uptime_collect)
 
-    return metrics.zenodo_website_uptime_metric
+    return metrics.uptime('web', 'http://www.google.com', 'abc', 'Website')
 
 
 @pytest.fixture
@@ -115,7 +116,7 @@ def search_uptime_metric(mocker):
     """Fixture for search uptime metric."""
     mocker.patch.object(UptimeRobotProvider, 'collect', new=uptime_collect)
 
-    return metrics.zenodo_search_uptime_metric
+    return metrics.uptime('search', 'http://www.google.com', 'abc', 'Search')
 
 
 @pytest.fixture
@@ -123,7 +124,9 @@ def files_uptime_metric(mocker):
     """Fixture for files uptime metric."""
     mocker.patch.object(UptimeRobotProvider, 'collect', new=uptime_collect)
 
-    return metrics.zenodo_files_uptime_metric
+    return metrics.uptime(
+        'files', 'http://www.google.com', 'abc', 'Files upload/download'
+    )
 
 
 @pytest.fixture
@@ -180,7 +183,7 @@ def zenodo_records(mocker, zenodo_records_json):
     """Fixture for Zenodo records metric instance."""
     mocker.patch.object(RecordsMetric, 'collect',
                         new=records_collect(zenodo_records_json))
-    return metrics.zenodo_records_metric
+    return metrics.records('zenodo_records', 'http://www.google.com')
 
 
 @pytest.fixture
@@ -188,7 +191,7 @@ def cod_records(mocker, cod_records_json):
     """Fixture for COD records metric instance."""
     mocker.patch.object(RecordsMetric, 'collect',
                         new=records_collect(cod_records_json))
-    return metrics.cod_records_metric
+    return metrics.records('cod_records', 'http://www.google.com')
 
 
 @pytest.fixture
@@ -239,13 +242,13 @@ def zenodo_support_ticket_metric(mocker):
 
     mocker.patch.object(ServiceNowProvider, 'auth_get', new=auth_get)
 
-    return metrics.zenodo_support_metric
+    return metrics.support('zenodo_support', Service.ZENODO)
 
 
 @pytest.fixture
 def dummy_support_ticket_metric(mocker):
     """Fixture for dummy support ticket metric."""
-    return metrics.dummy_support_metric
+    return metrics.support('dummy_support', dummy=True)
 
 
 @pytest.fixture
