@@ -10,6 +10,7 @@
 import json
 
 import pytest
+from celery.utils.log import get_task_logger
 
 import kpiit.metrics as metrics
 from kpiit import Service
@@ -23,6 +24,8 @@ from kpiit.providers.uptime_robot import UptimeRobotProvider
 from kpiit.publishers.base import BasePublisher
 from kpiit.publishers.cern import CERNMonitPublisher
 from kpiit.publishers.json import JSONFilePublisher
+
+logger = get_task_logger(__name__)
 
 
 @pytest.fixture
@@ -250,7 +253,7 @@ def dummy_support_ticket_metric(mocker):
 def cern_monit_publisher(mocker):
     """Fixture for the CERN monit publisher."""
     def new_send(document, production):
-        print('doc', document)
+        logger.debug('doc', document)
 
     mocker.patch('kpiit.send_check.send', new=new_send)
     return CERNMonitPublisher('testkpi')
