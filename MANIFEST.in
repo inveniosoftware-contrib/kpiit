@@ -45,3 +45,4 @@ include *.yaml
 recursive-include scripts *.py
 recursive-include scripts *.sh
 include *.json
+recursive-include kpiit *.cfg

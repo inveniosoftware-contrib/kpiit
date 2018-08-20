@@ -14,34 +14,34 @@ import requests.exceptions
 from celery.utils.log import get_task_logger
 
 from kpiit import Service
+from kpiit.config import config
 from kpiit.providers.base import BaseProvider
 
 logger = get_task_logger(__name__)
 
-SNOW_USER = os.getenv('SNOW_USER')
-SNOW_PASS = os.getenv('SNOW_PASS')
+SNOW_CFG = config['providers']['snow'].dict()
 
-INC_TABLE = 'incident'
-REQ_TABLE = 'u_request_fulfillment'
+SNOW_USER = SNOW_CFG['user']
+SNOW_PASS = SNOW_CFG['pass']
 
-INSTANCE_URLS = dict(
-    prod=None,
-    test='https://cerntraining.service-now.com'
-)
+INC_TABLE = SNOW_CFG['incident_table']
+REQ_TABLE = SNOW_CFG['request_table']
+
+INSTANCE_URL = SNOW_CFG['url']
 
 # Functional element IDs
 FUNC_ELEMENT_IDS = {
-    Service.CDS: 'CERN Document Server',
-    Service.CDS_VIDEOS: 'MultiMedia Archive',
-    Service.COD: 'Open Data Repository',
-    Service.ZENODO: 'Zenodo Repository'
+    Service.CDS: SNOW_CFG['fe']['cds'],
+    Service.CDS_VIDEOS: SNOW_CFG['fe']['cds_videos'],
+    Service.COD: SNOW_CFG['fe']['cod'],
+    Service.ZENODO: SNOW_CFG['fe']['cds']
 }
 
 
 class ServiceNowQuery(object):
     """Service Now query builder."""
 
-    def __init__(self, table_name, instance=INSTANCE_URLS['test']):
+    def __init__(self, table_name, instance=INSTANCE_URL):
         """Initiate the Service Now query."""
         self.table_name = table_name
         self.instance = instance
@@ -177,7 +177,7 @@ class ServiceNowQuery(object):
 class ServiceNowProvider(BaseProvider):
     """Service Now provider."""
 
-    def __init__(self, functional_element, instance=INSTANCE_URLS['test']):
+    def __init__(self, functional_element, instance=INSTANCE_URL):
         """Initiate the Service Now provider."""
         self.functional_element = functional_element
         self.instance = instance

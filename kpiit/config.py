@@ -10,7 +10,6 @@
 import os.path
 
 import configobj
-
 from celery.schedules import crontab
 
 from kpiit.util import args
@@ -23,33 +22,46 @@ class Config(configobj.ConfigObj):
         """Initialize config file."""
         super().__init__(filename, interpolation='Template', file_error=True)
 
+        # Load secrets from OpenShift into config structure
+        self['providers']['snow']['user'] = os.getenv('SNOW_USER')
+        self['providers']['snow']['pass'] = os.getenv('SNOW_PASS')
+
     @property
     def beat_schedule(self):
         """Get the tasks in celeryconfig beat schedule format."""
         tasks = {}
+        cfg = self.dict()
 
-        for task_name, values in self['tasks'].items():
-            schedule = self['schedules'][values['schedule']]
-
-            metrics = self._parse_instances(values['metrics'])
-            publishers = self._parse_instances(values['publishers'])
-
-            tasks[task_name] = {
-                'task': values['task'],
-                'schedule': crontab(**schedule),
+        for name, data in cfg['tasks'].items():
+            metrics = self._parse_instances(cfg, data['metrics'], 'metrics')
+            publishers = self._parse_instances(
+                cfg,
+                data['publishers'],
+                'publishers'
+            )
+            tasks[name] = {
+                'task': data['task'],
+                'schedule': crontab(**cfg['schedules'][data['schedule']]),
                 'kwargs': {
                     'metrics': metrics,
                     'publishers': publishers
                 }
             }
+
         return tasks
 
-    @classmethod
-    def _parse_instances(cls, data):
+    def _parse_instances(self, cfg, names, instance_type):
         """Parse instances config values into celeryconfig format."""
+        if isinstance(names, str):
+            names = [names]
+        tasks = [cfg[instance_type][name] for name in names]
+
         instances = {}
-        for name, values in data.items():
-            kwargs = values.copy()
+        for task in tasks:
+            kwargs = task.copy()
             del kwargs['instance']
-            instances[values['instance']] = args(**kwargs)
+            instances[task['instance']] = args(**kwargs)
         return instances
+
+
+config = Config('kpiit/config.test.cfg')

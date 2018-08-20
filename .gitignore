@@ -76,3 +76,5 @@ celerybeat-schedule
 output.json
 logs
 *.keytab
+kpiit/*.cfg
+!kpiit/config.example.cfg
