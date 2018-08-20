@@ -27,42 +27,38 @@ class Config(configobj.ConfigObj):
     def beat_schedule(self):
         """Get the tasks in celeryconfig beat schedule format."""
         tasks = {}
+        cfg = self.dict()
 
-        for name, data in self['tasks'].items():
-            schedule = self['schedules'][data['schedule']]
-
-            metrics, publishers = {}, {}
-
-            if isinstance(data['metrics'], str):
-                metrics[data['metrics']] = self['metrics'][data['metrics']]
-            else:
-                for name in data['metrics']:
-                    metrics[name] = self['metrics'][name]
-
-            if isinstance(data['publishers'], str):
-                publishers[data['publishers']] = \
-                    self['publishers'][data['publishers']]
-            else:
-                for name in data['publishers']:
-                    publishers[name] = self['publishers'][name]
-
+        for name, data in cfg['tasks'].items():
+            metrics = self._parse_instances(cfg, data['metrics'], 'metrics')
+            publishers = self._parse_instances(
+                cfg,
+                data['publishers'],
+                'publishers'
+            )
             tasks[name] = {
                 'task': data['task'],
-                'schedule': crontab(**schedule),
+                'schedule': crontab(**cfg['schedules'][data['schedule']]),
                 'kwargs': {
-                    'metrics': self._parse_instances(metrics),
-                    'publishers': self._parse_instances(publishers)
+                    'metrics': metrics,
+                    'publishers': publishers
                 }
             }
 
         return tasks
 
-    @classmethod
-    def _parse_instances(cls, data):
+    def _parse_instances(self, cfg, names, instance_type):
         """Parse instances config values into celeryconfig format."""
+        if isinstance(names, str):
+            names = [names]
+        tasks = [cfg[instance_type][name] for name in names]
+
         instances = {}
-        for name, values in data.items():
-            kwargs = values.copy()
+        for task in tasks:
+            kwargs = task.copy()
             del kwargs['instance']
-            instances[values['instance']] = args(**kwargs)
+            instances[task['instance']] = args(**kwargs)
         return instances
+
+
+config = Config('kpiit/config.cfg')
