@@ -7,7 +7,6 @@
 
 """Metrics module."""
 
-from kpiit.config import Config
 from kpiit.metrics.base import BaseMetric
 from kpiit.metrics.records import RecordsMetric
 from kpiit.metrics.uptime import UptimeMetric
@@ -15,9 +14,6 @@ from kpiit.providers import DataCiteProvider, JSONURLProvider, DummyProvider
 from kpiit.providers.piwik import PiwikProvider
 from kpiit.providers.snow import ServiceNowProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
-
-
-config = Config('kpiit/config.cfg')
 
 
 class Metric(BaseMetric):

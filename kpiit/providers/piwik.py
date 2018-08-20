@@ -14,7 +14,11 @@ import requests
 import requests.exceptions
 from celery.utils.log import get_task_logger
 
+from kpiit.config import config
 from kpiit.providers.base import BaseProvider
+
+BASE_URL = config['providers']['piwik']['base_url']
+URL = config['providers']['piwik']['url']
 
 logger = get_task_logger(__name__)
 
@@ -22,9 +26,8 @@ logger = get_task_logger(__name__)
 class Piwik(object):
     """Static base class for accessing the Piwik API."""
 
-    BASE_URL = 'https://piwikui.web.cern.ch/piwikui/'
-    NAME = None
-    COOKIE = None
+    name = None
+    cookie = None
 
     @classmethod
     def krb_ticket(cls, principal, keytab_file):
@@ -42,7 +45,7 @@ class Piwik(object):
         Note: Make sure the user has a valid Kerberos ticket before retrieving
         the cookie.
         """
-        return cern_sso.krb_sign_on(cls.BASE_URL)
+        return cern_sso.krb_sign_on(BASE_URL)
 
     @classmethod
     def get(cls, url):
@@ -52,10 +55,13 @@ class Piwik(object):
 
         :param str url: API url
         """
-        if cls.COOKIE is None:
-            cls.krb_ticket('n.persson@CERN.CH', 'n.persson.keytab')
-            cls.COOKIE = cls.krb_cookie()
-        response = requests.get(url, cookies=cls.COOKIE)
+        if cls.cookie is None:
+            cls.krb_ticket(
+                config['providers']['piwik']['principal'],
+                config['providers']['piwik']['keytab_file']
+            )
+            cls.cookie = cls.krb_cookie()
+        response = requests.get(url, cookies=cls.cookie)
         return response.json()
 
     @classmethod
@@ -76,7 +82,8 @@ class Piwik(object):
         query = ['{}={}'.format(key, value)
                  for key, value in kwargs.items()
                  if value is not None and value]
-        return cls.BASE_URL + 'index.php?module=API&' + '&'.join(query)
+        return URL.format(query='&'.join(query))
+        # return BASE_URL + 'index.php?module=API&' + '&'.join(query)
 
 
 class PiwikAPI(Piwik):
@@ -87,7 +94,7 @@ class PiwikAPI(Piwik):
     @classmethod
     def getPiwikVersion(cls):
         """Get the Piwik API version."""
-        data = cls.get(cls.build_url(cls.NAME, cls.getPiwikVersion.__name__))
+        data = cls.get(cls.build_url(cls.name, cls.getPiwikVersion.__name__))
         return data['value']
 
 
@@ -107,7 +114,7 @@ class PiwikVisitsSummary(Piwik):
         :return: number of visits
         :rtype: str
         """
-        url = cls.build_url(cls.NAME, cls.getVisits.__name__, idSite=idSite,
+        url = cls.build_url(cls.name, cls.getVisits.__name__, idSite=idSite,
                             period=period, date=date, segment=segment)
         data = cls.get(url)
         return data['value']
@@ -123,7 +130,7 @@ class PiwikVisitsSummary(Piwik):
         :return: number of unique visitors
         :rtype: str
         """
-        url = cls.build_url(cls.NAME, cls.getUniqueVisitors.__name__,
+        url = cls.build_url(cls.name, cls.getUniqueVisitors.__name__,
                             idSite=idSite, period=period, date=date,
                             segment=segment)
         data = cls.get(url)

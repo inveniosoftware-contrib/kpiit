@@ -10,7 +10,6 @@
 import os.path
 
 import configobj
-
 from celery.schedules import crontab
 
 from kpiit.util import args
@@ -22,6 +21,10 @@ class Config(configobj.ConfigObj):
     def __init__(self, filename):
         """Initialize config file."""
         super().__init__(filename, interpolation='Template', file_error=True)
+
+        # Load secrets from OpenShift into config structure
+        self['providers']['snow']['user'] = os.getenv('SNOW_USER')
+        self['providers']['snow']['pass'] = os.getenv('SNOW_PASS')
 
     @property
     def beat_schedule(self):
@@ -61,4 +64,4 @@ class Config(configobj.ConfigObj):
         return instances
 
 
-config = Config('kpiit/config.cfg')
+config = Config('kpiit/config.test.cfg')

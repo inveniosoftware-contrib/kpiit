@@ -12,6 +12,7 @@ import requests
 from bs4 import BeautifulSoup
 from celery.utils.log import get_task_logger
 
+from kpiit.config import config
 from kpiit.providers.base import BaseProvider
 
 
@@ -51,9 +52,6 @@ class JSONURLProvider(BaseProvider):
 class DataCiteProvider(BaseProvider):
     """Retrieve DOI statistics from DataCite."""
 
-    INDEX_URL = 'https://stats.datacite.org/stats/resolution-report/index.html'
-    STATS_URL = 'https://stats.datacite.org/stats/resolution-report/'
-
     def __init__(self, prefix):
         """Provider DataCite initialization."""
         if not prefix:
@@ -72,13 +70,15 @@ class DataCiteProvider(BaseProvider):
 
     def collect(self):
         """Collect DOI statistics from DataCite."""
-        html_code = self.load_index_data(self.INDEX_URL)
+        index_url = config['providers']['data_cite']['index_url']
+
+        html_code = self.load_index_data(index_url)
 
         html = BeautifulSoup(html_code, 'html.parser')
         links = html.find_all('a')[-1]
 
         stats_url = '{base}{file}'.format(
-            base=self.STATS_URL,
+            base=config['providers']['data_cite']['stats_url'],
             file=links.get('href')
         )
         stats_data = self.load_stats_data(stats_url)
