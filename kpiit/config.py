@@ -28,20 +28,33 @@ class Config(configobj.ConfigObj):
         """Get the tasks in celeryconfig beat schedule format."""
         tasks = {}
 
-        for task_name, values in self['tasks'].items():
-            schedule = self['schedules'][values['schedule']]
+        for name, data in self['tasks'].items():
+            schedule = self['schedules'][data['schedule']]
 
-            metrics = self._parse_instances(values['metrics'])
-            publishers = self._parse_instances(values['publishers'])
+            metrics, publishers = {}, {}
 
-            tasks[task_name] = {
-                'task': values['task'],
+            if isinstance(data['metrics'], str):
+                metrics[data['metrics']] = self['metrics'][data['metrics']]
+            else:
+                for name in data['metrics']:
+                    metrics[name] = self['metrics'][name]
+
+            if isinstance(data['publishers'], str):
+                publishers[data['publishers']] = \
+                    self['publishers'][data['publishers']]
+            else:
+                for name in data['publishers']:
+                    publishers[name] = self['publishers'][name]
+
+            tasks[name] = {
+                'task': data['task'],
                 'schedule': crontab(**schedule),
                 'kwargs': {
-                    'metrics': metrics,
-                    'publishers': publishers
+                    'metrics': self._parse_instances(metrics),
+                    'publishers': self._parse_instances(publishers)
                 }
             }
+
         return tasks
 
     @classmethod
