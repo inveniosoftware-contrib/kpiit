@@ -13,6 +13,7 @@ from datetime import datetime
 
 from celery.utils.log import get_task_logger
 
+from kpiit.config import config
 from kpiit.publishers.base import BasePublisher
 from kpiit.send_check import send
 
@@ -136,7 +137,7 @@ class CERNMonitPublisher(CERNPublisher):
         """Publish KPIs to the grafana instance."""
         super().publish(metrics)
 
-        is_production = os.getenv('KPIIT_DEV') != '1'
+        is_production = config['environment'].startswith('prod')
 
-        resp = send([self.data], production=is_production)
+        resp = self.send([self.data], production=is_production)
         logger.debug('Response: %s' % resp)

@@ -18,9 +18,11 @@ from kpiit.util import args
 class Config(configobj.ConfigObj):
     """Config file."""
 
-    def __init__(self, filename):
+    def __init__(self, filename, environment):
         """Initialize config file."""
         super().__init__(filename, interpolation='Template', file_error=True)
+
+        self['environment'] = environment
 
         # Load secrets from OpenShift into config structure
         self['providers']['snow']['user'] = os.getenv('SNOW_USER')
@@ -64,4 +66,4 @@ class Config(configobj.ConfigObj):
         return instances
 
 
-config = Config('kpiit/config.test.cfg')
+config = Config('kpiit/config.test.cfg', 'test')
