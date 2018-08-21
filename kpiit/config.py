@@ -75,4 +75,6 @@ class Config(configobj.ConfigObj):
         return instances
 
 
-config = Config('kpiit/config.test.cfg', 'test')
+environment = os.getenv('KPIIT_ENV', 'development')
+
+config = Config('kpiit/config.{}.cfg'.format(environment), environment)
