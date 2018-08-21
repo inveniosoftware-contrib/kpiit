@@ -27,7 +27,6 @@ def test_json_url_provider(json_url_provider):
     with pytest.raises(ValueError):
         JSONURLProvider(url=None)
 
-    # TODO: Test JSON content
     assert json_url_provider.json is None
     json_url_provider.collect()
     assert json_url_provider.json is not None

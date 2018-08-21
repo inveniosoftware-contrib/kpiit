@@ -77,8 +77,6 @@ def test_cern_repo_publisher_message(zenodo_records, website_uptime_metric,
     search_uptime_metric.collect()
     dummy_visits_metric.collect()
 
-    # TODO: Use normal visits metric once it's implemented
-
     publisher = CERNPublisher.create_repo(service=Service.ZENODO, env=Env.PROD)
 
     metrics = [

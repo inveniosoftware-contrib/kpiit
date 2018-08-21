@@ -51,8 +51,6 @@ class Piwik(object):
     def get(cls, url):
         """Make a GET API call to Piwik.
 
-        TODO: Handle unauthorized API calls.
-
         :param str url: API url
         """
         if cls.cookie is None:
@@ -110,7 +108,7 @@ class PiwikVisitsSummary(Piwik):
         :param int site_id: ID of website
         :param str period: range of when visits are counted
         :param str date: date for when visits are counted
-        :param segment: TODO, defaults to ''
+        :param segment: -, defaults to ''
         :return: number of visits
         :rtype: str
         """
@@ -126,7 +124,7 @@ class PiwikVisitsSummary(Piwik):
         :param int site_id: ID of website
         :param str period: range of when visits are counted
         :param str date: date for when visits are counted
-        :param segment: TODO, defaults to ''
+        :param segment: -, defaults to ''
         :return: number of unique visitors
         :rtype: str
         """

@@ -214,7 +214,6 @@ def redeploy(deployment, verbose):
 
     Bump the termination log filename in the deployment config file to force
     the deployment to restart.
-    TODO: Find a better way of handling this.
 
     :param bool verbose: Display verbose command output.
     :raises DeploymentError: If re-deployment failed
