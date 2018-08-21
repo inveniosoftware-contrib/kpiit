@@ -31,8 +31,8 @@ register(
 
 
 # Default schedule crontabs
-SCHEDULE_DOI_MONTHLY = crontab(**config['schedules']['doi'])
-SCHEDULE_REPO_DAILY = crontab(**config['schedules']['repo'])
+SCHEDULE_DOI_MONTHLY = crontab(**config['celery']['schedules']['doi'])
+SCHEDULE_REPO_DAILY = crontab(**config['celery']['schedules']['repo'])
 
 #: URL of message broker for Celery (default is Redis).
 broker_url = config['celery']['broker_url']

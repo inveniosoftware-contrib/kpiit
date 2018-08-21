@@ -40,7 +40,7 @@ class Config(configobj.ConfigObj):
     def beat_schedule(self):
         """Get the tasks in celeryconfig beat schedule format."""
         tasks = {}
-        cfg = self.dict()
+        cfg = self['celery'].dict()
 
         for name, data in cfg['tasks'].items():
             metrics = self._parse_instances(cfg, data['metrics'], 'metrics')
