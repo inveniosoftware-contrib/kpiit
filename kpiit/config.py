@@ -29,6 +29,14 @@ class Config(configobj.ConfigObj):
         self['providers']['snow']['pass'] = os.getenv('SNOW_PASS')
 
     @property
+    def closed_task_states(self):
+        """Get the IDs of the task states that are defined as "closed"."""
+        names = self['providers']['snow']['closed_task_states']
+        states = self['providers']['snow']['states']
+
+        return [states[name] for name in names]
+
+    @property
     def beat_schedule(self):
         """Get the tasks in celeryconfig beat schedule format."""
         tasks = {}

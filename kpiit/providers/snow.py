@@ -183,10 +183,12 @@ class ServiceNowProvider(BaseProvider):
     def _collect_record_count(self, table):
         """Extract record count from JSON object."""
         functional_element = FUNC_ELEMENT_IDS[self.functional_element]
+        closed_ids = config.closed_task_states
 
+        # Query non-closed tasks
         query = ServiceNowQuery(table, self.instance).where(
             'assignment_groupSTARTSWITH{}'.format(functional_element),
-            'stateNOT IN4,3,7,6,8'  # only select tickets that are not closed
+            'stateNOT IN{ids}'.format(ids=','.join(closed_ids))
         ).max('u_reassignment_counter_fe').count()
 
         res_json = self.auth_get(query.url)
