@@ -7,8 +7,6 @@
 
 """Service Now provider."""
 
-import os
-
 import requests
 import requests.exceptions
 from celery.utils.log import get_task_logger
@@ -122,12 +120,12 @@ class ServiceNowQuery(object):
         self.aggregate('max', *fields)
         return self
 
-    def aggregate(self, op, field, *fields):
+    def aggregate(self, oper, field, *fields):
         """Add aggregate operation for the given fields."""
         fields = [field, *fields]
         self.source_type = 'stats'
         self.api_version = 1
-        self.params['sysparm_{}_fields'.format(op)] = ','.join(fields)
+        self.params['sysparm_{}_fields'.format(oper)] = ','.join(fields)
         return self
 
     def _append_params(self, query, *args, use_or=False, **kwargs):

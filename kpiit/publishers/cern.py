@@ -8,14 +8,12 @@
 """Publisher for CERN's Grafana instance."""
 
 import json
-import os
 from datetime import datetime
 
 from celery.utils.log import get_task_logger
 
 from kpiit.config import config
 from kpiit.publishers.base import BasePublisher
-from kpiit.send_check import send
 
 logger = get_task_logger(__name__)
 
@@ -23,11 +21,11 @@ logger = get_task_logger(__name__)
 class CERNPublisher(BasePublisher):
     """Publish metrics to CERN's Grafana instance."""
 
-    def __init__(self, type, skip_fields=False, save_json=True, **tags):
+    def __init__(self, _type, skip_fields=False, save_json=True, **tags):
         """CERN publisher initialize."""
         self.data = dict(
             producer='digitalrepos',
-            type=type,
+            type=_type,
             type_prefix='raw',
             timestamp=None,
             idb_tags=[]
@@ -44,7 +42,7 @@ class CERNPublisher(BasePublisher):
             elif 'service' in tags:
                 self.name = tags['service']
             else:
-                self.name = type
+                self.name = _type
 
         # Add tags
         for key, value in tags.items():
@@ -75,12 +73,14 @@ class CERNPublisher(BasePublisher):
         if name in self.data:
             del self.data[name]
 
-    def save(self, format='json'):
+    def save(self, file_format='json'):
         """Save data to file."""
-        if format == 'json':
+        if file_format == 'json':
             encoded = json.dumps(self.data)
         else:
-            raise NotImplementedError('format "%s" is not supported' % format)
+            raise NotImplementedError(
+                'format "%s" is not supported' % file_format
+            )
 
         self.filename = 'logs/{type}_{name}_{now}.{format}'.format(
             type=self.data['type'],
@@ -89,14 +89,14 @@ class CERNPublisher(BasePublisher):
             format=format
         )
 
-        with open(self.filename, 'w+') as f:
-            f.write(encoded)
-            logger.info('saved output to: {}'.format(self.filename))
+        with open(self.filename, 'w+') as file:
+            file.write(encoded)
+            logger.info('saved output to: %s' % self.filename)
 
     def build_message(self, metrics):
         """Build KPI object from the given metrics."""
         for metric in metrics:
-            for name, values in metric.values.items():
+            for values in metric.values.values():
                 for key, value in values.items():
                     if value is not None:
                         self.add_field(key, value)
@@ -107,7 +107,7 @@ class CERNPublisher(BasePublisher):
         self.data['timestamp'] = self.get_timestamp()
 
         if self.save_json:
-            self.save(format='json')
+            self.save(file_format='json')
 
     @staticmethod
     def get_timestamp():
@@ -138,6 +138,7 @@ class CERNMonitPublisher(CERNPublisher):
         super().publish(metrics)
 
         is_production = config['environment'].startswith('prod')
+        url = config['cern_grafana_url']
 
-        resp = self.send([self.data], production=is_production)
+        resp = self.send(url, [self.data], production=is_production)
         logger.debug('Response: %s' % resp)

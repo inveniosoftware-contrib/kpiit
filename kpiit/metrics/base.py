@@ -70,7 +70,7 @@ class BaseMetric(object):
         """Clean string value and convert to appropriate type."""
         if value is None:
             return None
-        elif isinstance(value, float) or isinstance(value, int):
+        elif isinstance(value, (float, int)):
             return value
 
         if '.' in value:

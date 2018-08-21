@@ -52,7 +52,8 @@ class Config(configobj.ConfigObj):
 
         return tasks
 
-    def _parse_instances(self, cfg, names, instance_type):
+    @classmethod
+    def _parse_instances(cls, cfg, names, instance_type):
         """Parse instances config values into celeryconfig format."""
         if isinstance(names, str):
             names = [names]

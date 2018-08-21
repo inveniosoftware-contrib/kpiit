@@ -37,9 +37,11 @@ class UptimeRobotProvider(BaseProvider):
         """Get data from Uptime Robot."""
         if not self.api_key:
             # Send dummy values if no API key is specified
-            logger.warn('no API key specified for Uptime provider: {}'.format(
-                self.monitor_name
-            ))
+            logger.warning(
+                'no API key specified for Uptime provider: {}'.format(
+                    self.monitor_name
+                )
+            )
             return {
                 'response_time': None,
                 'uptime_ratio': None

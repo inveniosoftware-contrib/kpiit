@@ -46,3 +46,5 @@ recursive-include scripts *.py
 recursive-include scripts *.sh
 include *.json
 recursive-include kpiit *.cfg
+exclude kpiit config.test.cfg
+exclude kpiit config.production.cfg

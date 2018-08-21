@@ -12,7 +12,6 @@ import os
 from celery.schedules import crontab
 from kombu.serialization import register
 
-from kpiit import Env, Service
 from kpiit.config import config
 from kpiit.json import metric_dumps, metric_loads
 
@@ -31,11 +30,6 @@ register(
 )
 
 
-def args(*args, **kwargs):
-    """Get function arguments as a dictionary."""
-    return dict(args=args, kwargs=kwargs)
-
-
 # Default schedule crontabs
 SCHEDULE_DOI_MONTHLY = crontab(**config['schedules']['doi'])
 SCHEDULE_REPO_DAILY = crontab(**config['schedules']['repo'])
@@ -46,6 +40,7 @@ broker_url = config['celery']['broker_url']
 result_backend = config['celery']['result_backend']
 #: List of modules to import when the Celery worker starts.
 imports = ['kpiit.tasks']
+
 #: Scheduled tasks configuration (aka cronjobs).
 beat_schedule = config.beat_schedule
 # beat_schedule = {

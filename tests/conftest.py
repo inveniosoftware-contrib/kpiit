@@ -18,7 +18,7 @@ from kpiit.app import app
 from kpiit.metrics.records import RecordsMetric
 from kpiit.providers import DataCiteProvider, JSONURLProvider
 from kpiit.providers.base import BaseProvider
-from kpiit.providers.piwik import Piwik
+from kpiit.providers.piwik import BASE_URL, URL, Piwik
 from kpiit.providers.snow import ServiceNowProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
 from kpiit.publishers.base import BasePublisher
@@ -252,13 +252,13 @@ def dummy_support_ticket_metric(mocker):
 @pytest.fixture
 def cern_monit_publisher(mocker):
     """Fixture for the CERN monit publisher."""
-    def new_send(document, production):
+    def new_send(cls, url, document, production):
         logger.debug('doc', document)
 
-    mocker.patch('kpiit.send_check.send', new=new_send)
+    mocker.patch.object(BasePublisher, 'send', new=new_send)
     return CERNMonitPublisher('testkpi')
 
 
 def piwik_url(query):
     """Get the full URL for the Piwik query."""
-    return Piwik.BASE_URL + 'index.php' + query
+    return BASE_URL + '/index.php' + query

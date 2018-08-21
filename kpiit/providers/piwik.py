@@ -65,18 +65,18 @@ class Piwik(object):
         return response.json()
 
     @classmethod
-    def build_url(cls, module, method, format='json', filter_limit=-1,
+    def build_url(cls, module, method, file_format='json', filter_limit=-1,
                   **kwargs):
         """Build API URL from the given parameters.
 
         :param str module: API module (e.g. VisitsSummary)
         :param str method: API method (e.g. getVisits)
-        :param str format: response format, defaults to 'json'
+        :param str file_format: response file_format, defaults to 'json'
         :param int filter_limit: max number of records to get, defaults to -1
         :return: generated URL
         """
         kwargs['method'] = '{}.{}'.format(module, method)
-        kwargs['format'] = format
+        kwargs['format'] = file_format
         if filter_limit != -1:
             kwargs['filter_limit'] = filter_limit
         query = ['{}={}'.format(key, value)
@@ -92,9 +92,9 @@ class PiwikAPI(Piwik):
     NAME = 'API'
 
     @classmethod
-    def getPiwikVersion(cls):
+    def piwik_version(cls):
         """Get the Piwik API version."""
-        data = cls.get(cls.build_url(cls.name, cls.getPiwikVersion.__name__))
+        data = cls.get(cls.build_url(cls.name, cls.piwik_version.__name__))
         return data['value']
 
 
@@ -104,34 +104,34 @@ class PiwikVisitsSummary(Piwik):
     NAME = 'VisitsSummary'
 
     @classmethod
-    def getVisits(cls, idSite, period, date, segment=''):
+    def visits(cls, site_id, period, date, segment=''):
         """Get number of visits for a site.
 
-        :param int idSite: ID of website
+        :param int site_id: ID of website
         :param str period: range of when visits are counted
         :param str date: date for when visits are counted
         :param segment: TODO, defaults to ''
         :return: number of visits
         :rtype: str
         """
-        url = cls.build_url(cls.name, cls.getVisits.__name__, idSite=idSite,
+        url = cls.build_url(cls.name, cls.getVisits.__name__, site_id=site_id,
                             period=period, date=date, segment=segment)
         data = cls.get(url)
         return data['value']
 
     @classmethod
-    def getUniqueVisitors(cls, idSite, period, date, segment=''):
+    def unique_visitors(cls, site_id, period, date, segment=''):
         """Get number of unique visitors for a site.
 
-        :param int idSite: ID of website
+        :param int site_id: ID of website
         :param str period: range of when visits are counted
         :param str date: date for when visits are counted
         :param segment: TODO, defaults to ''
         :return: number of unique visitors
         :rtype: str
         """
-        url = cls.build_url(cls.name, cls.getUniqueVisitors.__name__,
-                            idSite=idSite, period=period, date=date,
+        url = cls.build_url(cls.name, cls.unique_visitors.__name__,
+                            site_id=site_id, period=period, date=date,
                             segment=segment)
         data = cls.get(url)
         return data['value']
@@ -148,9 +148,9 @@ class PiwikProvider(BaseProvider):
 
     def collect(self):
         """Collect support stats from Service Now."""
-        visits = PiwikVisitsSummary.getVisits(
+        visits = PiwikVisitsSummary.visits(
             self.site_id, self.period, self.date)
-        unique_visits = PiwikVisitsSummary.getUniqueVisitors(
+        unique_visits = PiwikVisitsSummary.unique_visitors(
             self.site_id, self.period, self.date)
 
         return {

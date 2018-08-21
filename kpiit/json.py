@@ -28,7 +28,7 @@ class MetricEncoder(json.JSONEncoder):
             '_type': _type,
             'name': o.name,
             'values': {key: o.value(key) for key in o.fields},
-            'provider': None  # TODO: add support for encoding provider
+            'provider': None
         }
 
 
@@ -49,8 +49,8 @@ class MetricDecoder(json.JSONDecoder):
         if '_type' not in obj:
             return obj
 
-        MetricClass = load_target(obj['_type'])
-        metric = MetricClass(
+        metric_class = load_target(obj['_type'])
+        metric = metric_class(
             name=obj['name'],
             provider=obj['provider']
         )

@@ -16,6 +16,7 @@ class RecordsMetric(BaseMetric):
     def __init__(self, name, provider):
         """Records metric initialization."""
         super().__init__(name, provider, ['records'])
+        self.records = None
 
     def collect_done(self, data):
         """Process collected data."""
