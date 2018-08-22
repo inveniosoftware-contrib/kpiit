@@ -22,11 +22,21 @@ class Config(configobj.ConfigObj):
         """Initialize config file."""
         super().__init__(filename, interpolation='Template', file_error=True)
 
+        self._merge_environment_config(filename, environment)
+
         self['environment'] = environment
 
         # Load secrets from OpenShift into config structure
         self['providers']['snow']['user'] = os.getenv('SNOW_USER')
         self['providers']['snow']['pass'] = os.getenv('SNOW_PASS')
+
+    def _merge_environment_config(self, filename, environment):
+        """Merge the main config file with the env config file ConfigObj."""
+        filename_split = filename.split('.')
+        env_filename = '{}.{}.cfg'.format(
+            '.'.join(filename_split[:-1]), environment)
+        env_cfg = configobj.ConfigObj(env_filename, file_error=True)
+        self.merge(env_cfg)
 
     @property
     def closed_task_states(self):
@@ -77,4 +87,4 @@ class Config(configobj.ConfigObj):
 
 environment = os.getenv('KPIIT_ENV', 'development')
 
-config = Config('kpiit/config.{}.cfg'.format(environment), environment)
+config = Config('kpiit/config.cfg', environment)
