@@ -81,7 +81,6 @@ class Piwik(object):
                  for key, value in kwargs.items()
                  if value is not None and value]
         return URL.format(query='&'.join(query))
-        # return BASE_URL + 'index.php?module=API&' + '&'.join(query)
 
 
 class PiwikAPI(Piwik):
