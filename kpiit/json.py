@@ -10,8 +10,12 @@
 
 import json
 
+from celery.utils.log import get_task_logger
+
 from kpiit.metrics.base import BaseMetric
 from kpiit.util import load_target
+
+logger = get_task_logger(__name__)
 
 
 class MetricEncoder(json.JSONEncoder):
@@ -27,6 +31,7 @@ class MetricEncoder(json.JSONEncoder):
         return {
             '_type': _type,
             'name': o.name,
+            'fields': o.fields,
             'values': {key: o.value(key) for key in o.fields},
             'provider': None
         }
@@ -49,10 +54,13 @@ class MetricDecoder(json.JSONDecoder):
         if '_type' not in obj:
             return obj
 
+        fields = obj['fields'] if 'fields' in obj else None
+
         metric_class = load_target(obj['_type'])
         metric = metric_class(
             name=obj['name'],
-            provider=obj['provider']
+            provider=obj['provider'],
+            fields=fields
         )
         metric.update(**obj['values'])
         return metric

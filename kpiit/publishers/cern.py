@@ -9,6 +9,7 @@
 
 import json
 from datetime import datetime
+from enum import Enum
 
 from celery.utils.log import get_task_logger
 
@@ -122,10 +123,16 @@ class CERNPublisher(BasePublisher):
     @classmethod
     def create_repo(cls, service, env, skip_fields=False, save_json=True):
         """Create a repo publisher."""
+        if isinstance(service, Enum):
+            service = service.value
+
+        if isinstance(env, Enum):
+            env = env.value
+
         return cls(
             'repokpi',
-            service=service.value,
-            env=env.value,
+            service=service,
+            env=env,
             skip_fields=skip_fields
         )
 

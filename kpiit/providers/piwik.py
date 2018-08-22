@@ -35,8 +35,8 @@ class Piwik(object):
         try:
             ret = subprocess.run(['kinit', principal, '-k', '-t', keytab_file])
             ret.check_returncode()
-        except subprocess.CalledProcessError:
-            logger.error('Failed to retrieve Kerberos ticket')
+        except subprocess.CalledProcessError as cpe:
+            logger.error('Failed to retrieve Kerberos ticket: %s' % cpe.cmd)
 
     @classmethod
     def krb_cookie(cls):
@@ -90,9 +90,9 @@ class PiwikAPI(Piwik):
     NAME = 'API'
 
     @classmethod
-    def piwik_version(cls):
+    def version(cls):
         """Get the Piwik API version."""
-        data = cls.get(cls.build_url(cls.name, cls.piwik_version.__name__))
+        data = cls.get(cls.build_url(cls.NAME, 'getPiwikVersion'))
         return data['value']
 
 
@@ -112,8 +112,9 @@ class PiwikVisitsSummary(Piwik):
         :return: number of visits
         :rtype: str
         """
-        url = cls.build_url(cls.name, cls.getVisits.__name__, site_id=site_id,
+        url = cls.build_url(cls.NAME, 'getVisits', idSite=site_id,
                             period=period, date=date, segment=segment)
+        print(url)
         data = cls.get(url)
         return data['value']
 
@@ -128,8 +129,8 @@ class PiwikVisitsSummary(Piwik):
         :return: number of unique visitors
         :rtype: str
         """
-        url = cls.build_url(cls.name, cls.unique_visitors.__name__,
-                            site_id=site_id, period=period, date=date,
+        url = cls.build_url(cls.NAME, 'getUniqueVisitors',
+                            idSite=site_id, period=period, date=date,
                             segment=segment)
         data = cls.get(url)
         return data['value']

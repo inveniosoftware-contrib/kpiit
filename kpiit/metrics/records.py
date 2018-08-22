@@ -13,9 +13,9 @@ from kpiit.metrics.base import BaseMetric
 class RecordsMetric(BaseMetric):
     """Metric for number of records."""
 
-    def __init__(self, name, provider):
+    def __init__(self, name, provider, fields=['records']):
         """Records metric initialization."""
-        super().__init__(name, provider, ['records'])
+        super().__init__(name, provider, fields)
         self.records = None
 
     def collect_done(self, data):

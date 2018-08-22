@@ -28,8 +28,8 @@ class BasePublisher(object):
 
     def send(cls, url, document, production):
         """Send data to url with a GET request."""
-        logger.debug('sending document to: ', url)
-        logger.debug('document', json.dumps(document))
+        logger.debug('sending document to: %s' % url)
+        logger.debug('document: %s' % json.dumps(document))
 
         return requests.post(
             url,

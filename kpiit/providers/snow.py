@@ -182,7 +182,7 @@ class ServiceNowProvider(BaseProvider):
 
     def _collect_record_count(self, table):
         """Extract record count from JSON object."""
-        functional_element = FUNC_ELEMENT_IDS[self.functional_element]
+        functional_element = SNOW_CFG['fe'][self.functional_element]
         closed_ids = config.closed_task_states
 
         # Query non-closed tasks
@@ -197,7 +197,7 @@ class ServiceNowProvider(BaseProvider):
 
     def _collect_stc(self, table):
         """Collect waiting time from Service Now."""
-        functional_element = FUNC_ELEMENT_IDS[self.functional_element]
+        functional_element = SNOW_CFG['fe'][self.functional_element]
 
         query = ServiceNowQuery(table, self.instance).where(
             'assignment_groupSTARTSWITH{}'.format(functional_element),
