@@ -21,20 +21,24 @@ def collect_and_publish_metrics(*args, **kwargs):
     """Collect metrics then publish."""
     metrics = kwargs['metrics']
 
+    logger.info('collect_and_publish_metrics(%s, %s)' % (args, kwargs))
+
     # Skip publishing if no publisher is given
-    if 'publisher' not in kwargs or not isinstance(kwargs['publisher'], str):
+    if not ('publishers' in kwargs and isinstance(kwargs['publishers'], dict)):
+        logger.debug('Skipping publishing because no publishers were set.')
         return collect_metrics.s(metrics)
 
     # Publish when collecting metrics is completed
     return chain(
         collect_metrics.s(metrics),
-        publish_metrics.s(kwargs['publisher'])
+        publish_metrics.s(kwargs['publishers'])
     )()
 
 
 @app.task
 def collect_metrics(metrics):
     """Collect metrics."""
+    logger.info('collect_metrics', metrics)
     metric_instances = [load_target(obj)(*args['args'], **args['kwargs'])
                         for obj, args in metrics.items()]
 
@@ -47,6 +51,7 @@ def collect_metrics(metrics):
 @app.task
 def publish_metrics(metrics, publishers):
     """Publish metrics."""
+    logger.debug('publish_metrics', metrics, publishers)
     publisher_instances = [load_target(obj)(*args['args'], **args['kwargs'])
                            for obj, args in publishers.items()]
 
