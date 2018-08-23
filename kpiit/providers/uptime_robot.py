@@ -12,7 +12,7 @@ import os.path
 import requests
 from celery.utils.log import get_task_logger
 
-from kpiit.providers.base import BaseProvider
+from kpiit.providers import BaseProvider
 
 logger = get_task_logger(__name__)
 

@@ -99,4 +99,5 @@ class Config(configobj.ConfigObj):
 
 environment = os.getenv('KPIIT_ENV', 'development')
 
-config = Config('kpiit/config.cfg', environment)
+config_path = os.path.join(os.path.dirname(__file__), 'config.cfg')
+config = Config(config_path, environment)

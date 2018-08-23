@@ -13,7 +13,7 @@ from celery.utils.log import get_task_logger
 
 from kpiit import Service
 from kpiit.config import config
-from kpiit.providers.base import BaseProvider
+from kpiit.providers import BaseProvider
 
 logger = get_task_logger(__name__)
 

@@ -16,8 +16,8 @@ import kpiit.metrics as metrics
 from kpiit.app import app
 from kpiit.config import config
 from kpiit.metrics.records import RecordsMetric
-from kpiit.providers import DataCiteProvider, JSONURLProvider
-from kpiit.providers.base import BaseProvider
+from kpiit.providers.datacite import JSONURLProvider
+from kpiit.providers import BaseProvider
 from kpiit.providers.piwik import BASE_URL
 from kpiit.providers.snow import ServiceNowProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
@@ -197,6 +197,7 @@ def cod_records(mocker, cod_records_json):
 @pytest.fixture
 def zenodo_doi_metric(mocker, zenodo_doi_index_html, zenodo_doi_june_html):
     """Fixture for COD records metric instance."""
+
     def load_index_data(self, url):
         return zenodo_doi_index_html
 

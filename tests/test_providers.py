@@ -9,8 +9,9 @@
 
 import pytest
 
-from kpiit.providers import DataCiteProvider, JSONURLProvider
-from kpiit.providers.base import BaseProvider
+from kpiit.providers import BaseProvider
+from kpiit.providers.datacite import DataCiteProvider
+from kpiit.providers.json import JSONURLProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
 
 

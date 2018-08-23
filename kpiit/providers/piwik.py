@@ -15,7 +15,7 @@ import requests.exceptions
 from celery.utils.log import get_task_logger
 
 from kpiit.config import config
-from kpiit.providers.base import BaseProvider
+from kpiit.providers import BaseProvider
 
 BASE_URL = config['providers']['piwik']['base_url']
 URL = config['providers']['piwik']['url']
