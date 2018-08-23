@@ -12,6 +12,7 @@ import os
 import pytest
 
 from kpiit import Env, Service
+from kpiit.publishers import doi, repo
 from kpiit.publishers.base import BasePublisher
 from kpiit.publishers.cern import CERNPublisher
 
@@ -35,7 +36,7 @@ def test_json_publisher(json_publisher, zenodo_records):
 
 
 def test_cern_doi_publisher_message(zenodo_doi_metric):
-    publisher = CERNPublisher.create_doi(prefix='10.5281')
+    publisher = doi(prefix='10.5281')
 
     zenodo_doi_metric.collect()
 
@@ -77,7 +78,7 @@ def test_cern_repo_publisher_message(zenodo_records, website_uptime_metric,
     search_uptime_metric.collect()
     dummy_visits_metric.collect()
 
-    publisher = CERNPublisher.create_repo(service=Service.ZENODO, env=Env.PROD)
+    publisher = repo(service=Service.ZENODO, env=Env.PROD)
 
     metrics = [
         zenodo_records, website_uptime_metric,

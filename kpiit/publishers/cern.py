@@ -8,6 +8,7 @@
 """Publisher for CERN's Grafana instance."""
 
 import json
+import os.path
 from datetime import datetime
 
 from celery.utils.log import get_task_logger
@@ -82,12 +83,15 @@ class CERNPublisher(BasePublisher):
                 'format "%s" is not supported' % file_format
             )
 
-        self.filename = 'logs/{type}_{name}_{now}.{format}'.format(
+        path = os.path.dirname(__file__)
+        filename = 'logs/{type}_{name}_{now}.{format}'.format(
             type=self.data['type'],
             name=self.name,
             now=self.get_timestamp(),
-            format=format
+            format=file_format
         )
+
+        self.filename = os.path.join(path, '..', '..', filename)
 
         with open(self.filename, 'w+') as file:
             file.write(encoded)
