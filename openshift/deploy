@@ -30,41 +30,47 @@ DEFAULT_DEPLOYMENT = config['deploy']['default_deployment']
 logger = logging.getLogger('openshift_deploy')
 
 
-def setup():
-    """Authenticate and setup the command line parser and logger."""
-    # Setup the command line parser
+def create_parser():
+    """Create a new argument parser."""
     parser = argparse.ArgumentParser(
         description='Deploy Docker image to OpenShift.')
     parser.add_argument(
         '--image', '-i',
         default=DEFAULT_IMAGE,
-        help='docker image name (default: {})'.format(DEFAULT_IMAGE)
+        help='Docker image name'
     )
     parser.add_argument(
         '--registry', '-r',
         default=DEFAULT_REGISTRY,
-        help='OpenShift docker registry (default: {})'.format(DEFAULT_REGISTRY)
+        help='OpenShift docker registry'
     )
     parser.add_argument(
         '--deployment', '-d',
         default=DEFAULT_DEPLOYMENT,
-        help='OpenShift deployment (default: {})'.format(DEFAULT_DEPLOYMENT)
+        help='OpenShift deployment'
     )
     parser.add_argument(
         '--build-only', '-b',
         action='store_true',
-        help='build the Docker image without pushing it to OpenShift'
+        help='Build the Docker image without pushing it to OpenShift'
     )
     parser.add_argument(
         '--redeploy-only',
         action='store_true',
-        help='restart the OpenShift deployment without building and pushing the Docker image'
+        help='Restart the OpenShift deployment without building and pushing the Docker image'
     )
     parser.add_argument(
         '--verbose', '-v',
         action='store_true',
-        help='verbose output messages'
+        help='Verbose output messages'
     )
+    return parser
+
+
+def setup():
+    """Authenticate and setup the command line parser and logger."""
+    # Setup the command line parser
+    parser = create_parser()
 
     # Configure logger
     logger.setLevel(logging.DEBUG)
