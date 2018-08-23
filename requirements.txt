@@ -14,3 +14,4 @@ vine==1.1.4               # via amqp
 BeautifulSoup4==4.6.0
 python-cern-sso-krb==1.3.3
 configobj==5.0.6
+sphinx-argparse==0.2.2
