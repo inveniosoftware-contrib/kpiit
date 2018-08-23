@@ -146,10 +146,25 @@ class PiwikProvider(BaseProvider):
 
     def collect(self):
         """Collect support stats from Service Now."""
-        visits = PiwikVisitsSummary.visits(
-            self.site_id, self.period, self.date)
-        unique_visits = PiwikVisitsSummary.unique_visitors(
-            self.site_id, self.period, self.date)
+        if not self.site_id:
+            return {
+                'visits': None,
+                'visits_unique': None
+            }
+
+        try:
+            visits = PiwikVisitsSummary.visits(
+                self.site_id, self.period, self.date)
+        except ValueError:
+            logger.exception('Failed to collect number of visits')
+            visits = None
+
+        try:
+            unique_visits = PiwikVisitsSummary.unique_visitors(
+                self.site_id, self.period, self.date)
+        except ValueError:
+            logger.exception('Failed to collect number of unique visitors')
+            unique_visits = None
 
         return {
             'visits': visits,
