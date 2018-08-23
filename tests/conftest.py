@@ -16,14 +16,15 @@ import kpiit.metrics as metrics
 from kpiit.app import app
 from kpiit.config import config
 from kpiit.metrics.records import RecordsMetric
-from kpiit.providers.datacite import JSONURLProvider
 from kpiit.providers import BaseProvider
+from kpiit.providers.datacite import DataCiteProvider
+from kpiit.providers.json import JSONURLProvider
 from kpiit.providers.piwik import BASE_URL
 from kpiit.providers.snow import ServiceNowProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
+from kpiit.publishers import doi as pub_doi
 from kpiit.publishers.base import BasePublisher
 from kpiit.publishers.cern import CERNMonitPublisher
-from kpiit.publishers.json import JSONFilePublisher
 
 logger = get_task_logger(__name__)
 
@@ -197,7 +198,6 @@ def cod_records(mocker, cod_records_json):
 @pytest.fixture
 def zenodo_doi_metric(mocker, zenodo_doi_index_html, zenodo_doi_june_html):
     """Fixture for COD records metric instance."""
-
     def load_index_data(self, url):
         return zenodo_doi_index_html
 
@@ -214,7 +214,7 @@ def zenodo_doi_metric(mocker, zenodo_doi_index_html, zenodo_doi_june_html):
 @pytest.fixture
 def json_publisher(tmpdir):
     """Fixture for JSON publisher."""
-    return JSONFilePublisher.create_doi('10.5281')
+    return pub_doi('10.5281')
 
 
 @pytest.fixture(scope='module')

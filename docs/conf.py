@@ -14,7 +14,6 @@ import sys
 
 import sphinx.environment
 
-
 KPIIT_DIR = os.path.abspath('..')
 
 sys.path.append(KPIIT_DIR)

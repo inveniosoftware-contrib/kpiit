@@ -9,7 +9,6 @@
 
 import json
 from datetime import datetime
-from enum import Enum
 
 from celery.utils.log import get_task_logger
 
@@ -114,27 +113,6 @@ class CERNPublisher(BasePublisher):
     def get_timestamp():
         """Get timestamp in milliseconds without decimals."""
         return round(datetime.utcnow().timestamp() * 1000)
-
-    @classmethod
-    def create_doi(cls, prefix, skip_fields=False, save_json=True):
-        """Create a DOI publisher."""
-        return cls('doikpi', doi_prefix=prefix, skip_fields=skip_fields)
-
-    @classmethod
-    def create_repo(cls, service, env, skip_fields=False, save_json=True):
-        """Create a repo publisher."""
-        if isinstance(service, Enum):
-            service = service.value
-
-        if isinstance(env, Enum):
-            env = env.value
-
-        return cls(
-            'repokpi',
-            service=service,
-            env=env,
-            skip_fields=skip_fields
-        )
 
 
 class CERNMonitPublisher(CERNPublisher):

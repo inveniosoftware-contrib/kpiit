@@ -20,18 +20,6 @@ Application instance
 .. automodule:: kpiit.app
    :members:
 
-Utils
---------------------
-
-.. automodule:: kpiit.util
-   :members:
-
-JSON
-~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: kpiit.json
-   :members:
-
 Providers
 --------------------
 
@@ -72,4 +60,40 @@ Uptime Robot
 ~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: kpiit.providers.uptime_robot
+   :members:
+
+Publishers
+--------------------
+
+.. automodule:: kpiit.publishers
+   :members:
+
+Base Publisher
+~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: kpiit.publishers.base
+   :members:
+
+CERN
+~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: kpiit.publishers.cern
+   :members:
+
+JSON
+~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: kpiit.publishers.json
+   :members:
+
+Utils
+--------------------
+
+.. automodule:: kpiit.util
+   :members:
+
+JSON
+~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: kpiit.json
    :members:
