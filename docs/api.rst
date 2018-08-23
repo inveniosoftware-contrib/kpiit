@@ -20,6 +20,30 @@ Application instance
 .. automodule:: kpiit.app
    :members:
 
+Metrics
+--------------------
+
+.. automodule:: kpiit.metrics
+   :members:
+
+Base Metric
+~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: kpiit.metrics.base
+   :members:
+
+Records
+~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: kpiit.metrics.records
+   :members:
+
+Uptime
+~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: kpiit.metrics.uptime
+   :members:
+
 Providers
 --------------------
 
