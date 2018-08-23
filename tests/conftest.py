@@ -13,12 +13,12 @@ import pytest
 from celery.utils.log import get_task_logger
 
 import kpiit.metrics as metrics
-from kpiit import Service
 from kpiit.app import app
+from kpiit.config import config
 from kpiit.metrics.records import RecordsMetric
 from kpiit.providers import DataCiteProvider, JSONURLProvider
 from kpiit.providers.base import BaseProvider
-from kpiit.providers.piwik import BASE_URL, URL, Piwik
+from kpiit.providers.piwik import BASE_URL
 from kpiit.providers.snow import ServiceNowProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
 from kpiit.publishers.base import BasePublisher
@@ -240,7 +240,7 @@ def zenodo_support_ticket_metric(mocker):
 
     mocker.patch.object(ServiceNowProvider, 'auth_get', new=auth_get)
 
-    return metrics.support('zenodo_support', Service.ZENODO)
+    return metrics.support('zenodo_support', config['zenodo_service'])
 
 
 @pytest.fixture

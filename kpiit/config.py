@@ -11,8 +11,11 @@ import os.path
 
 import configobj
 from celery.schedules import crontab
+from celery.utils.log import get_task_logger
 
 from kpiit.util import args
+
+logger = get_task_logger(__name__)
 
 
 class Config(configobj.ConfigObj):
@@ -22,7 +25,13 @@ class Config(configobj.ConfigObj):
         """Initialize config file."""
         super().__init__(filename, interpolation='Template', file_error=True)
 
-        self._merge_environment_config(filename, environment)
+        try:
+            env_filename = self._env_filename(filename, environment)
+            self._merge_environment_config(env_filename)
+        except (configobj.ConfigObjError, IOError) as e:
+            logger.exception('Failed to load environment config: {}'.format(
+                env_filename
+            ))
 
         self['environment'] = environment
 
@@ -30,12 +39,9 @@ class Config(configobj.ConfigObj):
         self['providers']['snow']['user'] = os.getenv('SNOW_USER')
         self['providers']['snow']['pass'] = os.getenv('SNOW_PASS')
 
-    def _merge_environment_config(self, filename, environment):
+    def _merge_environment_config(self, filename):
         """Merge the main config file with the env config file ConfigObj."""
-        filename_split = filename.split('.')
-        env_filename = '{}.{}.cfg'.format(
-            '.'.join(filename_split[:-1]), environment)
-        env_cfg = configobj.ConfigObj(env_filename, file_error=True)
+        env_cfg = configobj.ConfigObj(filename, file_error=True)
         self.merge(env_cfg)
 
     @property
@@ -69,6 +75,12 @@ class Config(configobj.ConfigObj):
             }
 
         return tasks
+
+    @classmethod
+    def _env_filename(cls, filename, environment):
+        """Get environment config filename from a filename."""
+        filename_split = filename.split('.')
+        return '{}.{}.cfg'.format('.'.join(filename_split[:-1]), environment)
 
     @classmethod
     def _parse_instances(cls, cfg, names, instance_type):
