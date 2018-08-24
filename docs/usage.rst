@@ -40,12 +40,12 @@ Save the YAML file then push the secret to OpenShift:
 
     oc create -f ./path/to/file.yaml
 
-Open OpenShift and the deployment and edit the "Environment" and press "Add Value from Config Map or Secret" and choose the new secretAdd Value from Config Map or Secret.
+Open OpenShift and the deployment and edit the "Environment" and press "Add Value from Config Map or Secret" and choose the new secret.
 
 Keytab file
 ~~~~~~~~~~~
 
-A Kerberos keytab file should be generated with the ``ktutil`` command by following the following instructions: 
+A Kerberos keytab file should be generated with the ``ktutil`` command by using the following instructions: 
 https://kb.iu.edu/d/aumh#create
 
 Example:
