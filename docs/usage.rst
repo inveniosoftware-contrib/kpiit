@@ -58,7 +58,7 @@ Example:
     ktutil:  wkt username.keytab
     ktutil:  quit
 
-The principal and keytab_file are specified using secrets.
+The keytab file should be created in the same directory as kpiit and the principal and keytab_file are specified using secrets.
 
 Command: ``deploy``
 ~~~~~~~~~~~~~~~~~~~
