@@ -34,6 +34,18 @@ ServiceNow:
 * ``SNOW_USER``: ServiceNow username
 * ``SNOW_PASS``: ServiceNow password
 
+Uptime:
+
+* ``ZENODO_UPTIME_WEBSITE_API_KEY``: Zenodo web API key
+* ``ZENODO_UPTIME_SEARCH_API_KEY``: Zenodo search API key
+* ``ZENODO_UPTIME_FILES_API_KEY``: Zenodo files API key
+* ``CDS_VIDEOS_UPTIME_WEBSITE_API_KEY``: CDS Videos web API key
+* ``CDS_VIDEOS_UPTIME_SEARCH_API_KEY``: CDS Videos search API key
+* ``CDS_VIDEOS_UPTIME_FILES_API_KEY``: CDS Videos files API key
+* ``COD_UPTIME_WEBSITE_API_KEY``: COD web API key
+* ``COD_UPTIME_SEARCH_API_KEY``: COD search API key
+* ``COD_UPTIME_FILES_API_KEY``: COD files API key
+
 Config files
 ------------
 

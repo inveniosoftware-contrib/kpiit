@@ -39,6 +39,27 @@ class Config(configobj.ConfigObj):
         self['providers']['snow']['user'] = os.getenv('SNOW_USER')
         self['providers']['snow']['pass'] = os.getenv('SNOW_PASS')
 
+        self['celery']['metrics']['zenodo_uptime_web']['api_key'] = \
+            os.getenv('ZENODO_UPTIME_WEBSITE_API_KEY')
+        self['celery']['metrics']['zenodo_uptime_search']['api_key'] = \
+            os.getenv('ZENODO_UPTIME_SEARCH_API_KEY')
+        self['celery']['metrics']['zenodo_uptime_files']['api_key'] = \
+            os.getenv('ZENODO_UPTIME_FILES_API_KEY')
+
+        self['celery']['metrics']['cds_videos_uptime_web']['api_key'] = \
+            os.getenv('CDS_VIDEOS_UPTIME_WEBSITE_API_KEY')
+        self['celery']['metrics']['cds_videos_uptime_search']['api_key'] = \
+            os.getenv('CDS_VIDEOS_UPTIME_SEARCH_API_KEY')
+        self['celery']['metrics']['cds_videos_uptime_files']['api_key'] = \
+            os.getenv('CDS_VIDEOS_UPTIME_FILES_API_KEY')
+
+        self['celery']['metrics']['cod_uptime_web']['api_key'] = \
+            os.getenv('COD_UPTIME_WEBSITE_API_KEY')
+        self['celery']['metrics']['cod_uptime_search']['api_key'] = \
+            os.getenv('COD_UPTIME_SEARCH_API_KEY')
+        self['celery']['metrics']['cod_uptime_files']['api_key'] = \
+            os.getenv('COD_UPTIME_FILES_API_KEY')
+
     def _merge_environment_config(self, filename):
         """Merge the main config file with the env config file ConfigObj."""
         env_cfg = configobj.ConfigObj(filename, file_error=True)
