@@ -46,6 +46,11 @@ Uptime:
 * ``COD_UPTIME_SEARCH_API_KEY``: COD search API key
 * ``COD_UPTIME_FILES_API_KEY``: COD files API key
 
+Piwik:
+
+* ``PIWIK_PRINCIPAL``: Piwik principal
+* ``PIWIK_KEYTAB_FILE``: Piwik keytab file
+
 Config files
 ------------
 

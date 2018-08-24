@@ -19,6 +19,36 @@ All the steps described above are automated with the ``deploy`` command which is
 
 **Note:** The ``deploy`` script will only work if the user is authenticated with OpenShift using the ``oc login`` command. See ``oc login --help`` for more details on how to login. An alternative is to generate a one-time login command from `openshift.cern.ch <https://openshift.cern.ch/>`_ (click your username in the top right corner then "Copy Login Command" and paste in the terminal.
 
+Secrets
+~~~~~~~
+
+To add a new secret to OpenShift use the following template: https://docs.openshift.com/container-platform/3.5/dev_guide/secrets.html
+
+.. code-block:: yaml
+
+    apiVersion: v1
+    kind: Secret
+    metadata:
+    name: <name-of-secret>
+    type: Opaque
+    data:
+    web_key: <Base64 encoded API key>
+    search_key: <Base64 encoded API key>
+    files_key: <Base64 encoded API key>
+
+Save the YAML file then push the secret to OpenShift:
+
+    oc create -f ./path/to/file.yaml
+
+Open OpenShift and the deployment and edit the "Environment" and press "Add Value from Config Map or Secret" and choose the new secretAdd Value from Config Map or Secret.
+
+Keytab file
+~~~~~~~~~~~
+
+A Kerberos keytab file should be generated with the ``ktutil`` command by following the following instructions: https://www.ibm.com/support/knowledgecenter/en/SSZUMP_7.1.2/management_sym/sym_kerberos_creating_principal_keytab.html
+
+The principal and keytab_file are specified using secrets.
+
 Command: ``deploy``
 ~~~~~~~~~~~~~~~~~~~
 

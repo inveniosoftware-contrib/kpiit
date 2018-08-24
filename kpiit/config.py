@@ -39,6 +39,10 @@ class Config(configobj.ConfigObj):
         self['providers']['snow']['user'] = os.getenv('SNOW_USER')
         self['providers']['snow']['pass'] = os.getenv('SNOW_PASS')
 
+        self['providers']['piwik']['principal'] = os.getenv('PIWIK_PRINCIPAL')
+        self['providers']['piwik']['keytab_file'] = os.getenv(
+            'PIWIK_KEYTAB_FILE')
+
         self['celery']['metrics']['zenodo_uptime_web']['api_key'] = \
             os.getenv('ZENODO_UPTIME_WEBSITE_API_KEY')
         self['celery']['metrics']['zenodo_uptime_search']['api_key'] = \
