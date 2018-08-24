@@ -36,7 +36,7 @@ def collect_and_publish_metrics(*args, **kwargs):
 @app.task
 def collect_metrics(metrics):
     """Collect metrics."""
-    metric_instances = [load_target(obj)(*args['args'], **args['kwargs'])
+    metric_instances = [load_target(args['instance'])(*args['args'], **args['kwargs'])
                         for obj, args in metrics.items()]
 
     for metric in metric_instances:
@@ -48,7 +48,7 @@ def collect_metrics(metrics):
 @app.task
 def publish_metrics(metrics, publishers):
     """Publish metrics."""
-    publisher_instances = [load_target(obj)(*args['args'], **args['kwargs'])
+    publisher_instances = [load_target(args['instance'])(*args['args'], **args['kwargs'])
                            for obj, args in publishers.items()]
 
     for publisher in publisher_instances:

@@ -7,6 +7,8 @@
 
 """Metrics module."""
 
+from celery.utils.log import get_task_logger
+
 from kpiit.metrics.base import BaseMetric
 from kpiit.metrics.records import RecordsMetric
 from kpiit.metrics.uptime import UptimeMetric
@@ -16,6 +18,8 @@ from kpiit.providers.json import JSONURLProvider
 from kpiit.providers.piwik import PiwikProvider
 from kpiit.providers.snow import ServiceNowProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
+
+logger = get_task_logger(__name__)
 
 
 class Metric(BaseMetric):
@@ -47,6 +51,9 @@ def doi(prefix):
 
 def uptime(name, url, api_key, monitor):
     """Get uptime metric instance."""
+    logger.debug('uptime(name={}, url={}, api_key={}, monitor={})'.format(
+        name, url, api_key, monitor
+    ))
     return UptimeMetric(
         name=name,
         provider=UptimeRobotProvider(url, api_key, monitor)

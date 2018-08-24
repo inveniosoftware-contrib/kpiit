@@ -25,4 +25,9 @@ def load_target(abs_path):
 
 def args(*args, **kwargs):
     """Get function arguments as a dictionary."""
-    return dict(args=args, kwargs=kwargs)
+    if 'instance' in kwargs:
+        instance = kwargs['instance']
+        del kwargs['instance']
+        return dict(instance=instance, args=args, kwargs=kwargs)
+    else:
+        return dict(args=args, kwargs=kwargs)

@@ -17,7 +17,7 @@ The deployment process consist of building and tagging the Docker image. The ima
 
 All the steps described above are automated with the ``deploy`` command which is located in the ``openshift`` directory.
 
-**Note:** The ``deploy`` script will only work if the user is authenticated with OpenShift using the ``oc login`` command. See ``oc login --help`` for more details on how to login. An alternative is to generate a one-time login command from `openshift.cern.ch <https://openshift.cern.ch/>`_ (click your username in the top right corner then "Copy Login Command" and paste in the terminal.
+**Note:** The ``deploy`` script will only work if the user is authenticated with OpenShift using the ``oc login`` command. See ``oc login --help`` for more details on how to login. An alternative is to generate a one-time login command from `openshift.cern.ch <https://openshift.cern.ch/>`_ (click your username in the top right corner then "Copy Login Command" and paste in the terminal).
 
 Secrets
 ~~~~~~~
@@ -45,7 +45,18 @@ Open OpenShift and the deployment and edit the "Environment" and press "Add Valu
 Keytab file
 ~~~~~~~~~~~
 
-A Kerberos keytab file should be generated with the ``ktutil`` command by following the following instructions: https://www.ibm.com/support/knowledgecenter/en/SSZUMP_7.1.2/management_sym/sym_kerberos_creating_principal_keytab.html
+A Kerberos keytab file should be generated with the ``ktutil`` command by following the following instructions: 
+https://kb.iu.edu/d/aumh#create
+
+Example:
+
+.. code-block:: bash
+
+    > ktutil
+    ktutil:  addent -password -p username@CERN.CH -k 1 -e aes256-cts
+    Password for username@ADS.IU.EDU: [enter your password]
+    ktutil:  wkt username.keytab
+    ktutil:  quit
 
 The principal and keytab_file are specified using secrets.
 

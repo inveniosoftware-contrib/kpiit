@@ -112,13 +112,13 @@ class Config(configobj.ConfigObj):
         """Parse instances config values into celeryconfig format."""
         if isinstance(names, str):
             names = [names]
-        tasks = [cfg[instance_type][name] for name in names]
+        tasks = [(name, cfg[instance_type][name]) for name in names]
 
         instances = {}
-        for task in tasks:
+        for (name, task) in tasks:
             kwargs = task.copy()
             del kwargs['instance']
-            instances[task['instance']] = args(**kwargs)
+            instances[name] = args(instance=task['instance'], **kwargs)
         return instances
 
 
