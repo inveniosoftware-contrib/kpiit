@@ -19,53 +19,58 @@ import logging
 import re
 import subprocess
 
+from kpiit.config import config
+
 RE_LOG_FILE = re.compile(r'\/dev\/termination-log(\d+)')
 
-DEFAULT_IMAGE = 'kpiit-image:latest'
-DEFAULT_REGISTRY = 'openshift-registry.web.cern.ch/it-cda-dr-kpis'
-DEFAULT_DEPLOYMENT = 'deployment.apps/worker'
+DEFAULT_IMAGE = config['deploy']['default_image']
+DEFAULT_REGISTRY = config['deploy']['default_registry']
+DEFAULT_DEPLOYMENT = config['deploy']['default_deployment']
 
 logger = logging.getLogger('openshift_deploy')
 
 
-def setup():
-    """Authenticate and setup the command line parser and logger."""
-    check_openshift_auth()
-    docker_login()
-
-    # Setup the command line parser
+def create_parser():
+    """Create a new argument parser."""
     parser = argparse.ArgumentParser(
         description='Deploy Docker image to OpenShift.')
     parser.add_argument(
         '--image', '-i',
         default=DEFAULT_IMAGE,
-        help='docker image name (default: {})'.format(DEFAULT_IMAGE)
+        help='Docker image name'
     )
     parser.add_argument(
         '--registry', '-r',
         default=DEFAULT_REGISTRY,
-        help='OpenShift docker registry (default: {})'.format(DEFAULT_REGISTRY)
+        help='OpenShift docker registry'
     )
     parser.add_argument(
         '--deployment', '-d',
         default=DEFAULT_DEPLOYMENT,
-        help='OpenShift deployment (default: {})'.format(DEFAULT_DEPLOYMENT)
+        help='OpenShift deployment'
     )
     parser.add_argument(
         '--build-only', '-b',
         action='store_true',
-        help='build the Docker image without pushing it to OpenShift'
+        help='Build the Docker image without pushing it to OpenShift'
     )
     parser.add_argument(
         '--redeploy-only',
         action='store_true',
-        help='restart the OpenShift deployment without building and pushing the Docker image'
+        help='Restart the OpenShift deployment without building and pushing the Docker image'
     )
     parser.add_argument(
         '--verbose', '-v',
         action='store_true',
-        help='verbose output messages'
+        help='Verbose output messages'
     )
+    return parser
+
+
+def setup():
+    """Authenticate and setup the command line parser and logger."""
+    # Setup the command line parser
+    parser = create_parser()
 
     # Configure logger
     logger.setLevel(logging.DEBUG)
@@ -73,7 +78,12 @@ def setup():
     ch = logging.StreamHandler()
     logger.addHandler(ch)
 
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    check_openshift_auth()
+    docker_login(args.registry)
+
+    return args
 
 
 class DeploymentError(Exception):
@@ -105,14 +115,13 @@ def check_openshift_auth():
                               result.stderr.decode('utf-8'))
 
 
-def docker_login():
+def docker_login(registry):
     """Try to authenticate on Docker.
 
     :raises DeploymentError: If authentication failed.
     """
-    cmd = 'docker login -u openshift -p $(oc whoami -t) openshift-registry.web.cern.ch'
     result = subprocess.run(
-        cmd,
+        config['deploy']['docker_login_cmd'].format(registry=registry),
         shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL
@@ -159,7 +168,7 @@ def build_docker_image(image, verbose):
     :param bool verbose: Display verbose command output.
     :raises DeploymentError: If command failed
     """
-    cmd = 'docker build --no-cache=true --network=host -t {} .'.format(image)
+    cmd = config['deploy']['docker_build_cmd'].format(image=image)
     logger.debug('Build command: %s' % cmd)
     logger.info('Building docker image...')
 
@@ -176,7 +185,7 @@ def tag_docker_image(image, registry, verbose):
     :param bool verbose: Display verbose command output.
     :raises DeploymentError: If command failed
     """
-    cmd = 'docker tag {image} {registry}/{image_name}'.format(
+    cmd = config['deploy']['docker_tag_cmd'].format(
         image=image,
         registry=registry,
         image_name=image.split(':')[0]
@@ -197,7 +206,7 @@ def push_docker_image(image, registry, verbose):
     :param bool verbose: Display verbose command output.
     :raises DeploymentError: If command failed
     """
-    cmd = 'docker push {registry}/{image}'.format(
+    cmd = config['deploy']['docker_push_cmd'].format(
         registry=registry,
         image=image.split(':')[0]
     )
@@ -214,18 +223,17 @@ def redeploy(deployment, verbose):
 
     Bump the termination log filename in the deployment config file to force
     the deployment to restart.
-    TODO: Find a better way of handling this.
 
     :param bool verbose: Display verbose command output.
     :raises DeploymentError: If re-deployment failed
     """
     # Get the latest config file
-    cmd = 'oc get --export {} -o json'.format(deployment)
+    cmd = config['deploy']['redeploy_cmd'].format(deployment)
     result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
-    config = json.loads(result.stdout.decode('utf-8'))
+    openshift_cfg = json.loads(result.stdout.decode('utf-8'))
 
     # Change the termination log filename
-    containers = config['spec']['template']['spec']['containers']
+    containers = openshift_cfg['spec']['template']['spec']['containers']
     log_file = containers[0]['terminationMessagePath']
     m = RE_LOG_FILE.match(log_file)
     if m:
@@ -238,7 +246,7 @@ def redeploy(deployment, verbose):
     data = dict(spec=dict(template=dict(spec=dict(containers=containers))))
 
     # Update the deployment config to force the restart
-    cmd = "oc patch {deployment} -p '{json_data}'".format(
+    cmd = config['deploy']['update_deploy_cmd'].format(
         deployment=deployment,
         json_data=json.dumps(data)
     )

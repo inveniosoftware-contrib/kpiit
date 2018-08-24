@@ -7,6 +7,13 @@
 
 """Base publisher."""
 
+import json
+
+import requests
+from celery.utils.log import get_task_logger
+
+logger = get_task_logger(__name__)
+
 
 class BasePublisher(object):
     """Abstract class for publishing metrics."""
@@ -18,3 +25,14 @@ class BasePublisher(object):
     def publish(self, metrics):
         """Publish metrics."""
         self.build_message(metrics)
+
+    def send(cls, url, document, production):
+        """Send data to url with a GET request."""
+        logger.debug('sending document to: %s' % url)
+        logger.debug('document: %s' % json.dumps(document))
+
+        return requests.post(
+            url,
+            data=json.dumps(document),
+            headers={"Content-Type": "application/json; charset=UTF-8"}
+        )

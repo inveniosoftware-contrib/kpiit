@@ -13,7 +13,7 @@ from kpiit.metrics.base import BaseMetric
 class UptimeMetric(BaseMetric):
     """Metric for uptime and response time."""
 
-    def __init__(self, name, provider):
+    def __init__(self, name, provider, fields=None):
         """Uptime metric initialization."""
         super().__init__(name, provider, [
             'uptime_{}'.format(name),

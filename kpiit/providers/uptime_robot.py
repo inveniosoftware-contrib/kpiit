@@ -12,7 +12,7 @@ import os.path
 import requests
 from celery.utils.log import get_task_logger
 
-from kpiit.providers.base import BaseProvider
+from kpiit.providers import BaseProvider
 
 logger = get_task_logger(__name__)
 
@@ -37,9 +37,11 @@ class UptimeRobotProvider(BaseProvider):
         """Get data from Uptime Robot."""
         if not self.api_key:
             # Send dummy values if no API key is specified
-            logger.warn('no API key specified for Uptime provider: {}'.format(
-                self.monitor_name
-            ))
+            logger.warning(
+                'no API key specified for Uptime provider: {}'.format(
+                    self.monitor_name
+                )
+            )
             return {
                 'response_time': None,
                 'uptime_ratio': None

@@ -10,7 +10,7 @@
 import pytest
 
 from kpiit.metrics.base import BaseMetric
-from kpiit.providers.base import BaseProvider
+from kpiit.providers import BaseProvider
 from kpiit.util import load_target
 
 
@@ -19,7 +19,7 @@ def test_load_class():
     assert hasattr(load_target('kpiit.util.load_target'), '__call__')
 
     assert load_target('kpiit.metrics.base.BaseMetric') == BaseMetric
-    assert load_target('kpiit.providers.base.BaseProvider') == BaseProvider
+    assert load_target('kpiit.providers.BaseProvider') == BaseProvider
 
     with pytest.raises(ImportError):
         assert load_target('kpiit.models2.Provider') == BaseProvider

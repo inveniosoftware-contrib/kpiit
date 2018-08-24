@@ -7,12 +7,9 @@
 
 """Piwik tests."""
 
-import os
-
-import pytest
 from tests.conftest import piwik_url
 
-from kpiit.providers.piwik import *
+from kpiit.providers.piwik import Piwik
 
 
 def test_url_builder():
@@ -20,7 +17,7 @@ def test_url_builder():
     query = '?module=API&method=aaa.bbb&format=json'
     assert url == piwik_url(query)
 
-    url = Piwik.build_url('aaa', 'bbb', format='html')
+    url = Piwik.build_url('aaa', 'bbb', file_format='html')
     query = '?module=API&method=aaa.bbb&format=html'
     assert url == piwik_url(query)
 

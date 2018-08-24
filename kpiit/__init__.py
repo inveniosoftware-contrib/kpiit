@@ -9,16 +9,17 @@
 
 from enum import Enum
 
+from kpiit.config import config
 from kpiit.version import __version__
 
 
 class Service(Enum):
     """Available service types."""
 
-    CDS = 'cds'
-    CDS_VIDEOS = 'cds_videos'
-    COD = 'cod'
-    ZENODO = 'zenodo'
+    CDS = config['cds_service']
+    CDS_VIDEOS = config['cds_videos_service']
+    COD = config['cod_service']
+    ZENODO = config['zenodo_service']
 
 
 class Env(Enum):

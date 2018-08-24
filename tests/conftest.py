@@ -8,24 +8,30 @@
 """Common pytest fixtures and plugins."""
 
 import json
+import os.path
+from os.path import join as join_path
 
 import pytest
 from celery.utils.log import get_task_logger
 
 import kpiit.metrics as metrics
-from kpiit import Service
 from kpiit.app import app
+from kpiit.config import config
 from kpiit.metrics.records import RecordsMetric
-from kpiit.providers import DataCiteProvider, JSONURLProvider
-from kpiit.providers.base import BaseProvider
-from kpiit.providers.piwik import Piwik
+from kpiit.providers import BaseProvider
+from kpiit.providers.datacite import DataCiteProvider
+from kpiit.providers.json import JSONURLProvider
+from kpiit.providers.piwik import BASE_URL
 from kpiit.providers.snow import ServiceNowProvider
 from kpiit.providers.uptime_robot import UptimeRobotProvider
+from kpiit.publishers import doi as pub_doi
 from kpiit.publishers.base import BasePublisher
 from kpiit.publishers.cern import CERNMonitPublisher
-from kpiit.publishers.json import JSONFilePublisher
 
 logger = get_task_logger(__name__)
+
+
+TEST_DIR = os.path.dirname(__file__)
 
 
 @pytest.fixture
@@ -60,7 +66,7 @@ class UptimeRequest(object):
 
     def __init__(self, *args, **kwargs):
         """Uptime request test initialization."""
-        with open('tests/data/uptime_website.json', 'r') as f:
+        with open(join_path(TEST_DIR, 'data/uptime_website.json'), 'r') as f:
             self.data = json.loads(f.read())
 
     def json(self):
@@ -133,7 +139,7 @@ def files_uptime_metric(mocker):
 def zenodo_records_json():
     """Load JSON content from Zenodo records file."""
     data = None
-    with open('tests/data/zenodo_records.json', 'r') as f:
+    with open(join_path(TEST_DIR, 'data/zenodo_records.json'), 'r') as f:
         data = f.read()
     return data
 
@@ -142,7 +148,7 @@ def zenodo_records_json():
 def cod_records_json():
     """Load JSON content from COD records file."""
     data = None
-    with open('tests/data/cod_records.json', 'r') as f:
+    with open(join_path(TEST_DIR, 'data/cod_records.json'), 'r') as f:
         data = f.read()
     return data
 
@@ -151,7 +157,7 @@ def cod_records_json():
 def zenodo_doi_index_html():
     """Load HTML content for Zenodo DataCite index page."""
     data = None
-    with open('tests/data/datacite_doi_index.html', 'r') as f:
+    with open(join_path(TEST_DIR, 'data/datacite_doi_index.html'), 'r') as f:
         data = f.read()
     return data
 
@@ -160,7 +166,7 @@ def zenodo_doi_index_html():
 def zenodo_doi_june_html():
     """Load HTML content for Zenodo DataCite stats page for June 2018."""
     data = None
-    with open('tests/data/datacite_doi_2018-06.html', 'r') as f:
+    with open(join_path(TEST_DIR, 'data/datacite_doi_2018-06.html'), 'r') as f:
         data = f.read()
     return data
 
@@ -197,6 +203,8 @@ def cod_records(mocker, cod_records_json):
 @pytest.fixture
 def zenodo_doi_metric(mocker, zenodo_doi_index_html, zenodo_doi_june_html):
     """Fixture for COD records metric instance."""
+    prefix = '10.5281'
+
     def load_index_data(self, url):
         return zenodo_doi_index_html
 
@@ -207,13 +215,13 @@ def zenodo_doi_metric(mocker, zenodo_doi_index_html, zenodo_doi_june_html):
                         new=load_index_data)
     mocker.patch.object(DataCiteProvider, 'load_stats_data',
                         new=load_stats_data)
-    return metrics.doi(prefix='10.5281')
+    return metrics.doi(prefix=prefix)
 
 
 @pytest.fixture
 def json_publisher(tmpdir):
     """Fixture for JSON publisher."""
-    return JSONFilePublisher.create_doi('10.5281')
+    return pub_doi('10.5281')
 
 
 @pytest.fixture(scope='module')
@@ -240,7 +248,7 @@ def zenodo_support_ticket_metric(mocker):
 
     mocker.patch.object(ServiceNowProvider, 'auth_get', new=auth_get)
 
-    return metrics.support('zenodo_support', Service.ZENODO)
+    return metrics.support('zenodo_support', config['zenodo_service'])
 
 
 @pytest.fixture
@@ -252,13 +260,13 @@ def dummy_support_ticket_metric(mocker):
 @pytest.fixture
 def cern_monit_publisher(mocker):
     """Fixture for the CERN monit publisher."""
-    def new_send(document, production):
+    def new_send(cls, url, document, production):
         logger.debug('doc', document)
 
-    mocker.patch('kpiit.send_check.send', new=new_send)
+    mocker.patch.object(BasePublisher, 'send', new=new_send)
     return CERNMonitPublisher('testkpi')
 
 
 def piwik_url(query):
     """Get the full URL for the Piwik query."""
-    return Piwik.BASE_URL + 'index.php' + query
+    return BASE_URL + '/index.php' + query

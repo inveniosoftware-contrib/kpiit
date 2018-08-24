@@ -21,3 +21,8 @@ def load_target(abs_path):
     target_obj = getattr(module_obj, obj_name)
 
     return target_obj
+
+
+def args(*args, **kwargs):
+    """Get function arguments as a dictionary."""
+    return dict(args=args, kwargs=kwargs)

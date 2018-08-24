@@ -22,13 +22,14 @@ def collect_and_publish_metrics(*args, **kwargs):
     metrics = kwargs['metrics']
 
     # Skip publishing if no publisher is given
-    if 'publisher' not in kwargs or not isinstance(kwargs['publisher'], str):
+    if not ('publishers' in kwargs and isinstance(kwargs['publishers'], dict)):
+        logger.debug('Skipping publishing because no publishers were set.')
         return collect_metrics.s(metrics)
 
     # Publish when collecting metrics is completed
     return chain(
         collect_metrics.s(metrics),
-        publish_metrics.s(kwargs['publisher'])
+        publish_metrics.s(kwargs['publishers'])
     )()
 
 

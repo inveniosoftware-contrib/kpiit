@@ -14,7 +14,11 @@ import requests
 import requests.exceptions
 from celery.utils.log import get_task_logger
 
-from kpiit.providers.base import BaseProvider
+from kpiit.config import config
+from kpiit.providers import BaseProvider
+
+BASE_URL = config['providers']['piwik']['base_url']
+URL = config['providers']['piwik']['url']
 
 logger = get_task_logger(__name__)
 
@@ -22,9 +26,8 @@ logger = get_task_logger(__name__)
 class Piwik(object):
     """Static base class for accessing the Piwik API."""
 
-    BASE_URL = 'https://piwikui.web.cern.ch/piwikui/'
-    NAME = None
-    COOKIE = None
+    name = None
+    cookie = None
 
     @classmethod
     def krb_ticket(cls, principal, keytab_file):
@@ -32,8 +35,8 @@ class Piwik(object):
         try:
             ret = subprocess.run(['kinit', principal, '-k', '-t', keytab_file])
             ret.check_returncode()
-        except subprocess.CalledProcessError:
-            logger.error('Failed to retrieve Kerberos ticket')
+        except subprocess.CalledProcessError as cpe:
+            logger.error('Failed to retrieve Kerberos ticket: %s' % cpe.cmd)
 
     @classmethod
     def krb_cookie(cls):
@@ -42,41 +45,42 @@ class Piwik(object):
         Note: Make sure the user has a valid Kerberos ticket before retrieving
         the cookie.
         """
-        return cern_sso.krb_sign_on(cls.BASE_URL)
+        return cern_sso.krb_sign_on(BASE_URL)
 
     @classmethod
     def get(cls, url):
         """Make a GET API call to Piwik.
 
-        TODO: Handle unauthorized API calls.
-
         :param str url: API url
         """
-        if cls.COOKIE is None:
-            cls.krb_ticket('n.persson@CERN.CH', 'n.persson.keytab')
-            cls.COOKIE = cls.krb_cookie()
-        response = requests.get(url, cookies=cls.COOKIE)
+        if cls.cookie is None:
+            cls.krb_ticket(
+                config['providers']['piwik']['principal'],
+                config['providers']['piwik']['keytab_file']
+            )
+            cls.cookie = cls.krb_cookie()
+        response = requests.get(url, cookies=cls.cookie)
         return response.json()
 
     @classmethod
-    def build_url(cls, module, method, format='json', filter_limit=-1,
+    def build_url(cls, module, method, file_format='json', filter_limit=-1,
                   **kwargs):
         """Build API URL from the given parameters.
 
         :param str module: API module (e.g. VisitsSummary)
         :param str method: API method (e.g. getVisits)
-        :param str format: response format, defaults to 'json'
+        :param str file_format: response file_format, defaults to 'json'
         :param int filter_limit: max number of records to get, defaults to -1
         :return: generated URL
         """
         kwargs['method'] = '{}.{}'.format(module, method)
-        kwargs['format'] = format
+        kwargs['format'] = file_format
         if filter_limit != -1:
             kwargs['filter_limit'] = filter_limit
         query = ['{}={}'.format(key, value)
                  for key, value in kwargs.items()
                  if value is not None and value]
-        return cls.BASE_URL + 'index.php?module=API&' + '&'.join(query)
+        return URL.format(query='&'.join(query))
 
 
 class PiwikAPI(Piwik):
@@ -85,9 +89,9 @@ class PiwikAPI(Piwik):
     NAME = 'API'
 
     @classmethod
-    def getPiwikVersion(cls):
+    def version(cls):
         """Get the Piwik API version."""
-        data = cls.get(cls.build_url(cls.NAME, cls.getPiwikVersion.__name__))
+        data = cls.get(cls.build_url(cls.NAME, 'getPiwikVersion'))
         return data['value']
 
 
@@ -97,34 +101,35 @@ class PiwikVisitsSummary(Piwik):
     NAME = 'VisitsSummary'
 
     @classmethod
-    def getVisits(cls, idSite, period, date, segment=''):
+    def visits(cls, site_id, period, date, segment=''):
         """Get number of visits for a site.
 
-        :param int idSite: ID of website
+        :param int site_id: ID of website
         :param str period: range of when visits are counted
         :param str date: date for when visits are counted
-        :param segment: TODO, defaults to ''
+        :param segment: -, defaults to ''
         :return: number of visits
         :rtype: str
         """
-        url = cls.build_url(cls.NAME, cls.getVisits.__name__, idSite=idSite,
+        url = cls.build_url(cls.NAME, 'getVisits', idSite=site_id,
                             period=period, date=date, segment=segment)
+        print(url)
         data = cls.get(url)
         return data['value']
 
     @classmethod
-    def getUniqueVisitors(cls, idSite, period, date, segment=''):
+    def unique_visitors(cls, site_id, period, date, segment=''):
         """Get number of unique visitors for a site.
 
-        :param int idSite: ID of website
+        :param int site_id: ID of website
         :param str period: range of when visits are counted
         :param str date: date for when visits are counted
-        :param segment: TODO, defaults to ''
+        :param segment: -, defaults to ''
         :return: number of unique visitors
         :rtype: str
         """
-        url = cls.build_url(cls.NAME, cls.getUniqueVisitors.__name__,
-                            idSite=idSite, period=period, date=date,
+        url = cls.build_url(cls.NAME, 'getUniqueVisitors',
+                            idSite=site_id, period=period, date=date,
                             segment=segment)
         data = cls.get(url)
         return data['value']
@@ -141,10 +146,25 @@ class PiwikProvider(BaseProvider):
 
     def collect(self):
         """Collect support stats from Service Now."""
-        visits = PiwikVisitsSummary.getVisits(
-            self.site_id, self.period, self.date)
-        unique_visits = PiwikVisitsSummary.getUniqueVisitors(
-            self.site_id, self.period, self.date)
+        if not self.site_id:
+            return {
+                'visits': None,
+                'visits_unique': None
+            }
+
+        try:
+            visits = PiwikVisitsSummary.visits(
+                self.site_id, self.period, self.date)
+        except ValueError:
+            logger.exception('Failed to collect number of visits')
+            visits = None
+
+        try:
+            unique_visits = PiwikVisitsSummary.unique_visitors(
+                self.site_id, self.period, self.date)
+        except ValueError:
+            logger.exception('Failed to collect number of unique visitors')
+            unique_visits = None
 
         return {
             'visits': visits,

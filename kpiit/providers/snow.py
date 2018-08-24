@@ -7,41 +7,39 @@
 
 """Service Now provider."""
 
-import os
-
 import requests
 import requests.exceptions
 from celery.utils.log import get_task_logger
 
 from kpiit import Service
-from kpiit.providers.base import BaseProvider
+from kpiit.config import config
+from kpiit.providers import BaseProvider
 
 logger = get_task_logger(__name__)
 
-SNOW_USER = os.getenv('SNOW_USER')
-SNOW_PASS = os.getenv('SNOW_PASS')
+SNOW_CFG = config['providers']['snow'].dict()
 
-INC_TABLE = 'incident'
-REQ_TABLE = 'u_request_fulfillment'
+SNOW_USER = SNOW_CFG['user']
+SNOW_PASS = SNOW_CFG['pass']
 
-INSTANCE_URLS = dict(
-    prod=None,
-    test='https://cerntraining.service-now.com'
-)
+INC_TABLE = SNOW_CFG['incident_table']
+REQ_TABLE = SNOW_CFG['request_table']
+
+INSTANCE_URL = SNOW_CFG['url']
 
 # Functional element IDs
 FUNC_ELEMENT_IDS = {
-    Service.CDS: 'CERN Document Server',
-    Service.CDS_VIDEOS: 'MultiMedia Archive',
-    Service.COD: 'Open Data Repository',
-    Service.ZENODO: 'Zenodo Repository'
+    Service.CDS: SNOW_CFG['fe']['cds'],
+    Service.CDS_VIDEOS: SNOW_CFG['fe']['cds_videos'],
+    Service.COD: SNOW_CFG['fe']['cod'],
+    Service.ZENODO: SNOW_CFG['fe']['cds']
 }
 
 
 class ServiceNowQuery(object):
     """Service Now query builder."""
 
-    def __init__(self, table_name, instance=INSTANCE_URLS['test']):
+    def __init__(self, table_name, instance=INSTANCE_URL):
         """Initiate the Service Now query."""
         self.table_name = table_name
         self.instance = instance
@@ -122,12 +120,12 @@ class ServiceNowQuery(object):
         self.aggregate('max', *fields)
         return self
 
-    def aggregate(self, op, field, *fields):
+    def aggregate(self, oper, field, *fields):
         """Add aggregate operation for the given fields."""
         fields = [field, *fields]
         self.source_type = 'stats'
         self.api_version = 1
-        self.params['sysparm_{}_fields'.format(op)] = ','.join(fields)
+        self.params['sysparm_{}_fields'.format(oper)] = ','.join(fields)
         return self
 
     def _append_params(self, query, *args, use_or=False, **kwargs):
@@ -177,18 +175,20 @@ class ServiceNowQuery(object):
 class ServiceNowProvider(BaseProvider):
     """Service Now provider."""
 
-    def __init__(self, functional_element, instance=INSTANCE_URLS['test']):
+    def __init__(self, functional_element, instance=INSTANCE_URL):
         """Initiate the Service Now provider."""
         self.functional_element = functional_element
         self.instance = instance
 
     def _collect_record_count(self, table):
         """Extract record count from JSON object."""
-        functional_element = FUNC_ELEMENT_IDS[self.functional_element]
+        functional_element = SNOW_CFG['fe'][self.functional_element]
+        closed_ids = config.closed_task_states
 
+        # Query non-closed tasks
         query = ServiceNowQuery(table, self.instance).where(
             'assignment_groupSTARTSWITH{}'.format(functional_element),
-            'stateNOT IN4,3,7,6,8'  # only select tickets that are not closed
+            'stateNOT IN{ids}'.format(ids=','.join(closed_ids))
         ).max('u_reassignment_counter_fe').count()
 
         res_json = self.auth_get(query.url)
@@ -197,7 +197,7 @@ class ServiceNowProvider(BaseProvider):
 
     def _collect_stc(self, table):
         """Collect waiting time from Service Now."""
-        functional_element = FUNC_ELEMENT_IDS[self.functional_element]
+        functional_element = SNOW_CFG['fe'][self.functional_element]
 
         query = ServiceNowQuery(table, self.instance).where(
             'assignment_groupSTARTSWITH{}'.format(functional_element),

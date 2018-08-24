@@ -45,3 +45,9 @@ include *.yaml
 recursive-include scripts *.py
 recursive-include scripts *.sh
 include *.json
+recursive-include kpiit *.cfg
+exclude kpiit config.test.cfg
+exclude kpiit config.development.cfg
+exclude kpiit config.production.cfg
+recursive-include openshift *.yaml
+recursive-include openshift deploy

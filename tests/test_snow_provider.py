@@ -7,12 +7,13 @@
 
 """Metric tests."""
 
-import os
-
 import pytest
+import requests
 
-from kpiit import Service
-from kpiit.providers.snow import *
+from kpiit.config import config
+from kpiit.providers.snow import ServiceNowProvider, ServiceNowQuery
+
+SNOW_URL = config['providers']['snow']['url']
 
 
 def test_simple_queries():
@@ -49,7 +50,7 @@ def test_limits():
     assert isinstance(q1.limit(10), ServiceNowQuery)
     assert str(q1) == base + 'test=hello&sysparm_limit=10'
 
-    assert q1.url == INSTANCE_URLS['test'] + base + \
+    assert q1.url == SNOW_URL + base + \
         'test=hello&sysparm_limit=10'
 
 
@@ -62,7 +63,7 @@ def test_count():
     assert isinstance(q1.limit(20), ServiceNowQuery)
     assert str(q1) == base + 'test=hello&sysparm_count=true&sysparm_limit=20'
 
-    assert q1.url == INSTANCE_URLS['test'] + base + \
+    assert q1.url == SNOW_URL + base + \
         'test=hello&sysparm_count=true&sysparm_limit=20'
 
 
@@ -80,7 +81,7 @@ def test_orderby():
     assert str(q1) == base + \
         'test=hello&sysparm_limit=12&sysparm_orderby=field2^DESC'
 
-    assert q1.url == INSTANCE_URLS['test'] + base + \
+    assert q1.url == SNOW_URL + base + \
         'test=hello&sysparm_limit=12&sysparm_orderby=field2^DESC'
 
 
