@@ -64,3 +64,15 @@ target/
 
 # Vim swapfiles
 .*.sw?
+
+# VSCode settings
+.vscode
+
+# Celery
+celerybeat-schedule
+
+.env
+
+output.json
+logs
+*.keytab

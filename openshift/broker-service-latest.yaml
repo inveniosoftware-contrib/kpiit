@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.13.0 (84fa826)
+  creationTimestamp: '2018-07-10T12:28:53Z'
+  labels:
+    io.kompose.service: broker
+  name: broker
+  namespace: it-cda-dr-kpis
+  resourceVersion: '310985559'
+  selfLink: /api/v1/namespaces/it-cda-dr-kpis/services/broker
+  uid: ce6fa588-843c-11e8-b019-fa163ea7aa03
+spec:
+  clusterIP: 172.30.196.163
+  ports:
+    - name: '6379'
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+  selector:
+    io.kompose.service: broker
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

@@ -7,6 +7,26 @@
 
 """KPIit."""
 
-from .version import __version__
+from enum import Enum
+
+from kpiit.config import config
+from kpiit.version import __version__
+
+
+class Service(Enum):
+    """Available service types."""
+
+    CDS = config['cds_service']
+    CDS_VIDEOS = config['cds_videos_service']
+    COD = config['cod_service']
+    ZENODO = config['zenodo_service']
+
+
+class Env(Enum):
+    """OpenShift environments."""
+
+    PROD = 'prod'
+    QA = 'qa'
+
 
 __all__ = ('__version__', )

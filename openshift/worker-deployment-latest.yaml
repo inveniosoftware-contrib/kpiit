@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: '97'
+    kompose.cmd: kompose convert
+    kompose.version: 1.13.0 (84fa826)
+  creationTimestamp: '2018-07-10T12:48:29Z'
+  generation: 93
+  labels:
+    io.kompose.service: worker
+  name: worker
+  namespace: it-cda-dr-kpis
+  resourceVersion: '334897159'
+  selfLink: /apis/apps/v1/namespaces/it-cda-dr-kpis/deployments/worker
+  uid: 8bb0ef59-843f-11e8-b019-fa163ea7aa03
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      io.kompose.service: worker
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: worker
+    spec:
+      containers:
+        - args:
+            - /opt/kpiit/src/scripts/server
+          env:
+            - name: BROKER_URL
+              value: 'redis://broker.it-cda-dr-kpis.svc:6379/0'
+            - name: CELERY_RESULT_BACKEND
+              value: 'redis://broker.it-cda-dr-kpis.svc:6379/1'
+            - name: ZENODO_UPTIME_WEBSITE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: web_key
+                  name: uptime-secrets
+            - name: ZENODO_UPTIME_SEARCH_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: search_key
+                  name: uptime-secrets
+            - name: ZENODO_UPTIME_FILES_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: files_key
+                  name: uptime-secrets
+            - name: UPTIME_WEBSITE_NAME
+              value: Website
+            - name: UPTIME_SEARCH_NAME
+              value: Search
+            - name: UPTIME_FILES_NAME
+              value: Files upload/download
+            - name: SNOW_USER
+              valueFrom:
+                secretKeyRef:
+                  key: snow-user
+                  name: snow-secrets
+            - name: SNOW_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: snow-pass
+                  name: snow-secrets
+            - name: CDS_VIDEOS_UPTIME_WEBSITE_API_KEY
+            - name: CDS_VIDEOS_UPTIME_SEARCH_API_KEY
+            - name: CDS_VIDEOS_UPTIME_FILES_API_KEY
+            - name: COD_UPTIME_WEBSITE_API_KEY
+            - name: COD_UPTIME_SEARCH_API_KEY
+            - name: COD_UPTIME_FILES_API_KEY
+            - name: KPIIT_ENV
+              value: production
+          image: 'docker-registry.default.svc:5000/it-cda-dr-kpis/kpiit-image:latest'
+          imagePullPolicy: Always
+          name: worker
+          resources: {}
+          terminationMessagePath: /dev/termination-log39
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  collisionCount: 4
+  conditions:
+    - lastTransitionTime: '2018-07-10T12:48:29Z'
+      lastUpdateTime: '2018-07-10T12:48:29Z'
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: 'True'
+      type: Available
+    - lastTransitionTime: '2018-07-10T13:32:48Z'
+      lastUpdateTime: '2018-08-24T11:19:43Z'
+      message: ReplicaSet "worker-768f8bfdd" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: 'True'
+      type: Progressing
+  observedGeneration: 93
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1

@@ -7,8 +7,6 @@
 
 """Celery application."""
 
-import os
-
 from celery import Celery
 
 

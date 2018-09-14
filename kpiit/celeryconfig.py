@@ -9,15 +9,44 @@
 
 import os
 
+from celery.schedules import crontab
+from kombu.serialization import register
+
+from kpiit.config import config
+from kpiit.json import metric_dumps, metric_loads
+
 
 def _env(key, default):
     return os.environ.get(key, default)
 
+
+# Register new JSON serializer
+register(
+    config['celery']['serializer'],
+    metric_dumps,
+    metric_loads,
+    content_type='application/x-metricjson',
+    content_encoding='utf-8'
+)
+
+
+# Default schedule crontabs
+SCHEDULE_DOI_MONTHLY = crontab(**config['celery']['schedules']['doi'])
+SCHEDULE_REPO_DAILY = crontab(**config['celery']['schedules']['repo'])
+
 #: URL of message broker for Celery (default is Redis).
-broker_url = _env('BROKER_URL', 'redis://localhost:6379/0')
+broker_url = config['celery']['broker_url']
 #: URL of backend for result storage (default is Redis).
-result_backend = _env('CELERY_RESULT_BACKEND', 'redis://localhost:6379/1')
+result_backend = config['celery']['result_backend']
 #: List of modules to import when the Celery worker starts.
-imports = _env('CELERY_IMPORTS', [])
+imports = ['kpiit.tasks']
+
 #: Scheduled tasks configuration (aka cronjobs).
-beat_schedule = _env('CELERYBEAT_SCHEDULE', {})
+beat_schedule = config.beat_schedule
+
+#: Accept the new serializer
+accept_content = [config['celery']['serializer']]
+#: Serialize JSON with the custom serializer
+task_serializer = config['celery']['serializer']
+#: Serialize result with the custom serializer
+result_serializer = config['celery']['serializer']
