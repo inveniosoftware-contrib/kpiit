@@ -45,7 +45,7 @@ Open OpenShift and the deployment and edit the "Environment" and press "Add Valu
 Keytab file
 ~~~~~~~~~~~
 
-A Kerberos keytab file should be generated with the ``ktutil`` command by using the following instructions: 
+A Kerberos keytab file should be generated with the ``ktutil`` command by using the following instructions:
 https://kb.iu.edu/d/aumh#create
 
 Example:
@@ -64,6 +64,6 @@ Command: ``deploy``
 ~~~~~~~~~~~~~~~~~~~
 
 .. argparse::
-    :filename: openshift/deploy
+    :filename: ../openshift/deploy
     :func: create_parser
     :prog: deploy
