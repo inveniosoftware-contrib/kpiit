@@ -260,7 +260,7 @@ def dummy_support_ticket_metric(mocker):
 @pytest.fixture
 def cern_monit_publisher(mocker):
     """Fixture for the CERN monit publisher."""
-    def new_send(cls, url, document, production):
+    def new_send(cls, url, document):
         logger.debug('doc', document)
 
     mocker.patch.object(BasePublisher, 'send', new=new_send)

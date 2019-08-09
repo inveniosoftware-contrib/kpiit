@@ -126,8 +126,7 @@ class CERNMonitPublisher(CERNPublisher):
         """Publish KPIs to the grafana instance."""
         super().publish(metrics)
 
-        is_production = config['environment'].startswith('prod')
         url = config['cern_grafana_url']
 
-        resp = self.send(url, [self.data], production=is_production)
+        resp = self.send(url, [self.data])
         logger.debug('Response: %s' % resp)

@@ -26,7 +26,7 @@ class BasePublisher(object):
         """Publish metrics."""
         self.build_message(metrics)
 
-    def send(cls, url, document, production):
+    def send(cls, url, document):
         """Send data to url with a GET request."""
         logger.debug('sending document to: %s' % url)
         logger.debug('document: %s' % json.dumps(document))
