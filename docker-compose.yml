@@ -16,14 +16,23 @@ services:
     environment:
       - "BROKER_URL=redis://broker:6379/0"
       - "CELERY_RESULT_BACKEND=redis://broker:6379/1"
+      - "WDB_SOCKET_SERVER=wdb"
+      - "WDB_NO_BROWSER_AUTO_OPEN=True"
+    volumes:
+      - ./:/opt/kpiit/src
     links:
       - broker
+      - wdb
   broker:
     image: redis
     restart: "always"
     read_only: true
     ports:
       - "6379:6379"
+  wdb:
+    image: kozea/wdb:3.2.5
+    ports:
+      - "1984:1984"
   flower:
     image: mher/flower
     command: --broker=redis://broker:6379/0
