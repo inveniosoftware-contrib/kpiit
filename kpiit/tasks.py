@@ -9,6 +9,7 @@
 
 from celery import chain
 from celery.utils.log import get_task_logger
+from requests.exceptions import RequestException
 
 from kpiit.app import app
 from kpiit.util import load_target
@@ -33,11 +34,15 @@ def collect_and_publish_metrics(*args, **kwargs):
     )()
 
 
-@app.task
+@app.task(autoretry_for=(RequestException,),
+          retry_backoff=True,
+          retry_kwargs={'max_retries': 10})
 def collect_metrics(metrics):
     """Collect metrics."""
-    metric_instances = [load_target(args['instance'])(*args['args'], **args['kwargs'])
-                        for obj, args in metrics.items()]
+    metric_instances = [load_target(
+                        args['instance'])(*args['args'], **args['kwargs'])
+                        for obj, args in metrics.items()
+                        ]
 
     for metric in metric_instances:
         metric.collect()
@@ -45,11 +50,15 @@ def collect_metrics(metrics):
     return metric_instances
 
 
-@app.task
+@app.task(autoretry_for=(RequestException,),
+          retry_backoff=True,
+          retry_kwargs={'max_retries': 10})
 def publish_metrics(metrics, publishers):
     """Publish metrics."""
-    publisher_instances = [load_target(args['instance'])(*args['args'], **args['kwargs'])
-                           for obj, args in publishers.items()]
+    publisher_instances = [load_target(
+                           args['instance'])(*args['args'], **args['kwargs'])
+                           for obj, args in publishers.items()
+                           ]
 
     for publisher in publisher_instances:
         publisher.publish(metrics)

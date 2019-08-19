@@ -29,5 +29,6 @@ class JSONURLProvider(BaseProvider):
     def collect(self):
         """Get URL request."""
         self.data = requests.get(self.url, verify=False)
+        self.data.raise_for_status()
         self.json = self.data.json()
         return self.json

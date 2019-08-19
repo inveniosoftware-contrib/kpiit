@@ -83,9 +83,11 @@ class UptimeRobotProvider(BaseProvider):
             'content-type': 'application/x-www-form-urlencoded',
             'cache-control': 'no-cache'
         }
-        return requests.request(
+        resp = requests.request(
             'POST',
             url,
             data=payload,
             headers=headers
-        ).json()
+        )
+        resp.raise_for_status()
+        return resp.json()

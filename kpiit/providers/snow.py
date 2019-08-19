@@ -233,6 +233,5 @@ class ServiceNowProvider(BaseProvider):
     def auth_get(cls, url, user=SNOW_USER, password=SNOW_PASS):
         """Perform an authenticated GET request."""
         response = requests.get(url, auth=(user, password))
-        if response.status_code != 200:
-            raise requests.exceptions.HTTPError(response=response)
+        response.raise_for_status()
         return response.json()

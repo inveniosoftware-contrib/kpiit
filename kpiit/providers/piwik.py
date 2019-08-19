@@ -60,6 +60,7 @@ class Piwik(object):
             )
             cls.cookie = cls.krb_cookie()
         response = requests.get(url, cookies=cls.cookie)
+        response.raise_for_status()
         return response.json()
 
     @classmethod
@@ -113,7 +114,6 @@ class PiwikVisitsSummary(Piwik):
         """
         url = cls.build_url(cls.NAME, 'getVisits', idSite=site_id,
                             period=period, date=date, segment=segment)
-        print(url)
         data = cls.get(url)
         return data['value']
 

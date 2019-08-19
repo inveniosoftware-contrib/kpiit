@@ -31,8 +31,10 @@ class BasePublisher(object):
         logger.debug('sending document to: %s' % url)
         logger.debug('document: %s' % json.dumps(document))
 
-        return requests.post(
+        resp = requests.post(
             url,
             data=json.dumps(document),
             headers={"Content-Type": "application/json; charset=UTF-8"}
         )
+        resp.raise_for_status()
+        return resp
