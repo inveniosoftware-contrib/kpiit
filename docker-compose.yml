@@ -26,7 +26,7 @@ services:
       - "6379:6379"
   flower:
     image: mher/flower
-    command: --broker=redis://localhost:6379/0
+    command: --broker=redis://broker:6379/0
     ports:
       - "5555:5555"
     links:
