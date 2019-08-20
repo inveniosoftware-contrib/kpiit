@@ -46,6 +46,7 @@ def collect_metrics(metrics):
 
     for metric in metric_instances:
         metric.collect()
+        logger.debug('collected metrics for "{}"'.format(metric.name))
 
     return metric_instances
 
@@ -62,3 +63,6 @@ def publish_metrics(metrics, publishers):
 
     for publisher in publisher_instances:
         publisher.publish(metrics)
+        logger.debug('published metrics in "{}"'.format(
+            ", ".join([m.name for m in metrics]))
+        )
