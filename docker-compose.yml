@@ -40,3 +40,4 @@ services:
       - "5555:5555"
     links:
       - broker
+      - worker
