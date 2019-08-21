@@ -16,10 +16,6 @@ from kpiit.config import config
 from kpiit.json import metric_dumps, metric_loads
 
 
-def _env(key, default):
-    return os.environ.get(key, default)
-
-
 # Register new JSON serializer
 register(
     config['celery']['serializer'],
