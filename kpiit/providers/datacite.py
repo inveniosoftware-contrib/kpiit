@@ -30,13 +30,15 @@ class DataCiteProvider(BaseProvider):
 
     def load_index_data(self, url):
         """Download DOI index HTML data."""
-        resp = requests.get(url).text
+        resp = requests.get(url)
         resp.raise_for_status()
-        return resp
+        return resp.text
 
     def load_stats_data(self, url):
         """Download DOI stats HTML data."""
-        return requests.get(url).text
+        resp = requests.get(url)
+        resp.raise_for_status()
+        return resp.text
 
     def collect(self):
         """Collect DOI statistics from DataCite."""
