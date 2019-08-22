@@ -17,6 +17,7 @@ ENV WORKING_DIR=/opt/kpiit
 # copy everything inside /src
 RUN mkdir -p ${WORKING_DIR}/src
 COPY ./ ${WORKING_DIR}/src
+COPY ./openshift/etc/krb5.conf /etc/
 WORKDIR ${WORKING_DIR}/src
 
 # Install
@@ -28,4 +29,3 @@ RUN chgrp -R 0 ${WORKING_DIR} && \
 
 RUN useradd kpiit --uid 1000 --gid 0 && \
     chown -R kpiit:root ${WORKING_DIR}
-USER 1000

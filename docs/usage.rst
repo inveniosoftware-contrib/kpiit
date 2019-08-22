@@ -53,8 +53,8 @@ Example:
 .. code-block:: bash
 
     > ktutil
-    ktutil:  addent -password -p username@CERN.CH -k 1 -e aes256-cts
-    Password for username@ADS.IU.EDU: [enter your password]
+    ktutil:  addent -password -p username@CERN.CH -k 1 -e rc4-hmac
+    Password for username@CERN.CH: [enter your password]
     ktutil:  wkt username.keytab
     ktutil:  quit
 
