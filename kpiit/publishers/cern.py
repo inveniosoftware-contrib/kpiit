@@ -97,13 +97,12 @@ class CERNPublisher(BasePublisher):
             file.write(encoded)
             logger.info('saved output to: %s' % self.filename)
 
-    def build_message(self, metrics):
+    def build_message(self, metric):
         """Build KPI object from the given metrics."""
-        for metric in metrics:
-            for values in metric.values.values():
-                for key, value in values.items():
-                    if value is not None:
-                        self.add_field(key, value)
+        for values in metric.values.values():
+            for key, value in values.items():
+                if value is not None:
+                    self.add_field(key, value)
 
     def publish(self, metrics):
         """Publish KPIs to the grafana instance."""

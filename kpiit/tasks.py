@@ -12,6 +12,7 @@ from celery.utils.log import get_task_logger
 from requests.exceptions import RequestException
 
 from kpiit.app import app
+from kpiit.metrics.base import BaseMetric
 from kpiit.util import load_target
 
 logger = get_task_logger(__name__)
@@ -27,34 +28,34 @@ def collect_and_publish_metrics(*args, **kwargs):
         logger.debug('Skipping publishing because no publishers were set.')
         return collect_metrics.s(metrics)
 
-    # Publish when collecting metrics is completed
-    return chain(
-        collect_metrics.s(metrics),
-        publish_metrics.s(kwargs['publishers'])
-    )()
+    for metric in metrics.values():
+        chain(
+            collect_metrics.s(metric),
+            publish_metrics.s(kwargs['publishers'])
+        )()
 
 
 @app.task(autoretry_for=(RequestException,),
           retry_backoff=True,
           retry_kwargs={'max_retries': 10})
-def collect_metrics(metrics):
+def collect_metrics(metric):
     """Collect metrics."""
-    metric_instances = [load_target(
-                        args['instance'])(*args['args'], **args['kwargs'])
-                        for obj, args in metrics.items()
-                        ]
+    # when 'retrying' is passing the instance and not the metric dictionary
+    if isinstance(metric, BaseMetric):
+        metric_instance = metric
+    else:
+        metric_instance = load_target(metric['instance'])(*metric['args'],
+                                                          **metric['kwargs'])
+    metric_instance.collect()
+    logger.debug('collected metrics for "{}"'.format(metric_instance.name))
 
-    for metric in metric_instances:
-        metric.collect()
-        logger.debug('collected metrics for "{}"'.format(metric.name))
-
-    return metric_instances
+    return metric_instance
 
 
 @app.task(autoretry_for=(RequestException,),
           retry_backoff=True,
           retry_kwargs={'max_retries': 10})
-def publish_metrics(metrics, publishers):
+def publish_metrics(metric, publishers):
     """Publish metrics."""
     publisher_instances = [load_target(
                            args['instance'])(*args['args'], **args['kwargs'])
@@ -62,7 +63,5 @@ def publish_metrics(metrics, publishers):
                            ]
 
     for publisher in publisher_instances:
-        publisher.publish(metrics)
-        logger.debug('published metrics in "{}"'.format(
-            ", ".join([m.name for m in metrics]))
-        )
+        publisher.publish(metric)
+        logger.debug('published metrics for "{}"'.format(metric.name))
