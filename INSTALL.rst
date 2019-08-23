@@ -17,5 +17,4 @@ Running
 
 .. code-block:: console
 
-    (kpiit)$ docker-compose up -d broker flower
-    (kpiit)$ ./scripts/server
+    (kpiit)$ docker-compose up
