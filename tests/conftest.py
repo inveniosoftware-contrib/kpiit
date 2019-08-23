@@ -73,6 +73,9 @@ class UptimeRequest(object):
         """Get JSON data."""
         return self.data
 
+    def raise_for_status(self):
+        return
+
 
 @pytest.fixture
 def uptime_provider(mocker):

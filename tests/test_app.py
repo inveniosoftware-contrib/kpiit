@@ -15,7 +15,7 @@ def test_app_conf_env(monkeypatch):
     app = create_app(
         config_module='kpiit.celeryconfig',
     )
-    assert app.conf.broker_url == 'redis://localhost:6379/0'
+    assert app.conf.broker_url == 'redis://broker:6379/0'
     app = create_app(
         config_module='kpiit.celeryconfig',
         broker_url='redis://localhost:6379/3'

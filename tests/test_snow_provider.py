@@ -128,6 +128,10 @@ def test_auth_get(mocker):
         def json(self):
             return dict(hello='world')
 
+        def raise_for_status(self):
+            if self.status_code == 400:
+                raise requests.exceptions.HTTPError()
+
     mocker.patch('requests.get', new=lambda url, auth: AuthGetResponse(400))
 
     with pytest.raises(requests.exceptions.HTTPError):
