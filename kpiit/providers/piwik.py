@@ -29,12 +29,19 @@ class Piwik(object):
     name = None
     cookie = None
 
+    @staticmethod
+    def has_kerberos_ticket():
+        return True if subprocess.call(['klist', '-s']) == 0 else False
+
     @classmethod
     def krb_ticket(cls, principal, keytab_file):
         """Retrieve the Kerberos ticket for `principal`."""
         try:
-            ret = subprocess.run(['kinit', principal, '-k', '-t', keytab_file])
-            ret.check_returncode()
+            if not Piwik.has_kerberos_ticket():
+                ret = subprocess.run(
+                    ['kinit', principal, '-k', '-t', keytab_file]
+                )
+                ret.check_returncode()
         except subprocess.CalledProcessError as cpe:
             logger.error('Failed to retrieve Kerberos ticket: %s' % cpe.cmd)
 
