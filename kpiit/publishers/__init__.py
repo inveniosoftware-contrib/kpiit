@@ -16,16 +16,17 @@ from kpiit.publishers.cern import CERNMonitPublisher
 logger = get_task_logger(__name__)
 
 
-def doi(prefix, skip_fields=False, save_json=True):
+def doi(prefix, skip_fields=False, save_json=False):
     """Create a DOI publisher instance."""
     return CERNMonitPublisher(
         'doikpi',
         doi_prefix=prefix,
-        skip_fields=skip_fields
+        skip_fields=skip_fields,
+        save_json=save_json
     )
 
 
-def repo(service, env, skip_fields=False, save_json=True):
+def repo(service, env, skip_fields=False, save_json=False):
     """Create a repo publisher instance."""
     if isinstance(service, Enum):
         service = service.value
@@ -37,5 +38,6 @@ def repo(service, env, skip_fields=False, save_json=True):
         'repokpi',
         service=service,
         env=env,
-        skip_fields=skip_fields
+        skip_fields=skip_fields,
+        save_json=save_json
     )
