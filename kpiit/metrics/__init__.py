@@ -10,8 +10,8 @@
 from celery.utils.log import get_task_logger
 
 from kpiit.metrics.base import BaseMetric
-from kpiit.metrics.records import RecordsMetric
-from kpiit.metrics.uptime import UptimeMetric
+from kpiit.metrics.recordmetric import RecordsMetric
+from kpiit.metrics.uptimemetric import UptimeMetric
 from kpiit.providers.datacite import DataCiteProvider
 from kpiit.providers.dummy import DummyProvider
 from kpiit.providers.json import JSONURLProvider

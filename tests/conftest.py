@@ -17,7 +17,7 @@ from celery.utils.log import get_task_logger
 import kpiit.metrics as metrics
 from kpiit.app import app
 from kpiit.config import config
-from kpiit.metrics.records import RecordsMetric
+from kpiit.metrics.recordmetric import RecordsMetric
 from kpiit.providers import BaseProvider
 from kpiit.providers.datacite import DataCiteProvider
 from kpiit.providers.json import JSONURLProvider
