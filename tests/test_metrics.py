@@ -10,7 +10,7 @@
 import pytest
 
 from kpiit.metrics.base import BaseMetric
-from kpiit.metrics.records import RecordsMetric
+from kpiit.metrics.recordmetric import RecordsMetric
 
 
 def test_metric_base(zenodo_records):

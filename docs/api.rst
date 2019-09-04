@@ -35,13 +35,13 @@ Base Metric
 Records
 ~~~~~~~
 
-.. automodule:: kpiit.metrics.records
+.. automodule:: kpiit.metrics.recordmetric
    :members:
 
 Uptime
 ~~~~~~
 
-.. automodule:: kpiit.metrics.uptime
+.. automodule:: kpiit.metrics.uptimemetric
    :members:
 
 Providers

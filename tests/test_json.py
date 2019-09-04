@@ -10,7 +10,7 @@
 import pytest
 
 from kpiit.json import metric_dumps, metric_loads
-from kpiit.metrics.records import RecordsMetric
+from kpiit.metrics.recordmetric import RecordsMetric
 from kpiit.providers import BaseProvider
 from kpiit.publishers.base import BasePublisher
 from kpiit.publishers.json import JSONFilePublisher

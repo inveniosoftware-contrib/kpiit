@@ -12,7 +12,7 @@ import json
 import pytest
 from tests.conftest import records_collect
 
-from kpiit.metrics.records import RecordsMetric
+from kpiit.metrics.recordmetric import RecordsMetric
 from kpiit.tasks import collect_metrics, publish_metrics
 
 
