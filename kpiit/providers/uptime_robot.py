@@ -50,7 +50,7 @@ class UptimeRobotProvider(BaseProvider):
             }
 
         params = dict(
-            all_time_uptime_ratio=1,
+            custom_uptime_ratios=1,
             response_times=1
         )
         resp = self.send('getMonitors', **params)
@@ -63,7 +63,7 @@ class UptimeRobotProvider(BaseProvider):
         for monitor in resp['monitors']:
             name = monitor['friendly_name']
             if name == self.monitor_name:
-                self.uptime_ratio = monitor['all_time_uptime_ratio']
+                self.uptime_ratio = monitor['custom_uptime_ratio']
                 self.response_time = monitor['average_response_time']
                 break
         return {

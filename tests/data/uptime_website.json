@@ -25,7 +25,7 @@
                 "expires": 1588895999
             },
             "create_datetime": 1473018795,
-            "all_time_uptime_ratio": "99.960",
+            "custom_uptime_ratio": "99.960",
             "response_times": [
                 {
                     "datetime": 1530885385,
