@@ -8,6 +8,7 @@
 """Publisher instances."""
 
 from enum import Enum
+from os.path import dirname, join
 
 from celery.utils.log import get_task_logger
 
@@ -15,18 +16,22 @@ from kpiit.publishers.cern import CERNMonitPublisher
 
 logger = get_task_logger(__name__)
 
+OUTPUT_PATH = join(dirname(__file__), '..', '..', 'logs')
 
-def doi(prefix, skip_fields=False, save_json=False):
+
+def doi(prefix, skip_fields=False, output_path=OUTPUT_PATH, save_json=False):
     """Create a DOI publisher instance."""
     return CERNMonitPublisher(
         'doikpi',
         doi_prefix=prefix,
         skip_fields=skip_fields,
-        save_json=save_json
+        save_json=save_json,
+        output_path=output_path,
     )
 
 
-def repo(service, env, skip_fields=False, save_json=False):
+def repo(service, env, skip_fields=False, output_path=OUTPUT_PATH,
+         save_json=False):
     """Create a repo publisher instance."""
     if isinstance(service, Enum):
         service = service.value
@@ -39,5 +44,6 @@ def repo(service, env, skip_fields=False, save_json=False):
         service=service,
         env=env,
         skip_fields=skip_fields,
-        save_json=save_json
+        save_json=save_json,
+        output_path=output_path,
     )

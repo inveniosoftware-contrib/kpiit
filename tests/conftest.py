@@ -225,7 +225,7 @@ def zenodo_doi_metric(mocker, zenodo_doi_index_html, zenodo_doi_june_html):
 @pytest.fixture
 def json_publisher(tmpdir):
     """Fixture for JSON publisher."""
-    return pub_doi('10.5281', save_json=True)
+    return pub_doi('10.5281', output_path=tmpdir, save_json=True)
 
 
 @pytest.fixture(scope='module')
@@ -262,13 +262,13 @@ def dummy_support_ticket_metric(mocker):
 
 
 @pytest.fixture
-def cern_monit_publisher(mocker):
+def cern_monit_publisher(mocker, tmpdir):
     """Fixture for the CERN monit publisher."""
     def new_send(cls, url, document):
         logger.debug('doc', document)
 
     mocker.patch.object(BasePublisher, 'send', new=new_send)
-    return CERNMonitPublisher('testkpi')
+    return CERNMonitPublisher('testkpi', save_json=True, output_path=tmpdir)
 
 
 def piwik_url(query):

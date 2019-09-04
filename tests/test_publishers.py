@@ -35,8 +35,8 @@ def test_json_publisher(json_publisher, zenodo_records):
     assert os.path.exists(json_publisher.filename)
 
 
-def test_cern_doi_publisher_message(zenodo_doi_metric):
-    publisher = doi(prefix='10.5281')
+def test_cern_doi_publisher_message(zenodo_doi_metric, tmpdir):
+    publisher = doi(prefix='10.5281', save_json=True, output_path=tmpdir)
 
     zenodo_doi_metric.collect()
 

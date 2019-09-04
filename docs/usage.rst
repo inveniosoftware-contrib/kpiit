@@ -64,6 +64,6 @@ Command: ``deploy``
 ~~~~~~~~~~~~~~~~~~~
 
 .. argparse::
-    :filename: ../openshift/deploy
+    :filename: openshift/deploy
     :func: create_parser
     :prog: deploy
