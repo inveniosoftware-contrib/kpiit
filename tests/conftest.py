@@ -225,7 +225,7 @@ def zenodo_doi_metric(mocker, zenodo_doi_index_html, zenodo_doi_june_html):
 @pytest.fixture
 def json_publisher(tmpdir):
     """Fixture for JSON publisher."""
-    return pub_doi('10.5281')
+    return pub_doi('10.5281', save_json=True)
 
 
 @pytest.fixture(scope='module')
