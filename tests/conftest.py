@@ -74,6 +74,7 @@ class UptimeRequest(object):
         return self.data
 
     def raise_for_status(self):
+        """Mocked method."""
         return
 
 

@@ -15,7 +15,6 @@ from kombu.serialization import register
 from kpiit.config import config
 from kpiit.json import metric_dumps, metric_loads
 
-
 # Register new JSON serializer
 register(
     config['celery']['serializer'],

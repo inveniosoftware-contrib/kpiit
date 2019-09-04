@@ -31,6 +31,7 @@ class Piwik(object):
 
     @staticmethod
     def has_kerberos_ticket():
+        """Check if we have a keberos ticket."""
         return True if subprocess.call(['klist', '-s']) == 0 else False
 
     @classmethod
