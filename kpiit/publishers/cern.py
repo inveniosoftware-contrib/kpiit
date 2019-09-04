@@ -22,7 +22,8 @@ logger = get_task_logger(__name__)
 class CERNPublisher(BasePublisher):
     """Publish metrics to CERN's Grafana instance."""
 
-    def __init__(self, _type, skip_fields=False, save_json=True, **tags):
+    def __init__(self, _type, skip_fields=False, save_json=True,
+                 output_path='logs', **tags):
         """CERN publisher initialize."""
         self.data = dict(
             producer='digitalrepos',
@@ -31,6 +32,8 @@ class CERNPublisher(BasePublisher):
             timestamp=None,
             idb_tags=[]
         )
+
+        self.output_path = output_path
 
         if not skip_fields:
             self.data['idb_fields'] = []
@@ -83,15 +86,14 @@ class CERNPublisher(BasePublisher):
                 'format "%s" is not supported' % file_format
             )
 
-        path = os.path.dirname(__file__)
-        filename = 'logs/{type}_{name}_{now}.{format}'.format(
+        filename = '{type}_{name}_{now}.{format}'.format(
             type=self.data['type'],
             name=self.name,
             now=self.get_timestamp(),
             format=file_format
         )
 
-        self.filename = os.path.join(path, '..', '..', filename)
+        self.filename = os.path.join(self.output_path, filename)
 
         with open(self.filename, 'w+') as file:
             file.write(encoded)

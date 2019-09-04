@@ -8,6 +8,7 @@
 """JSON publishers."""
 
 import json
+from os.path import join
 
 from celery.utils.log import get_task_logger
 
@@ -35,10 +36,13 @@ class JSONFilePublisher(CERNPublisher):
         """Publish metrics to JSON file."""
         super().publish(metrics)
 
-        self.filename = 'logs/{type}_{name}_{now}.json'.format(
-            type=self.data['type'],
-            name=self.name,
-            now=self.get_timestamp()
+        self.filename = join(
+            self.output_path,
+            '{type}_{name}_{now}.json'.format(
+                type=self.data['type'],
+                name=self.name,
+                now=self.get_timestamp()
+            )
         )
 
         with open(self.filename, 'w+') as f:
