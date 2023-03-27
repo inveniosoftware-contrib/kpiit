@@ -9,7 +9,7 @@ billiard==3.5.0.3         # via celery
 celery[redis]==4.2.0
 kombu==4.2.1              # via celery
 pytz==2018.4              # via celery
-redis==2.10.6             # via celery
+redis==4.5.3             # via celery
 vine==1.1.4               # via amqp
 BeautifulSoup4==4.6.0
 python-cern-sso-krb==1.3.3
